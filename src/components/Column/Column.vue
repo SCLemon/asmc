@@ -25,7 +25,7 @@
 <script>
 import { VIcon } from 'vorium-ui'
 import { useRouter } from 'vue-router'
-import pathConfig from './pathConfig/pathConfig'
+import pathConfig from '../../config/Column/pathConfig'
 
 import 'vorium-ui/icons/icons.css'
 export default {
@@ -59,7 +59,7 @@ export default {
     /* common */
     .common-item{
         width: 100%;
-        height: 60px;
+        height: 65px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -72,12 +72,12 @@ export default {
     }
     .common-item:hover{
         cursor: pointer;
-        background: rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.12);
         color: white;
     }
     .common-item-selected{
         color: white;
-        background: rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.12);
     }
 
     /* column-logo */

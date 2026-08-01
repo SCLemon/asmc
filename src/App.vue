@@ -60,7 +60,7 @@ export default {
   }
   .view{
     width: 100%;
-    height: calc(100vh - 80px);
+    height: 100vh;
     box-sizing: border-box;
     padding-bottom: 20px;
     overflow-y: auto;
@@ -71,6 +71,7 @@ export default {
     height: 100vh;
     box-sizing: border-box;
     flex-shrink: 0;
+    box-shadow: 7.5px 0px 5px rgba(210,210,210);
   }
 
   *::-webkit-scrollbar{
