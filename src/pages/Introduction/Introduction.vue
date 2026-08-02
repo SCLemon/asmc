@@ -9,22 +9,45 @@
                 <v-carousel-item><div class="introduction-banner-item">Build. Measure. Iterate.</div></v-carousel-item>
             </VCarousel>
         </div>
-        <lab-intro></lab-intro>
-        <lab-member></lab-member>
+        <div class="introduction-view-wrapper">
+            <div class="introduction-view-options-wrapper">
+                <div class="introduction-view-option" @click="goTo('home')">
+                    Introduction
+                    <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/home')}"></div>
+                </div>
+                <div class="introduction-view-option"  @click="goTo('publications')">
+                    Publications
+                    <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/publications')}"></div>
+                </div>
+            </div>
+            <router-view v-slot="{ Component }">
+                <Transition name="page" mode="out-in">
+                    <component :is="Component" />
+                </Transition>
+            </router-view>
+        </div>
     </div>
 </template>
 
 <script>
 import { VCarousel, VCarouselItem } from 'vorium-ui'
 import 'vorium-ui/dist/vorium-ui.css'
-import LabIntro from './components/LabIntro.vue'
-import LabMember from './components/LabMember.vue';
+import { useRouter } from 'vue-router'
 export default {
     name: 'Introduction',
     components: {
         VCarousel, VCarouselItem,
-        LabIntro, LabMember
     },
+    setup(){
+        
+        const router = useRouter();
+        function goTo(path) {
+            router.replace(path).catch((e)=>{})
+        }
+        return {
+            goTo
+        }
+    }
 }
 </script>
 
@@ -42,5 +65,42 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+    .introduction-view-wrapper{
+        position: relative;
+        width: 100%;
+    }
+    .introduction-view-options-wrapper{
+        position: absolute;
+        top: 15px;
+        right:30px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 5px;
+    }
+    .introduction-view-option{
+        width: fit-content;
+        box-sizing: border-box;
+        padding: 15px 10px 15px 10px;
+        position: relative;
+    }
+    .introduction-view-option:hover{
+        cursor: pointer;
+    }
+    .introduction-view-option-selected-bar{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2.5px;
+        background: black;
+        transition: width 0.25s ease;
+    }
+    .introduction-view-option-selected-bar-selected{
+        width: 100%;
+    }
+    .introduction-view-option:hover .introduction-view-option-selected-bar{
+        width: 100%;
     }
 </style>

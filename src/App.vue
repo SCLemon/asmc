@@ -26,19 +26,19 @@ export default {
     Column
   },
   setup(){
-      const view = ref();
-      const route = useRoute();
-      watch(()=>route.path, (newVal) => {
+      // const view = ref();
+      // const route = useRoute();
+      // watch(()=>route.path, (newVal) => {
 
-          const target = view.value;
-          if(!target) return;
-          target.scrollTo({top: 0, behavior: 'smooth'})
+      //     const target = view.value;
+      //     if(!target) return;
+      //     target.scrollTo({top: 0, behavior: 'smooth'})
 
-      }, { immediate: true })
+      // }, { immediate: true })
 
-      return {
-        view
-      }
+      // return {
+      //   view
+      // }
   }
 }
 </script>

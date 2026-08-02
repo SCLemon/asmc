@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import intro from '../../../config/Intorduction/Lab/intro';
+import intro from '../../../../config/Intorduction/Lab/intro';
 export default {
     name: 'LabIntro',
     setup(){

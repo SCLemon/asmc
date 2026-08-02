@@ -12,7 +12,7 @@
                             <div class="member-research-title">Research Topic</div>
                             <div class="member-research">{{ member.topic }}</div>
                         </div>
-                        <div class="member-duration">{{ member.duration }}</div>
+                        <div class="member-badge">{{ member.badge }}</div>
                         <div class="member-location">{{ member.location }}</div>
                     </div>
                 </div>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import member from '../../../config/Intorduction/Lab/member';
+import member from '../../../../config/Intorduction/Lab/member';
 export default {
     name: 'LabMember',
     setup(){
@@ -75,6 +75,11 @@ export default {
         position: relative;
         box-shadow: 0.5px 0.5px 5px gray;
         border-radius: 3px;
+        transition: box-shadow 0.5s ease;
+    }
+    .member-wrapper:hover{
+        cursor: pointer;
+        box-shadow: 4px 4px 5px gray;
     }
     .member-img{
         width: 100px;
@@ -106,7 +111,7 @@ export default {
         overflow-y: scroll;
         
     }
-    .member-duration{
+    .member-badge{
         position: absolute;
         top: 15px;
         right: 15px;
