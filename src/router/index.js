@@ -2,28 +2,33 @@ import { createRouter, createWebHashHistory  } from 'vue-router'
 import Introduction from '../pages/Introduction/Introduction.vue'
 import Home from '../pages/Introduction/pages/Home.vue'
 import Publications from '../pages/Introduction/pages/Publications.vue'
+import AnalysisTools from '../pages/AnalysisTools/AnalysisTools.vue'
 const routes = [
     {
-        path: '/introduction',
-        component: Introduction,
-        children:[
-          {
-            path: 'home',
-            component: Home,
-          },
-          {
-            path: 'publications',
-            component: Publications,
-          },
-          {
-            path: '',
-            redirect: 'introduction/home'
-          }
-        ]
+      path: '/introduction',
+      component: Introduction,
+      children:[
+        {
+          path: 'home',
+          component: Home,
+        },
+        {
+          path: 'publications',
+          component: Publications,
+        },
+        {
+          path: '',
+          redirect: '/introduction/home'
+        }
+      ]
     },
     {
-        path: '/',
-        redirect: '/introduction'
+      path: '/analysis-tools',
+      component: AnalysisTools,
+    },
+    {
+      path: '/',
+      redirect: '/introduction'
     },
     // {
     //   path: '/:pathMatch(.*)*',
