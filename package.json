@@ -12,6 +12,7 @@
     "highlight.js": "^11.11.1",
     "install": "^0.13.0",
     "npm": "^11.16.0",
+    "plotly.js": "^3.7.0",
     "vorium-ui": "file:../vorium-ui/vorium-ui-0.1.0.tgz",
     "vue": "^3.2.13",
     "vue-router": "^5.1.0"
