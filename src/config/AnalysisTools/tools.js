@@ -1,8 +1,8 @@
 import { ChartLineIcon } from 'vorium-ui/icons'
 export default [
     {
-        title: 'I-V Plot',
+        title: 'Id-Vd Plot',
         icon: ChartLineIcon,
-        path: '/analysis-tools/current-voltage-analysis-tool'
+        path: '/analysis-tools/id-vd-analysis-tool'
     },
 ]
