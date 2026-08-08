@@ -36,41 +36,40 @@ export default {
             },
             yaxis: { 
                 title: { text: "Id" }, 
-                fixedrange: true,
                 exponentformat: 'power',
             }
         });
 
-        const plotLineConfig = ref({
-            type: "scatter",
-            mode: "lines",
-            line: { color: "#3b82f6", width: 3 }
-        })
+        
+        const plotLineConfig = ref(
+            {
+                'increase':{
+                    type: "scatter",
+                    mode: "lines",
+                    line: { color: "#3b82f6", width: 3 }
+                },
+                'decrease':{
+                    type: "scatter",
+                    mode: "lines",
+                    line: { color: " #F59E0B", width: 3 },
+                }
+            }
+        )
 
         const plotData = ref([]);
 
-
         onMounted(async () => {
             Plotly.newPlot(chart.value, plotData.value, plotLayout.value, plotConfig);
-            const cleanData = await useHandleData('./asset/id_vd.csv');
-            console.log(cleanData)
-            plotData.value = Object.entries(cleanData).map((group) => {
-                return {
-                    x: group[1]['increase'].x,
-                    y: group[1]['increase'].y,
-                    name: `Ig = ${group[0]} V`,
-                    ...toRaw(plotLineConfig)
-                }
-            })
-            
+            const { extractData } = await useHandleData('./asset/id_vd.csv');
+            plotData.value = extractData(1, plotLineConfig.value)
         });
 
         watch(
-            () => [plotData.value, plotLayout.value, plotConfig.value],
+            () => [plotData.value, plotLayout.value, plotConfig],
             () => {
-                const newData = structuredClone(plotData.value);  // 純 JS Object
-                const newLayout = structuredClone(plotLayout.value); // 純 JS Object
-                const newConfig = structuredClone(plotConfig.value)
+                const newData = structuredClone(plotData.value);
+                const newLayout = structuredClone(plotLayout.value); 
+                const newConfig = structuredClone(plotConfig)
                 Plotly.react(chart.value, newData, newLayout, newConfig);
             },
             { deep: true }
