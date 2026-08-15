@@ -2,6 +2,7 @@
     <div>
         <div class="chart-wrapper">
             <div class="chart-config-wrapper">
+                <div class="analyzer-title">Id-Vg Analyzer</div>
                 <div class="chart-file-wrapper"><input type="file" @change="handleFile" accept=".csv"></div>
                 <div class="chart-config-title-wrapper">
                     <div class="chart-config-title-title">Chart Title： </div>
@@ -108,6 +109,10 @@ export default {
 
         const plotData = ref([]);
 
+        onMounted(()=>{
+            Plotly.newPlot(chart.value, plotData.value, plotLayout.value, plotConfig);
+        })
+
         const handleFile = async (event) => {
             
             reset();
@@ -124,7 +129,7 @@ export default {
             })
 
             // initial plot
-            Plotly.newPlot(chart.value, plotData.value, plotLayout.value, plotConfig);
+            Plotly.react(chart.value, plotData.value, plotLayout.value, plotConfig);
             plotData.value = extractData(plotType.value, plotLineConfig.value, showPlots.value, normalized_factor.value)
         }
         
@@ -180,17 +185,23 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 20px;
-    }
-    .chart-config-wrapper{
-        width: calc(100% - 650px);
-        height: 400px;
-        margin-left: 15px;
+        gap: 10px;
     }
     .chart{
         flex-shrink: 0;
         width: 600px;
         aspect-ratio: 1/1;
+    }
+    .chart-config-wrapper{
+        width: calc(100% - 650px);
+        height: 530px;
+        margin-left: 25px;
+    }
+
+    .analyzer-title{
+        font-size: 20px;
+        font-weight: bolder;
+        margin-bottom: 25px;
     }
 
     /* chart file */
