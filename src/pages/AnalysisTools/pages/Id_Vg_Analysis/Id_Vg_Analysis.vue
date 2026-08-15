@@ -2,6 +2,7 @@
     <div>
         <div class="chart-wrapper">
             <div class="chart-config-wrapper">
+                <div class="chart-file-wrapper"><input type="file" @change="handleFile" accept=".csv"></div>
                 <div class="chart-config-title-wrapper">
                     <div class="chart-config-title-title">Chart Title： </div>
                     <input type="text" v-model="plotLayout.title.text" class="chart-config-title-input">
@@ -42,6 +43,7 @@ import Plotly from "plotly.js/dist/plotly";
 export default {
     name: 'Id_Vg_Analysis',
     setup() {
+
         const chart = ref();
 
         // ========== Global Config Start ========== //
@@ -51,8 +53,8 @@ export default {
             toImageButtonOptions: {
                 format: 'png',
                 filename: 'figure',
-                width: 1600,
-                height: 900,
+                width: 600,
+                height: 600,
                 scale: 3
             }
         }
@@ -105,30 +107,42 @@ export default {
         let showPlotsOptions = ref([]);
 
         const plotData = ref([]);
-        
-        onMounted(async () => {
 
-            // raw data
-            const result = await useHandleData('./asset/id_vg.csv')
+        const handleFile = async (event) => {
+            
+            reset();
+
+            const file = event.target.files[0]
+
+            const result = await useHandleData(file)
             extractData = result.extractData;
 
             // show plot options
             showPlotsOptions.value = Object.entries(result.grouppedData).map((item, id) => {
+                showPlots.value.push(id+1);
                 return { label: item[0], value: id+1 }
             })
 
             // initial plot
             Plotly.newPlot(chart.value, plotData.value, plotLayout.value, plotConfig);
             plotData.value = extractData(plotType.value, plotLineConfig.value, showPlots.value, normalized_factor.value)
-        });
+        }
         
+        // 清除使用者參數
+        function reset(){
+            normalized_factor.value = 1;
+            plotType.value = 0;
+            showPlots.value = [];
+        }
+
 
         // ========== Main Funcion End ========== //
 
+
+
         // ========== Watch Start ========== //
-
-
-        // layout
+        
+        // layout watcher
         watch(
             () => [plotData.value, plotLayout.value, plotConfig],
             () => {
@@ -140,18 +154,19 @@ export default {
             { deep: true }
         );
 
-        // config input
+        // config input watcher
         watch(()=>[
             normalized_factor.value, plotType.value, showPlots.value
         ], 
         async ()=>{
+            if (!extractData) return;
             plotData.value = extractData(plotType.value, plotLineConfig.value, showPlots.value, normalized_factor.value)
         }, { deep: true })
 
         // ========== Watch End ========== //
 
         return {
-            chart, plotLayout, normalized_factor, plotType, showPlots, showPlotsOptions
+            chart, plotLayout, normalized_factor, plotType, showPlots, showPlotsOptions, handleFile
         };
     }
 }
@@ -160,8 +175,7 @@ export default {
 <style scoped>
     .chart-wrapper{
         width: 100%;
-        height: 650px;
-        border: 1px solid red;
+        height: 100vh;
         box-sizing: border-box;
         display: flex;
         align-items: center;
@@ -171,12 +185,20 @@ export default {
     .chart-config-wrapper{
         width: calc(100% - 650px);
         height: 400px;
-        margin-left: 10px;
+        margin-left: 15px;
     }
     .chart{
         flex-shrink: 0;
         width: 600px;
         aspect-ratio: 1/1;
+    }
+
+    /* chart file */
+    .chart-file-wrapper{
+        margin-bottom: 10px;
+    }
+    .chart-file-wrapper input[type="file"]::file-selector-button {
+        margin-right: 10px;
     }
 
     /* chart title & normalized factor */

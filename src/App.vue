@@ -61,9 +61,8 @@ export default {
   .view{
     width: 100%;
     height: 100vh;
-    box-sizing: border-box;
-    padding-bottom: 20px;
     overflow-y: auto;
+    box-sizing: border-box;
   }
   .column{
     width: 80px;

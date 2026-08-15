@@ -85,7 +85,7 @@ function extractData(type, config, range, normalized_factor) {
 
     const groups = Object.entries(grouppedData)
 
-    const selectedGroups = range?.length ? groups.filter((_, index) => range.includes(index + 1)) : groups
+    const selectedGroups = range?.length ? groups.filter((_, index) => range.includes(index + 1)) : [];
 
     const output = [];
 
@@ -116,9 +116,9 @@ function extractData(type, config, range, normalized_factor) {
 }
 
 
-export async function useHandleData(src){
+export async function useHandleData(file){
 
-    rawData = await (await fetch(src)).text();
+    rawData = await file.text();
     parseData = parseDataToNumberAndRemoveHeader(rawData);
     grouppedData = groupData(parseData);
     
