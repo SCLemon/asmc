@@ -8,10 +8,6 @@
                     <div class="chart-config-title-title">Chart Title： </div>
                     <input type="text" v-model="plotLayout.title.text" class="chart-config-title-input">
                 </div>
-                <div class="chart-config-title-wrapper">
-                    <div class="chart-config-title-title">Normalized Factor： </div>
-                    <input type="number" v-model="normalized_factor" class="chart-config-title-input">
-                </div>
                 <div class="chart-plot-type-wrapper">
                     <div class="chart-plot-type-title">PlotType：</div>
                     <div class="chart-plot-type-radio-wrapper">
@@ -19,14 +15,33 @@
                         <div><label><input class="chart-plot-type-radio"  type="radio" v-model="plotType" :value="1"/>Increase</label></div>
                         <div><label><input class="chart-plot-type-radio"  type="radio" v-model="plotType" :value="2"/>Decrease</label></div>
                     </div>
-                </div>
-                <div class="chart-plot-type-wrapper">
-                    <div class="chart-plot-type-title">ShowPlots：</div>
+                    <div class="chart-plot-type-radio-split-line">|</div>
                     <div class="chart-plot-type-radio-wrapper">
-                        <div v-for="(item, id) in showPlotsOptions" :key="id">
-                            <label><input class="chart-plot-type-radio" type="checkbox" v-model="showPlots" :value="item.value"/>{{ item.label }}</label>
+                        <div><label><input class="chart-plot-type-radio" type="radio" v-model="yAxisType" :value="0"/>Both</label></div>
+                        <div><label><input class="chart-plot-type-radio"  type="radio" v-model="yAxisType" :value="1"/>Log</label></div>
+                        <div><label><input class="chart-plot-type-radio"  type="radio" v-model="yAxisType" :value="2"/>Linear</label></div>
+                    </div>
+                </div>
+                <div v-if="showPlotsOptions.length">
+                    <div class="chart-show-plot-wrapper">
+                        <div class="chart-show-plot-title">ShowPlots：</div>
+                        <div class="chart-show-plot-checkbox-wrapper">
+                            <div v-for="(item, id) in showPlotsOptions" :key="id">
+                                <label><input class="chart-show-plot-checkbox" type="checkbox" v-model="showPlots" :value="item.value"/>{{ item.label }}</label>
+                            </div>
                         </div>
                     </div>
+                    <div class="chart-config-title-wrapper">
+                        <div class="chart-config-title-title">Normalized Factor: </div>
+                        <input type="number" step="0.1" v-model="normalized_factor" class="chart-config-title-input">
+                        <div class="chart-config-title-title">Vg(off): </div>
+                        <input type="number" step="0.01" v-model="vgOff" class="chart-config-title-input">
+                        <div class="chart-config-title-title">I(Vth): </div>
+                        <input type="number" step="1e-9" v-model="iVth" class="chart-config-title-input">
+                    </div>
+                </div>
+                <div class="chart-result-wrapper">
+                    <ResultTable :parameters="tableData"></ResultTable>
                 </div>
             </div>
             <div ref="chart" class="chart"></div>
@@ -38,17 +53,33 @@
 import { ref, onMounted, watch } from "vue";
 import { useHandleData } from "./hooks/useHandleData";
 import Plotly from "plotly.js/dist/plotly";
+import ResultTable from "./components/ResultTable.vue";
+import { useStatistics } from "./hooks/useStatistics";
 
-
-// #3b82f6, #F59E0B
 export default {
     name: 'Id_Vg_Analysis',
+    components:{
+        ResultTable
+    },
     setup() {
 
-        const chart = ref();
+        // ========== Input Start ========== //
+
+        const normalized_factor = ref(1);
+        const plotType = ref(2); // 0, 1, 2
+        const yAxisType = ref(0); // 0, 1
+        const showPlots = ref([]); // 1~N
+
+        // for statistics
+        const vgOff = ref(0);
+        const iVth = ref(1e-9);
+
+        // ========== Input End ========== //
+
 
         // ========== Global Config Start ========== //
-        
+        const chart = ref();
+
         const plotConfig ={
             displaylogo: false,
             toImageButtonOptions: {
@@ -61,18 +92,40 @@ export default {
         }
 
         const plotLayout = ref({
-            title: { 
-                text: "Id-Vg Curve" 
+            title: {
+                text: "Id-Vg Curve"
             },
-            xaxis: { 
-                title: { text: "Vg (V)" }, 
-                fixedrange: true,
+
+            xaxis: {
+                title: {
+                    text: "Gate Voltage Vg (V)"
+                },
+                fixedrange: true
             },
-            yaxis: { 
-                title: { text: "Drain Current Id" }, 
-                exponentformat: 'log',
+
+            yaxis: {
+                title: {
+                    text: "Drain Current Id (A/μm)"
+                },
+                type: "log",
+                exponentformat: "power"
+            },
+
+            yaxis2: {
+                title: {
+                    text: "Drain Current Id (μA/μm)"
+                },
+                overlaying: "y",
+                side: "right",
+                type: "linear"
+            },
+            legend: {
+                x: 0,
+                y: 1,
+                xanchor: "left",
+                yanchor: "top"
             }
-        });
+        })
 
         
         const plotLineConfig = ref(
@@ -80,12 +133,12 @@ export default {
                 'increase':{
                     type: "scatter",
                     mode: "lines",
-                    line: { color: "#3b82f6", width: 3 }
+                    line: { width: 3 }
                 },
                 'decrease':{
                     type: "scatter",
                     mode: "lines",
-                    line: { color: " #F59E0B", width: 3 },
+                    line: { width: 3 },
                 }
             }
         )
@@ -93,85 +146,74 @@ export default {
         // ========== Global Config End ========== //
 
 
-        // ========== Input Start ========== //
-
-        const normalized_factor = ref(1);
-        const plotType = ref(0);
-        const showPlots = ref([]);
-
-        // ========== Input End ========== //
-
-
         // ========== Main Funcion Start ========== //
 
-        let extractData;
+        let extractData; // function
+        let grouppedData;
         let showPlotsOptions = ref([]);
+        
 
         const plotData = ref([]);
+        const tableData = ref([]);
 
         onMounted(()=>{
+            // initialize plot
             Plotly.newPlot(chart.value, plotData.value, plotLayout.value, plotConfig);
         })
 
         const handleFile = async (event) => {
             
-            reset();
+            showPlots.value = [];
 
             const file = event.target.files[0]
 
             const result = await useHandleData(file)
             extractData = result.extractData;
+            grouppedData = result.grouppedData;
 
             // show plot options
-            showPlotsOptions.value = Object.entries(result.grouppedData).map((item, id) => {
+            showPlotsOptions.value = Object.entries(grouppedData).map((item, id) => {
                 showPlots.value.push(id+1);
                 return { label: item[0], value: id+1 }
             })
 
-            // initial plot
+            // plot
             Plotly.react(chart.value, plotData.value, plotLayout.value, plotConfig);
-            plotData.value = extractData(plotType.value, plotLineConfig.value, showPlots.value, normalized_factor.value)
-        }
-        
-        // 清除使用者參數
-        function reset(){
-            normalized_factor.value = 1;
-            plotType.value = 0;
-            showPlots.value = [];
+            plotData.value = extractData(plotType.value, yAxisType.value, plotLineConfig.value, showPlots.value, normalized_factor.value)
+            
+            // statistic
+            tableData.value = useStatistics(result.grouppedData, normalized_factor.value, vgOff.value, iVth.value)
         }
 
 
         // ========== Main Funcion End ========== //
 
 
-
         // ========== Watch Start ========== //
         
         // layout watcher
-        watch(
-            () => [plotData.value, plotLayout.value, plotConfig],
-            () => {
-                const newData = structuredClone(plotData.value);
-                const newLayout = structuredClone(plotLayout.value); 
-                const newConfig = structuredClone(plotConfig)
-                Plotly.react(chart.value, newData, newLayout, newConfig);
-            },
-            { deep: true }
-        );
+        watch(() => [plotData.value, plotLayout.value, plotConfig],() => {
+            const newData = structuredClone(plotData.value);
+            const newLayout = structuredClone(plotLayout.value); 
+            const newConfig = structuredClone(plotConfig)
+            Plotly.react(chart.value, newData, newLayout, newConfig);
+        }, { deep: true });
 
         // config input watcher
-        watch(()=>[
-            normalized_factor.value, plotType.value, showPlots.value
-        ], 
-        async ()=>{
+        watch(()=>[normalized_factor.value, plotType.value, showPlots.value, yAxisType.value], async ()=>{
             if (!extractData) return;
-            plotData.value = extractData(plotType.value, plotLineConfig.value, showPlots.value, normalized_factor.value)
+            plotData.value = extractData(plotType.value, yAxisType.value, plotLineConfig.value, showPlots.value, normalized_factor.value)
+        }, { deep: true })
+
+        //  for statistics
+        watch(()=>[normalized_factor.value, vgOff.value, iVth.value],()=>{
+            tableData.value = useStatistics(grouppedData, normalized_factor.value, vgOff.value, iVth.value)
         }, { deep: true })
 
         // ========== Watch End ========== //
 
         return {
-            chart, plotLayout, normalized_factor, plotType, showPlots, showPlotsOptions, handleFile
+            chart, plotLayout, normalized_factor, plotType, showPlots, showPlotsOptions, handleFile, yAxisType, tableData, vgOff, iVth
         };
     }
 }
@@ -231,7 +273,7 @@ export default {
         height: 40px;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 15px;
     }
     .chart-config-title-title{
         flex-shrink: 0;
@@ -253,7 +295,6 @@ export default {
         width: 100%;
         height: 40px;
         box-sizing: border-box;
-        margin-top: 5px;
         display: flex;
         align-items: center;
     }
@@ -268,5 +309,40 @@ export default {
     .chart-plot-type-radio{
         margin-right: 10px;
         display: inline-block;
+    }
+    .chart-plot-type-radio-split-line{
+        margin-left: 16px;
+        margin-right: 10px;
+        color: rgba(0,0,0,0.2);
+    }
+
+    /* chart show plot */
+    .chart-show-plot-wrapper{
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 10px;
+        margin-bottom: 5px;
+        display: flex;
+    }
+    .chart-show-plot-title{
+        flex-shrink: 0;
+    }
+    .chart-show-plot-checkbox-wrapper{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .chart-show-plot-checkbox{
+        margin-right: 10px;
+        display: inline-block;
+    }
+
+    /* chart result */
+    .chart-result-wrapper{
+        width: 100%;
+        height: 275px;
+        margin-top: 15px;
+        overflow: scroll;
     }
 </style>

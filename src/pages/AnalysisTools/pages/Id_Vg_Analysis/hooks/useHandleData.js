@@ -24,7 +24,7 @@ function toXY(data) {
     }
 }
 
-// 資料分群
+// 資料分群 & 後續統計用
 function groupData(data) {
     // 分群
     const groups = data.reduce((obj, row) => {
@@ -79,36 +79,111 @@ function groupData(data) {
 }
 
 
-// 汲取輸出資料 -- type 0: All, type 1: increase, type 2: decrease
+// 繪圖用
+function getColor(index, total, type) {
 
-function extractData(type, config, range, normalized_factor) {
+    const ratio = index / Math.max(total - 1, 1)
+
+    if (type === 'increase') {
+        // 深藍 → 淺藍
+        const lightness = 25 + ratio * 50
+        return `hsl(215, 85%, ${lightness}%)`
+    }
+
+    // 深橘 → 淺橘
+    const lightness = 25 + ratio * 50
+    return `hsl(25, 90%, ${lightness}%)`
+}
+
+function extractData(type, yAxisType, config, range, normalized_factor) {
 
     const groups = Object.entries(grouppedData)
 
-    const selectedGroups = range?.length ? groups.filter((_, index) => range.includes(index + 1)) : [];
+    const selectedGroups = range?.length
+        ? groups.filter((_, index) => range.includes(index + 1))
+        : groups
 
-    const output = [];
+    const output = []
 
-    selectedGroups.forEach(([groupName, group]) => {
+    selectedGroups.forEach(([groupName, group], index) => {
 
-        // increase
-        if(type == 0 || type == 1) {
+        const increaseColor = getColor(index, selectedGroups.length, 'increase')
+        const decreaseColor = getColor(index, selectedGroups.length, 'decrease')
+
+
+        // Increase
+        if (type == 0 || type == 1) {
+
+            const y = group.increase.y.map(v => v / normalized_factor)
+
+            // Log axis
+            if (yAxisType == 0 || yAxisType == 1) {
+                output.push({
+                    x: group.increase.x,
+                    y: y,
+                    yaxis: 'y',
+                    name: `Vd = ${groupName}`,
+                    ...config.increase,
+                    line: {
+                        ...config.increase.line,
+                        color: increaseColor
+                    }
+                })
+            }
+
+
+            // Linear μA axis
+            if (yAxisType == 0 || yAxisType == 2) {
             output.push({
-                x: group.increase.x,
-                y: group.increase.y.map(v => v / normalized_factor),
-                name: `Vg = ${groupName}`,
-                ...config.increase
-            })
+                    x: group.increase.x,
+                    y: y.map(v => v * 1e6),
+                    yaxis: 'y2',
+                    name: `Vd = ${groupName}`,
+                    showlegend: (yAxisType == 2),
+                    ...config.increase,
+                    line: {
+                        ...config.increase.line,
+                        color: increaseColor
+                    }
+                })
+            }
         }
 
-        // decrease
-        if(type == 0 || type == 2){
-            output.push({
-                x: group.decrease.x,
-                y: group.decrease.y.map(v => v / normalized_factor),
-                name: `Vg = ${groupName} (rev)`,
-                ...config.decrease
-            })
+        // Decrease
+        if (type == 0 || type == 2) {
+
+            const y = group.decrease.y.map(v => v / normalized_factor)
+
+            // Log axis
+            if (yAxisType == 0 || yAxisType == 1) {
+                output.push({
+                    x: group.decrease.x,
+                    y: y,
+                    yaxis: 'y',
+                    name: `Vd = ${groupName} (rev)`,
+                    ...config.decrease,
+                    line: {
+                        ...config.decrease.line,
+                        color: decreaseColor
+                    }
+                })
+            }
+
+            // Linear μA axis
+            if (yAxisType == 0 || yAxisType == 2) {
+                output.push({
+                    x: group.decrease.x,
+                    y: y.map(v => v * 1e6),
+                    yaxis: 'y2',
+                    name: `Vd = ${groupName} (rev)`,
+                    showlegend: (yAxisType == 2),
+                    ...config.decrease,
+                    line: {
+                        ...config.decrease.line,
+                        color: decreaseColor
+                    }
+                })
+            }
         }
     })
 
