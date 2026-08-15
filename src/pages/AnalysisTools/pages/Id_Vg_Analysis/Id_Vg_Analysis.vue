@@ -178,9 +178,9 @@ export default {
             })
 
             // plot
-            Plotly.react(chart.value, plotData.value, plotLayout.value, plotConfig);
             plotData.value = extractData(plotType.value, yAxisType.value, plotLineConfig.value, showPlots.value, normalized_factor.value)
-            
+            Plotly.react(chart.value, plotData.value, plotLayout.value, plotConfig);
+                      
             // statistic
             tableData.value = useStatistics(result.grouppedData, normalized_factor.value, vgOff.value, iVth.value)
         }

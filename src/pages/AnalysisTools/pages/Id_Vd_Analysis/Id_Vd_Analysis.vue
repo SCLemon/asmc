@@ -135,8 +135,8 @@ export default {
             })
 
             // initial plot
-            Plotly.react(chart.value, plotData.value, plotLayout.value, plotConfig);
             plotData.value = extractData(plotType.value, plotLineConfig.value, showPlots.value, normalized_factor.value)
+            Plotly.react(chart.value, plotData.value, plotLayout.value, plotConfig);
         }
         
         // 清除使用者參數
