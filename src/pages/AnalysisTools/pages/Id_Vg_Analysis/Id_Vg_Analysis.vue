@@ -209,7 +209,20 @@ export default {
         margin-bottom: 10px;
     }
     .chart-file-wrapper input[type="file"]::file-selector-button {
-        margin-right: 10px;
+        margin-right: 12.5px;
+        border: 1px solid rgba(0,0,0,0.2);
+        border-radius: 2px;
+        padding: 3px 10px 3px 10px;
+        background: transparent;
+        transition: all 0.15s ease;
+    }
+    .chart-file-wrapper input[type="file"]::file-selector-button:hover{
+        cursor: pointer;
+        background: black;
+        color: white;
+    }
+    .chart-file{
+
     }
 
     /* chart title & normalized factor */
