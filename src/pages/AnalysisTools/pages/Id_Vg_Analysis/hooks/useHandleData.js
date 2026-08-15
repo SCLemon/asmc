@@ -80,7 +80,8 @@ function groupData(data) {
 
 
 // 汲取輸出資料 -- type 0: All, type 1: increase, type 2: decrease
-function extractData(type, config, range) {
+
+function extractData(type, config, range, normalized_factor) {
 
     const groups = Object.entries(grouppedData)
 
@@ -94,7 +95,7 @@ function extractData(type, config, range) {
         if(type == 0 || type == 1) {
             output.push({
                 x: group.increase.x,
-                y: group.increase.y,
+                y: group.increase.y.map(v => v / normalized_factor),
                 name: `Vg = ${groupName}`,
                 ...config.increase
             })
@@ -104,7 +105,7 @@ function extractData(type, config, range) {
         if(type == 0 || type == 2){
             output.push({
                 x: group.decrease.x,
-                y: group.decrease.y,
+                y: group.decrease.y.map(v => v / normalized_factor),
                 name: `Vg = ${groupName} (rev)`,
                 ...config.decrease
             })
@@ -120,10 +121,9 @@ export async function useHandleData(src){
     rawData = await (await fetch(src)).text();
     parseData = parseDataToNumberAndRemoveHeader(rawData);
     grouppedData = groupData(parseData);
-
     
     return {
-        extractData
+        extractData, grouppedData
     }
 }
 

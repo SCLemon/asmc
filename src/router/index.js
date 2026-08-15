@@ -4,7 +4,7 @@ import Home from '../pages/Introduction/pages/Home.vue'
 import Publications from '../pages/Introduction/pages/Publications.vue'
 import AnalysisTools from '../pages/AnalysisTools/AnalysisTools.vue'
 
-import IV_Analysis from '@/pages/AnalysisTools/pages/IV_Analysis/Id_Vd_Analysis.vue'
+import Id_Vg_Analysis from '@/pages/AnalysisTools/pages/Id_Vg_Analysis/Id_Vg_Analysis.vue'
 const routes = [
     {
       path: '/introduction',
@@ -29,8 +29,8 @@ const routes = [
       component: AnalysisTools,
     },
     {
-      path: '/analysis-tools/id-vd-analysis-tool',
-      component: IV_Analysis,
+      path: '/analysis-tools/id-vg-analysis-tool',
+      component: Id_Vg_Analysis,
     },
     {
       path: '/',
