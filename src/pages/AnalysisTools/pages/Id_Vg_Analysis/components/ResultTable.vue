@@ -3,13 +3,13 @@
         <table class="parameter-table">
             <thead>
                 <tr>
-                    <th>Title</th>
+                    <th>Vd (V)</th>
                     <th>Vth (V)</th>
                     <th>Ion (μA)</th>
                     <th>Ioff (μA)</th>
                     <th>Ion/Ioff</th>
                     <th>SS</th>
-                    <th>Mobility</th>
+                    <th>μ<span style="font-size: 9px;">eff</span> (F/cm²)</th>
                 </tr>
             </thead>
             <tbody>
@@ -20,7 +20,7 @@
                     <td>{{ (item.Ioff)?.toExponential(2) }}</td>
                     <td>{{ ((item.Ion) / (item.Ioff))?.toExponential(2) }}</td>
                     <td>-</td>
-                    <td>-</td>
+                    <td>{{ (item.Mobility)?.toFixed(2) }}</td>
                 </tr>
             </tbody>
         </table>

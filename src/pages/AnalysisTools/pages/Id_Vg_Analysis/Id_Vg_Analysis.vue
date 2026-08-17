@@ -32,10 +32,14 @@
                         </div>
                     </div>
                     <div class="chart-config-title-wrapper">
-                        <div class="chart-config-title-title">Normalized Factor: </div>
-                        <input type="number" step="0.1" v-model="normalized_factor" class="chart-config-title-input">
-                        <div class="chart-config-title-title">Vg(off): </div>
-                        <input type="number" step="0.01" v-model="vgOff" class="chart-config-title-input">
+                        <div class="chart-config-title-title">W (μm): </div>
+                        <input type="number" step="0.1" v-model="width" class="chart-config-title-input">
+                        <div class="chart-config-title-title">L (μm): </div>
+                        <input type="number" step="0.1" v-model="length" class="chart-config-title-input">
+                        <div class="chart-config-title-title">εr: </div>
+                        <input type="number" step="0.1" v-model="εr" class="chart-config-title-input">
+                        <div class="chart-config-title-title">d (nm): </div>
+                        <input type="number" step="0.1" v-model="thickness" class="chart-config-title-input">
                         <div class="chart-config-title-title">I(Vth): </div>
                         <input type="number" step="1e-9" v-model="iVth" class="chart-config-title-input">
                     </div>
@@ -65,14 +69,17 @@ export default {
 
         // ========== Input Start ========== //
 
-        const normalized_factor = ref(1);
+
         const plotType = ref(2); // 0, 1, 2
         const yAxisType = ref(0); // 0, 1
         const showPlots = ref([]); // 1~N
 
         // for statistics
-        const vgOff = ref(0);
         const iVth = ref(1e-9);
+        const width = ref(40);
+        const length = ref(2);
+        const thickness = ref(55); // 絕緣層厚度
+        const εr = ref(3.9); //
 
         // ========== Input End ========== //
 
@@ -178,11 +185,11 @@ export default {
             })
 
             // plot
-            plotData.value = extractData(plotType.value, yAxisType.value, plotLineConfig.value, showPlots.value, normalized_factor.value)
+            plotData.value = extractData(plotType.value, yAxisType.value, plotLineConfig.value, showPlots.value, width.value)
             Plotly.react(chart.value, plotData.value, plotLayout.value, plotConfig);
                       
             // statistic
-            tableData.value = useStatistics(result.grouppedData, normalized_factor.value, vgOff.value, iVth.value)
+            tableData.value = useStatistics(result.grouppedData, width.value, length.value, εr.value, thickness.value, iVth.value)
         }
 
 
@@ -200,20 +207,20 @@ export default {
         }, { deep: true });
 
         // config input watcher
-        watch(()=>[normalized_factor.value, plotType.value, showPlots.value, yAxisType.value], async ()=>{
+        watch(()=>[width.value, plotType.value, showPlots.value, yAxisType.value], async ()=>{
             if (!extractData) return;
-            plotData.value = extractData(plotType.value, yAxisType.value, plotLineConfig.value, showPlots.value, normalized_factor.value)
+            plotData.value = extractData(plotType.value, yAxisType.value, plotLineConfig.value, showPlots.value, width.value)
         }, { deep: true })
 
         //  for statistics
-        watch(()=>[normalized_factor.value, vgOff.value, iVth.value],()=>{
-            tableData.value = useStatistics(grouppedData, normalized_factor.value, vgOff.value, iVth.value)
+        watch(()=>[width.value, length.value, εr.value, thickness.value, iVth.value],()=>{
+            tableData.value = useStatistics(grouppedData, width.value, length.value, εr.value, thickness.value, iVth.value)
         }, { deep: true })
 
         // ========== Watch End ========== //
 
         return {
-            chart, plotLayout, normalized_factor, plotType, showPlots, showPlotsOptions, handleFile, yAxisType, tableData, vgOff, iVth
+            chart, plotLayout, width, plotType, showPlots, showPlotsOptions, handleFile, yAxisType, tableData, thickness, εr, iVth, length
         };
     }
 }

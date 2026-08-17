@@ -1,57 +1,48 @@
 
 // SS (mV/decade)
-function calculateSubthresholdSwing(data, normalized_factor) {
+function calculateSubthresholdSwing(data, width) {
     
 }
 
-// Effective Mobility (y-function)
-function calculateEffectiveMobility(data, normalized_factor){
+// Field Effect Effective Mobility
+function calculateEffectiveMobility(data, vd, width, length, εr, thickness) {
+    const { x, y } = data;
+    console.log(parseInt(vd))
+    const ε0 = 8.854*1e-14
+    const cox = (ε0 * εr) / (thickness * 1e-7); // F/cm^2
 
-}
+    let maxDydx = -Infinity;
 
-// Ion (uA)
-function calculateIon(data, normalized_factor) {
-    return ((Math.max(...data.y) / normalized_factor) * 1e6)
-}
-
-// Ioff (uA)
-function calculateIoff(data, normalized_factor, vgOff) {
-
-    const { x, y } = data
-
-    const exactIndex = x.findIndex(v => v === vgOff)
-    if (exactIndex !== -1) {
-        return y[exactIndex] / normalized_factor
-    }
-
-    // 內插法
-    for (let i = 0; i < x.length - 1; i++) {
-
-        const x1 = x[i]
-        const x2 = x[i + 1]
-
-        if ((x1 <= vgOff && vgOff <= x2) || (x2 <= vgOff && vgOff <= x1)) {
-
-            const y1 = y[i]
-            const y2 = y[i + 1]
-
-            // 線性內插
-            const interpolatedY =  y1 + (y2 - y1) * (vgOff - x1) / (x2 - x1)
-
-            return interpolatedY / normalized_factor
+    for (let i = 1; i < x.length - 1; i++) {
+        // dy / dx
+        const dydx = (y[i + 1] - y[i - 1]) / (x[i + 1] - x[i - 1]);
+        if (dydx > maxDydx) {
+            maxDydx = dydx;
         }
     }
 
-    return null
+    const mobility = maxDydx * (length / width) * (1 / cox) / parseInt(vd);
+
+    return mobility;
+}
+
+// Ion (uA)
+function calculateIon(data, width) {
+    return ((Math.max(...data.y) / width) * 1e6)
+}
+
+// Ioff (uA)
+function calculateIoff(data, width) {
+    return ((Math.min(...data.y) / width) * 1e6)
 }
 
 // Vth
-function calculateVth(data, normalized_factor, iVth) {
+function calculateVth(data, width, iVth) {
 
     const { x, y } = data
 
     // normalize Id
-    const normalizedY = y.map(current => current / normalized_factor)
+    const normalizedY = y.map(current => current / width)
 
     const targetCurrent = iVth
 
@@ -86,22 +77,23 @@ function calculateVth(data, normalized_factor, iVth) {
 }
 
 
-export function useStatistics(data, normalized_factor, vgOff, iVth) {
-
+export function useStatistics(data, width, length, εr, thickness, iVth) {
     const result = {}
 
     Object.entries(data).forEach(([groupName, group]) => {
 
         result[groupName] = {
-            Ion: calculateIon(group.increase, normalized_factor),
-            Ioff: calculateIoff(group.increase, normalized_factor,vgOff),
-            Vth: calculateVth(group.increase, normalized_factor, iVth),
+            Ion: calculateIon(group.increase, width),
+            Ioff: calculateIoff(group.increase, width),
+            Vth: calculateVth(group.increase, width, iVth),
+            Mobility: calculateEffectiveMobility(group.increase, groupName, width, length, εr, thickness)
         }
 
         result[`${groupName} (rev)`] = {
-            Ion: calculateIon(group.decrease, normalized_factor),
-            Ioff: calculateIoff(group.decrease, normalized_factor, vgOff),
-            Vth: calculateVth(group.decrease, normalized_factor, iVth),
+            Ion: calculateIon(group.decrease, width),
+            Ioff: calculateIoff(group.decrease, width),
+            Vth: calculateVth(group.decrease, width, iVth),
+            Mobility: calculateEffectiveMobility(group.decrease, groupName, width, length, εr, thickness)
         }
 
     })
