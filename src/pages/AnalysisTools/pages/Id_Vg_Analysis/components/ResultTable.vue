@@ -8,7 +8,7 @@
                     <th>Ion (μA)</th>
                     <th>Ioff (μA)</th>
                     <th>Ion/Ioff</th>
-                    <th>SS</th>
+                    <th>SS (mV/dec)</th>
                     <th>μ<span style="font-size: 9px;">eff</span> (F/cm²)</th>
                 </tr>
             </thead>
@@ -19,7 +19,7 @@
                     <td>{{ (item.Ion)?.toFixed(2) }}</td>
                     <td>{{ (item.Ioff)?.toExponential(2) }}</td>
                     <td>{{ ((item.Ion) / (item.Ioff))?.toExponential(2) }}</td>
-                    <td>-</td>
+                    <td>{{ (item.SS)?.toFixed(2) }}</td>
                     <td>{{ (item.Mobility)?.toFixed(2) }}</td>
                 </tr>
             </tbody>
@@ -32,8 +32,8 @@ export default {
     name: 'ResultTable',
     props:{
         parameters:{
-            type: Array,
-            default:[],
+            type: Object,
+            default: () => ({})
         }
     }
 }
@@ -42,12 +42,20 @@ export default {
 <style scoped>
     .parameter-wrapper{
         box-sizing: border-box;
+        overflow-y: scroll;
+        height: 100%;
     }
     .parameter-table {
         width: 100%;
         border-collapse: collapse;
         table-layout: fixed;
         text-align: left;
+    }
+    .parameter-table th {
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 2;
     }
     .parameter-table th,td {
         padding-top: 15px;

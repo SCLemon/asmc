@@ -36,7 +36,7 @@
                         <input type="number" step="0.1" v-model="width" class="chart-config-title-input">
                         <div class="chart-config-title-title">L (μm): </div>
                         <input type="number" step="0.1" v-model="length" class="chart-config-title-input">
-                        <div class="chart-config-title-title">εr: </div>
+                        <div class="chart-config-title-title">ε<span style="font-size: 9px;">r</span> : </div>
                         <input type="number" step="0.1" v-model="εr" class="chart-config-title-input">
                         <div class="chart-config-title-title">d (nm): </div>
                         <input type="number" step="0.1" v-model="thickness" class="chart-config-title-input">
@@ -350,6 +350,6 @@ export default {
         width: 100%;
         height: 275px;
         margin-top: 15px;
-        overflow: scroll;
+        overflow: hidden;
     }
 </style>

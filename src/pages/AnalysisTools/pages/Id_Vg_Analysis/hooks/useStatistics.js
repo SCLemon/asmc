@@ -1,13 +1,47 @@
 
-// SS (mV/decade)
-function calculateSubthresholdSwing(data, width) {
-    
+// SS (mV/decade) - 支援 n-type 與 p-type
+function calculateSubthresholdSwing(data) {
+    const { x, y } = data;
+    const points = x.map((vg, i) => ({ vg, logId: y[i] > 0 ? Math.log10(y[i]) : null })).filter(p => p.logId !== null);
+    const windowSize = 5;
+    let bestSS = Infinity;
+    let bestR2 = -Infinity;
+
+    for (let i = 0; i <= points.length - windowSize; i++) {
+        const window = points.slice(i, i + windowSize);
+        const n = window.length;
+        const sumX = window.reduce((s, p) => s + p.vg, 0);
+        const sumY = window.reduce((s, p) => s + p.logId, 0);
+        const sumXY = window.reduce((s, p) => s + p.vg * p.logId, 0);
+        const sumX2 = window.reduce((s, p) => s + p.vg ** 2, 0);
+        const denominator = n * sumX2 - sumX ** 2;
+        if (denominator === 0) continue;
+
+        const slope = (n * sumXY - sumX * sumY) / denominator;
+        const absSlope = Math.abs(slope);
+        if (absSlope === 0) continue;
+
+        const intercept = (sumY - slope * sumX) / n;
+        const meanY = sumY / n;
+        const ssTot = window.reduce((s, p) => s + (p.logId - meanY) ** 2, 0);
+        const ssRes = window.reduce((s, p) => s + (p.logId - (slope * p.vg + intercept)) ** 2, 0);
+        if (ssTot === 0) continue;
+
+        const r2 = 1 - ssRes / ssTot;
+        const ss = 1000 / absSlope;
+
+        if (r2 >= 0.95 && ss < bestSS) {
+            bestSS = ss;
+            bestR2 = r2;
+        }
+    }
+
+    return bestSS === Infinity ? null : bestSS;
 }
 
 // Field Effect Effective Mobility
 function calculateEffectiveMobility(data, vd, width, length, εr, thickness) {
     const { x, y } = data;
-    console.log(parseInt(vd))
     const ε0 = 8.854*1e-14
     const cox = (ε0 * εr) / (thickness * 1e-7); // F/cm^2
 
@@ -86,14 +120,16 @@ export function useStatistics(data, width, length, εr, thickness, iVth) {
             Ion: calculateIon(group.increase, width),
             Ioff: calculateIoff(group.increase, width),
             Vth: calculateVth(group.increase, width, iVth),
-            Mobility: calculateEffectiveMobility(group.increase, groupName, width, length, εr, thickness)
+            Mobility: calculateEffectiveMobility(group.increase, groupName, width, length, εr, thickness),
+            SS: calculateSubthresholdSwing(group.increase)
         }
 
         result[`${groupName} (rev)`] = {
             Ion: calculateIon(group.decrease, width),
             Ioff: calculateIoff(group.decrease, width),
             Vth: calculateVth(group.decrease, width, iVth),
-            Mobility: calculateEffectiveMobility(group.decrease, groupName, width, length, εr, thickness)
+            Mobility: calculateEffectiveMobility(group.decrease, groupName, width, length, εr, thickness),
+            SS: calculateSubthresholdSwing(group.decrease)
         }
 
     })
