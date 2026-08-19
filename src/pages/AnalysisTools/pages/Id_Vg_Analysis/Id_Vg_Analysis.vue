@@ -22,6 +22,18 @@
                         <div><label><input class="chart-plot-type-radio"  type="radio" v-model="yAxisType" :value="2"/>Linear</label></div>
                     </div>
                 </div>
+                <div class="chart-config-title-wrapper">
+                    <div class="chart-config-title-title">W (μm): </div>
+                    <input type="number" step="0.1" v-model="width" class="chart-config-title-input">
+                    <div class="chart-config-title-title">L (μm): </div>
+                    <input type="number" step="0.1" v-model="length" class="chart-config-title-input">
+                    <div class="chart-config-title-title">ε<span style="font-size: 12px;">r</span> : </div>
+                    <input type="number" step="0.1" v-model="εr" class="chart-config-title-input">
+                    <div class="chart-config-title-title">d (nm): </div>
+                    <input type="number" step="0.1" v-model="thickness" class="chart-config-title-input">
+                    <div class="chart-config-title-title">I(Vth): </div>
+                    <input type="number" step="1e-9" v-model="iVth" class="chart-config-title-input">
+                </div>
                 <div v-if="showPlotsOptions.length">
                     <div class="chart-show-plot-wrapper">
                         <div class="chart-show-plot-title">ShowPlots：</div>
@@ -31,21 +43,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="chart-config-title-wrapper">
-                        <div class="chart-config-title-title">W (μm): </div>
-                        <input type="number" step="0.1" v-model="width" class="chart-config-title-input">
-                        <div class="chart-config-title-title">L (μm): </div>
-                        <input type="number" step="0.1" v-model="length" class="chart-config-title-input">
-                        <div class="chart-config-title-title">ε<span style="font-size: 12px;">r</span> : </div>
-                        <input type="number" step="0.1" v-model="εr" class="chart-config-title-input">
-                        <div class="chart-config-title-title">d (nm): </div>
-                        <input type="number" step="0.1" v-model="thickness" class="chart-config-title-input">
-                        <div class="chart-config-title-title">I(Vth): </div>
-                        <input type="number" step="1e-9" v-model="iVth" class="chart-config-title-input">
+                    <div class="chart-result-wrapper">
+                        <ResultTable :parameters="tableData"></ResultTable>
                     </div>
-                </div>
-                <div class="chart-result-wrapper">
-                    <ResultTable :parameters="tableData"></ResultTable>
                 </div>
             </div>
             <div ref="chart" class="chart"></div>
@@ -200,6 +200,7 @@ export default {
         
         // layout watcher
         watch(() => [plotData.value, plotLayout.value, plotConfig],() => {
+            if(!plotData.value) return;
             const newData = structuredClone(plotData.value);
             const newLayout = structuredClone(plotLayout.value); 
             const newConfig = structuredClone(plotConfig)
@@ -214,6 +215,7 @@ export default {
 
         //  for statistics
         watch(()=>[width.value, length.value, εr.value, thickness.value, iVth.value],()=>{
+            if(!grouppedData) return;
             tableData.value = useStatistics(grouppedData, width.value, length.value, εr.value, thickness.value, iVth.value)
         }, { deep: true })
 
@@ -349,7 +351,7 @@ export default {
     .chart-result-wrapper{
         width: 100%;
         height: 275px;
-        margin-top: 15px;
+        margin-top: 10px;
         overflow: hidden;
     }
 </style>

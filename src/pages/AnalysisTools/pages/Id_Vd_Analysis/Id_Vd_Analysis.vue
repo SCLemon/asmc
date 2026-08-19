@@ -20,7 +20,7 @@
                         <div><label><input class="chart-plot-type-radio"  type="radio" v-model="plotType" :value="2"/>Decrease</label></div>
                     </div>
                 </div>
-                <div class="chart-plot-type-wrapper">
+                <div class="chart-plot-type-wrapper" v-if="showPlotsOptions.length">
                     <div class="chart-plot-type-title">ShowPlots：</div>
                     <div class="chart-plot-type-radio-wrapper">
                         <div v-for="(item, id) in showPlotsOptions" :key="id">
