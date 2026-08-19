@@ -3,13 +3,13 @@
         <table class="parameter-table">
             <thead>
                 <tr>
-                    <th>Vd (V)</th>
-                    <th>Vth (V)</th>
-                    <th>Ion (μA)</th>
-                    <th>Ioff (μA)</th>
-                    <th>Ion/Ioff</th>
+                    <th>V<span style="font-size: 10px;">d</span> (V)</th>
+                    <th>V<span style="font-size: 10px;">th</span> (V)</th>
+                    <th>I<span style="font-size: 10px;">on</span> (μA)</th>
+                    <th>I<span style="font-size: 10px;">off</span> (μA)</th>
+                    <th>I<span style="font-size: 10px;">on</span>/I<span style="font-size: 10px;">off</span></th>
                     <th>SS (mV/dec)</th>
-                    <th>μ<span style="font-size: 9px;">eff</span> (F/cm²)</th>
+                    <th>μ<span style="font-size: 10px;">eff</span> (F/cm²)</th>
                 </tr>
             </thead>
             <tbody>

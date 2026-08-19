@@ -15,8 +15,7 @@ function parseDataToNumberAndRemoveHeader(data) {
     return rows;
 }
 
-
-// 轉換成 x,y 格式
+// 轉換為 x,y 格式
 function toXY(data) {
     return {
         x: data.map(row => row[0]),
@@ -26,7 +25,6 @@ function toXY(data) {
 
 // 資料分群
 function groupData(data) {
-    // 分群
     const groups = data.reduce((obj, row) => {
         const key = row[3]
 
@@ -62,34 +60,55 @@ function groupData(data) {
             lastDir = dir
         }
 
-        
         if (lastDir >= 0) increase.push(group.at(-1))
         else decrease.push(group.at(-1))
 
         increase = increase.sort((a, b) => a[0] - b[0]);
         decrease = decrease.sort((a, b) => b[0] - a[0]);
 
-        // 轉換為 x,y 格式
-        result[key+`V`] = {
+        result[key + `V`] = {
             increase: toXY(increase),
             decrease: toXY(decrease)
         }
     })
+
     return result;
 }
 
 
-// 汲取輸出資料 -- type 0: All, type 1: increase, type 2: decrease
+// 顏色
+function getColor(index, total, type) {
 
+    const ratio = index / Math.max(total - 1, 1)
+
+    if (type === 'increase') {
+        // 深藍 → 淺藍
+        const lightness = 25 + ratio * 50
+        return `hsl(215, 85%, ${lightness}%)`
+    }
+
+    // 深橘 → 淺橘
+    const lightness = 25 + ratio * 50
+    return `hsl(25, 90%, ${lightness}%)`
+}
+
+
+// 汲取輸出資料 -- type 0: All, type 1: increase, type 2: decrease
 function extractData(type, config, range, normalized_factor) {
 
     const groups = Object.entries(grouppedData)
 
-    const selectedGroups = range?.length ? groups.filter((_, index) => range.includes(index + 1)) : [];
+    const selectedGroups = range?.length
+        ? groups.filter((_, index) => range.includes(index + 1))
+        : [];
 
     const output = [];
 
-    selectedGroups.forEach(([groupName, group]) => {
+    selectedGroups.forEach(([groupName, group], index) => {
+
+        // 根據目前 selectedGroups 的位置產生顏色
+        const increaseColor = getColor(index, selectedGroups.length, 'increase')
+        const decreaseColor = getColor(index, selectedGroups.length, 'decrease')
 
         // increase
         if(type == 0 || type == 1) {
@@ -97,7 +116,11 @@ function extractData(type, config, range, normalized_factor) {
                 x: group.increase.x,
                 y: group.increase.y.map(v => v / normalized_factor),
                 name: `Vg = ${groupName}`,
-                ...config.increase
+                ...config.increase,
+                line: {
+                    ...config.increase?.line,
+                    color: increaseColor
+                }
             })
         }
 
@@ -107,7 +130,11 @@ function extractData(type, config, range, normalized_factor) {
                 x: group.decrease.x,
                 y: group.decrease.y.map(v => v / normalized_factor),
                 name: `Vg = ${groupName} (rev)`,
-                ...config.decrease
+                ...config.decrease,
+                line: {
+                    ...config.decrease?.line,
+                    color: decreaseColor
+                }
             })
         }
     })
@@ -126,4 +153,3 @@ export async function useHandleData(file){
         extractData, grouppedData
     }
 }
-

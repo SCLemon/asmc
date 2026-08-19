@@ -2,7 +2,7 @@
     <div>
         <div class="chart-wrapper">
             <div class="chart-config-wrapper">
-                <div class="analyzer-title">Id-Vg Analyzer</div>
+                <div class="analyzer-title">I<span style="font-size: 14px;">d</span>-V<span style="font-size: 14px;">d</span> Analyzer</div>
                 <div class="chart-file-wrapper"><input type="file" @change="handleFile" accept=".csv"></div>
                 <div class="chart-config-title-wrapper">
                     <div class="chart-config-title-title">Chart Title： </div>
@@ -62,15 +62,15 @@ export default {
 
         const plotLayout = ref({
             title: { 
-                text: "Id-Vg Curve" 
+                text: "Id-Vd Curve" 
             },
             xaxis: { 
-                title: { text: "Vg (V)" }, 
+                title: { text: "Vd (V)" }, 
                 fixedrange: true,
             },
             yaxis: { 
                 title: { text: "Drain Current Id" }, 
-                exponentformat: 'log',
+                exponentformat: 'linear',
             },
             legend: {
                 x: 0,
@@ -86,12 +86,12 @@ export default {
                 'increase':{
                     type: "scatter",
                     mode: "lines",
-                    line: { color: "#3b82f6", width: 3 }
+                    line: { width: 3 }
                 },
                 'decrease':{
                     type: "scatter",
                     mode: "lines",
-                    line: { color: " #F59E0B", width: 3 },
+                    line: { width: 3 },
                 }
             }
         )
@@ -101,8 +101,8 @@ export default {
 
         // ========== Input Start ========== //
 
-        const normalized_factor = ref(1);
-        const plotType = ref(0);
+        const normalized_factor = ref(40);
+        const plotType = ref(2);
         const showPlots = ref([]);
 
         // ========== Input End ========== //
@@ -120,8 +120,8 @@ export default {
         })
 
         const handleFile = async (event) => {
-            
-            reset();
+
+            showPlots.value = [];
 
             const file = event.target.files[0]
 
@@ -137,13 +137,6 @@ export default {
             // initial plot
             plotData.value = extractData(plotType.value, plotLineConfig.value, showPlots.value, normalized_factor.value)
             Plotly.react(chart.value, plotData.value, plotLayout.value, plotConfig);
-        }
-        
-        // 清除使用者參數
-        function reset(){
-            normalized_factor.value = 1;
-            plotType.value = 0;
-            showPlots.value = [];
         }
 
 

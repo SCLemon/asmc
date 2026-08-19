@@ -2,7 +2,7 @@
     <div>
         <div class="chart-wrapper">
             <div class="chart-config-wrapper">
-                <div class="analyzer-title">Id-Vg Analyzer</div>
+                <div class="analyzer-title">I<span style="font-size: 14px;">d</span>-V<span style="font-size: 14px;">g</span> Analyzer</div>
                 <div class="chart-file-wrapper"><input type="file" @change="handleFile" accept=".csv"></div>
                 <div class="chart-config-title-wrapper">
                     <div class="chart-config-title-title">Chart Title： </div>
@@ -36,7 +36,7 @@
                         <input type="number" step="0.1" v-model="width" class="chart-config-title-input">
                         <div class="chart-config-title-title">L (μm): </div>
                         <input type="number" step="0.1" v-model="length" class="chart-config-title-input">
-                        <div class="chart-config-title-title">ε<span style="font-size: 9px;">r</span> : </div>
+                        <div class="chart-config-title-title">ε<span style="font-size: 12px;">r</span> : </div>
                         <input type="number" step="0.1" v-model="εr" class="chart-config-title-input">
                         <div class="chart-config-title-title">d (nm): </div>
                         <input type="number" step="0.1" v-model="thickness" class="chart-config-title-input">
