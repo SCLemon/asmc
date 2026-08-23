@@ -65,6 +65,10 @@ const userSchema = new mongoose.Schema({
         idCard:{
             type:String,
             default:''
+        },
+        lab: {
+            type:String,
+            default:''
         }
     }
 });

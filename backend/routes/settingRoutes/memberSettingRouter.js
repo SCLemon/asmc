@@ -89,7 +89,7 @@ router.post('/api/memberSetting/register', authMiddleware(10), async (req, res) 
 
         return res.send({
             type:'success',
-            message:'註冊成功。' 
+            message:'用戶註冊成功。' 
         });
 
     } catch (e) {

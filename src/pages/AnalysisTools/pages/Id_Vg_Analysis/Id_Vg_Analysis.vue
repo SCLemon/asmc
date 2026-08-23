@@ -272,9 +272,6 @@ export default {
         background: black;
         color: white;
     }
-    .chart-file{
-
-    }
 
     /* chart title & normalized factor */
     .chart-config-title-wrapper{

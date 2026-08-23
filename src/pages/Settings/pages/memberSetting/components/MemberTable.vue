@@ -13,7 +13,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(user, id) in tableData" :key="id">
+                <tr v-for="(user, id) in filteredData" :key="id">
                     <td>{{ user.createTime }}</td>
                     <td>Level {{ user.level }}</td>
                     <td>{{ user.name }}</td>
@@ -38,15 +38,26 @@
 import { eventBus } from '@/utils/eventBus';
 import axios from 'axios';
 import jsCookie from 'js-cookie';
-import { ref, onMounted } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ref, onMounted, computed } from 'vue';
+import { ElMessageBox } from 'element-plus'
 
 export default {
     name: 'MemberTable',
-    setup(){
+    props:{
+        keyword:{
+            type: String,
+            default: ''
+        }
+    },
+    setup(props){
         
         const tableData = ref([]);
 
+        const filteredData = computed(()=>{
+            return tableData.value.filter((user)=>{
+                return ((user.name).toLowerCase()).includes((props.keyword).toLowerCase())
+            })
+        })
 
         onMounted(async ()=>{
             await getData();
@@ -102,7 +113,7 @@ export default {
             catch(e){}
         }
         return {
-            tableData, freeze, getData, deleteUser
+            tableData, freeze, getData, deleteUser, filteredData
         }
     }
 }
