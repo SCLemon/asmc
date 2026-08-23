@@ -11,6 +11,8 @@ import UserLogin from '../pages/UserLogin/UserLogin.vue'
 
 import Id_Vg_Analysis from '../pages/AnalysisTools/pages/Id_Vg_Analysis/Id_Vg_Analysis.vue'
 import Id_Vd_Analysis from '../pages/AnalysisTools/pages/Id_Vd_Analysis/Id_Vd_Analysis.vue'
+import Settings from '../pages/Settings/Settings.vue'
+import MemberSetting from '../pages/Settings/pages/memberSetting/memberSetting.vue'
 
 const routes = [
     {
@@ -52,6 +54,14 @@ const routes = [
       component: UserLogin,
     },
     {
+      path: '/settings',
+      component: Settings,
+    },
+    {
+      path: '/settings/member-setting',
+      component: MemberSetting
+    },
+    {
       path: '/',
       redirect: '/introduction'
     },
@@ -73,14 +83,22 @@ router.beforeEach(async (to, from) => {
   const token = jsCookie.get('authToken');
 
   if (!token && to.path !== '/user/login') {
-    return {
-        path: '/user/login',
-        query: {
-            redirect: to.fullPath
-        }
+    return { path: '/user/login', query: { redirect: to.fullPath } }
+  }
+  
+  const res = await axios.post('/login/token',{ save: false },{
+    headers:{
+      'x-user-token': token
+    }
+  })
+
+  if(res.data.type == 'success') return true;
+  else{
+    if (to.path !== '/user/login') {
+      return { path: '/user/login', query: { redirect: to.fullPath } }
     }
   }
-  else return true;
+  
 
 });
 

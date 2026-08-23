@@ -14,9 +14,8 @@ const userSchema = new mongoose.Schema({
         default: true,
     },
     level:{
-        type:String,
+        type: Number,
         required:true,
-        trim: true,
     },
     account:{
         type:String,
@@ -63,6 +62,10 @@ const userSchema = new mongoose.Schema({
             type:String,
             default:''
         },
+        idCard:{
+            type:String,
+            default:''
+        }
     }
 });
 

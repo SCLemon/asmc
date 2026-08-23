@@ -30,12 +30,12 @@ export default {
     setting:[
         {
             name: 'User',
-            path: '/user/dashboard',
+            path: '/user',
             icon: UserIcon,
         },
         {
-            name: 'Setting',
-            path: '/setting',
+            name: 'Settings Dashboard',
+            path: '/settings',
             icon: SettingIcon,
         },
     ]

@@ -45,6 +45,9 @@ connectToDatabase();
 const loginRouter = require('./routes/loginRouter');
 app.use(loginRouter);
 
+const memberSettingRouter = require('./routes/settingRoutes/memberSettingRouter');
+app.use(memberSettingRouter);
+
 // const avatorRouter = require('./routes/avatorRouter');
 // app.use(avatorRouter);
 
