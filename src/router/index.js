@@ -1,8 +1,13 @@
 import { createRouter, createWebHashHistory  } from 'vue-router'
+
+import axios from 'axios'
+import jsCookie from 'js-cookie'
+
 import Introduction from '../pages/Introduction/Introduction.vue'
 import Home from '../pages/Introduction/pages/Home.vue'
 import Publications from '../pages/Introduction/pages/Publications.vue'
 import AnalysisTools from '../pages/AnalysisTools/AnalysisTools.vue'
+import UserLogin from '../pages/UserLogin/UserLogin.vue'
 
 import Id_Vg_Analysis from '../pages/AnalysisTools/pages/Id_Vg_Analysis/Id_Vg_Analysis.vue'
 import Id_Vd_Analysis from '../pages/AnalysisTools/pages/Id_Vd_Analysis/Id_Vd_Analysis.vue'
@@ -39,6 +44,14 @@ const routes = [
       component: Id_Vd_Analysis,
     },
     {
+      path: '/analysis-tools/id-vd-analysis-tool',
+      component: Id_Vd_Analysis,
+    },
+    {
+      path: '/user/login',
+      component: UserLogin,
+    },
+    {
       path: '/',
       redirect: '/introduction'
     },
@@ -53,8 +66,22 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  next()
-})
+router.beforeEach(async (to, from) => {
+  
+  if(to.fullPath === '/user/login' || to.fullPath === '/introduction/home') return true;
+
+  const token = jsCookie.get('authToken');
+
+  if (!token && to.path !== '/user/login') {
+    return {
+        path: '/user/login',
+        query: {
+            redirect: to.fullPath
+        }
+    }
+  }
+  else return true;
+
+});
 
 export default router

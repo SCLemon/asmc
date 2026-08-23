@@ -16,29 +16,28 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue'
-import { useRoute } from 'vue-router';
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import Column from './components/Column/Column.vue';
-
+import { ElNotification } from 'element-plus'
+import { eventBus } from '@/utils/eventBus'
 export default {
   name:'App',
   components:{
     Column
   },
   setup(){
-      // const view = ref();
-      // const route = useRoute();
-      // watch(()=>route.path, (newVal) => {
 
-      //     const target = view.value;
-      //     if(!target) return;
-      //     target.scrollTo({top: 0, behavior: 'smooth'})
-
-      // }, { immediate: true })
-
-      // return {
-      //   view
-      // }
+    // 操作通知
+    const alertHandler = (data)=>{
+      const { title, message, type } = data;
+      ElNotification({ title, message, type })
+    }
+    onMounted(()=>{
+      eventBus.on('handleAlert', alertHandler)
+    })
+    onUnmounted(() => {
+        eventBus.off('handleAlerte', alertHandler)
+    })
   }
 }
 </script>

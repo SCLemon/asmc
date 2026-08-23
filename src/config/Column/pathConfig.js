@@ -30,7 +30,7 @@ export default {
     setting:[
         {
             name: 'User',
-            path: '/user',
+            path: '/user/dashboard',
             icon: UserIcon,
         },
         {
