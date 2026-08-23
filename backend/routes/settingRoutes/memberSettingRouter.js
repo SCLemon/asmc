@@ -37,7 +37,7 @@ router.get('/api/memberSetting/getData', authMiddleware(10), async (req, res) =>
         return res.send({
             type:'success',
             data: output,
-            message:'登入成功！'
+            message:'用戶資料獲取成功！'
         });
         
     } catch (e) {

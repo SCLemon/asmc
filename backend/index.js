@@ -58,7 +58,7 @@ app.use(memberSettingRouter);
 // app.use(notifyRouter);
 
 app.listen(3007,()=>{
-    console.log('server is running on port 3008')
+    console.log('server is running on port 3007')
 })
 
 process.on('SIGINT', function() {

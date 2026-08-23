@@ -1,6 +1,6 @@
 <template>
     <div class="parameter-wrapper">
-        <table class="parameter-table">
+        <table class="parameter-table" v-if="tableData.length">
             <thead>
                 <tr>
                     <th>CreateTime</th>
