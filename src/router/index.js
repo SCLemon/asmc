@@ -9,6 +9,8 @@ import Publications from '../pages/Introduction/pages/Publications.vue'
 import AnalysisTools from '../pages/AnalysisTools/AnalysisTools.vue'
 import UserLogin from '../pages/UserLogin/UserLogin.vue'
 
+import Profile from '../pages/Profile/Profile.vue'
+
 import Id_Vg_Analysis from '../pages/AnalysisTools/pages/Id_Vg_Analysis/Id_Vg_Analysis.vue'
 import Id_Vd_Analysis from '../pages/AnalysisTools/pages/Id_Vd_Analysis/Id_Vd_Analysis.vue'
 import Settings from '../pages/Settings/Settings.vue'
@@ -36,6 +38,10 @@ const routes = [
           redirect: '/introduction/home'
         }
       ]
+    },
+    {
+      path: '/profile',
+      component: Profile
     },
     {
       path: '/analysis-tools',

@@ -29,8 +29,8 @@ export default {
     ],
     setting:[
         {
-            name: 'User',
-            path: '/user',
+            name: 'Profile',
+            path: '/profile',
             icon: UserIcon,
         },
         {

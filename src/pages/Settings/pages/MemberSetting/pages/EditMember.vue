@@ -99,7 +99,7 @@ export default {
         })
 
         async function getData(){
-            const res = await axios.post('/api/memberSetting/getSpecificData',{ targetUser },{
+            const res = await axios.post('/api/memberSetting/getSpecificDataByAdmin',{ targetUser },{
                 headers:{
                     'x-user-token': jsCookie.get('authToken')
                 }
@@ -110,7 +110,7 @@ export default {
         }
 
         async function getLabList(){
-            const res = await axios.get('/api/memberSetting/getLabList',{
+            const res = await axios.get('/api/memberSetting/getLabListByAdmin',{
                 headers:{
                     'x-user-token': jsCookie.get('authToken')
                 }

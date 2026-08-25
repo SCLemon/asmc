@@ -52,8 +52,8 @@ router.get('/api/memberSetting/getData', authMiddleware(10), async (req, res) =>
     }
 });
 
-// 獲取特定使用者資料
-router.post('/api/memberSetting/getSpecificData', authMiddleware(10), async (req, res) => {
+// 獲取特定使用者資料 By Admin
+router.post('/api/memberSetting/getSpecificDataByAdmin', authMiddleware(10), async (req, res) => {
 
     const { targetUser } = req.body;
 
@@ -68,7 +68,6 @@ router.post('/api/memberSetting/getSpecificData', authMiddleware(10), async (req
             });
         }
 
-        const lab = await labModel.findOne({ token: user.lab });
         const output = {
             account: user.account,
             password: user.password,
@@ -78,6 +77,49 @@ router.post('/api/memberSetting/getSpecificData', authMiddleware(10), async (req
             phoneNumber: user.phoneNumber,
             mailAddress: user.mailAddress,
             lab: user.lab,
+        }
+
+        return res.send({
+            type:'success',
+            data: output,
+            message:'用戶資料獲取成功！'
+        });
+        
+    } catch (e) {
+        console.log(e)
+        return res.send({
+            type:'error',
+            message:'伺服器錯誤，請洽客服人員協助。'
+        });
+    }
+});
+
+// 獲取特定使用者資料 By User
+router.get('/api/memberSetting/getSpecificDataByUser', authMiddleware(0), async (req, res) => {
+
+    const targetUser = req.headers['x-user-token'];
+
+    try {
+        const user = await userModel.findOne({ token: targetUser });
+        const lab = await labModel.findOne({ token: user.lab });
+
+        if(!user){
+            return res.send({
+                type:'success',
+                data: {},
+                message:'使用者資料不存在。'
+            });
+        }
+
+        const output = {
+            account: user.account,
+            password: user.password,
+            level: user.level,
+            name: user.name,
+            idCard: user.idCard,
+            phoneNumber: user.phoneNumber,
+            mailAddress: user.mailAddress,
+            lab: lab?.name,
         }
 
         return res.send({
@@ -222,7 +264,7 @@ router.post('/api/memberSetting/register', authMiddleware(10), async (req, res) 
     }
 });
 
-// 修改用戶
+// 修改用戶 By Admin
 router.post('/api/memberSetting/reviseByAdmin', authMiddleware(10), async (req, res) => {
 
     let { targetUser, name, password, level, lab, phoneNumber, mailAddress, idCard } = req.body;
@@ -270,8 +312,56 @@ router.post('/api/memberSetting/reviseByAdmin', authMiddleware(10), async (req, 
     }
 });
 
-// 獲取實驗室列表
-router.get('/api/memberSetting/getLabList', authMiddleware(10), async (req, res) => {
+// 修改用戶 By User
+router.post('/api/memberSetting/reviseByUser', authMiddleware(0), async (req, res) => {
+
+    let { name, password, phoneNumber, mailAddress, idCard } = req.body;
+
+    const targetUser = req.headers['x-user-token'];
+    
+    if (!password || !name) {
+        return res.send({
+            type:'error',
+            message:'註冊資料不可為空。'
+        });
+    }
+
+    try {
+
+        const user = await userModel.findOne({ token: targetUser });
+        if(!user){
+            return res.send({
+                type:'error',
+                message:'使用者資料不存在。'
+            });
+        }
+        
+        user.name = name;
+        user.password = password;
+
+        user.mailAddress = mailAddress;
+        user.phoneNumber = phoneNumber;
+        user.idCard = idCard;
+
+
+        await user.save();
+
+        return res.send({
+            type:'success',
+            message:'用戶資料修改成功。' 
+        });
+
+    } catch (e) {
+        console.log(e)
+        return res.send({
+            type:'error',
+            message:'伺服器錯誤，請洽客服人員協助。'
+        });
+    }
+});
+
+// 獲取實驗室列表 By Admin
+router.get('/api/memberSetting/getLabListByAdmin', authMiddleware(10), async (req, res) => {
 
     try {
         const labs = await labModel.find({});
@@ -296,7 +386,6 @@ router.get('/api/memberSetting/getLabList', authMiddleware(10), async (req, res)
         });
     }
 });
-
 
 
 module.exports = router;
