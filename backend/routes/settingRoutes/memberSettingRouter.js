@@ -298,6 +298,8 @@ router.post('/api/memberSetting/reviseByAdmin', authMiddleware(10), async (req, 
 
         await user.save();
 
+        tokenCache.set(user.token, user);
+
         return res.send({
             type:'success',
             message:'用戶資料修改成功。' 
@@ -345,6 +347,8 @@ router.post('/api/memberSetting/reviseByUser', authMiddleware(0), async (req, re
 
 
         await user.save();
+
+        tokenCache.set(user.token, user);
 
         return res.send({
             type:'success',

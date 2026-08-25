@@ -3,8 +3,8 @@
         <div class="member-setting-edit-header">
             <div class="member-setting-edit-title">User Profile</div>
             <div class="member-setting-edit-right">
-                <div class="member-setting-edit-button"><el-button @click="goBack()">返回列表</el-button></div>
                 <div class="member-setting-edit-button"><el-button @click="send()" type="primary">儲存資訊</el-button></div>
+                <div class="member-setting-edit-button"><el-button @click="goBack()">返回列表</el-button></div>
             </div>
         </div>
         <div class="member-setting-edit-table-wrapper">
