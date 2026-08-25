@@ -12,8 +12,8 @@ import UserLogin from '../pages/UserLogin/UserLogin.vue'
 import Id_Vg_Analysis from '../pages/AnalysisTools/pages/Id_Vg_Analysis/Id_Vg_Analysis.vue'
 import Id_Vd_Analysis from '../pages/AnalysisTools/pages/Id_Vd_Analysis/Id_Vd_Analysis.vue'
 import Settings from '../pages/Settings/Settings.vue'
-import MemberSetting from '../pages/Settings/pages/memberSetting/memberSetting.vue'
-
+import MemberSetting from '../pages/Settings/pages/MemberSetting/MemberSetting.vue'
+import LabSetting from '../pages/Settings/pages/LabSetting/LabSetting.vue'
 const routes = [
     {
       path: '/introduction',
@@ -60,6 +60,10 @@ const routes = [
     {
       path: '/settings/member-setting',
       component: MemberSetting
+    },
+    {
+      path: '/settings/lab-setting',
+      component: LabSetting
     },
     {
       path: '/',

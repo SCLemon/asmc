@@ -48,14 +48,9 @@ app.use(loginRouter);
 const memberSettingRouter = require('./routes/settingRoutes/memberSettingRouter');
 app.use(memberSettingRouter);
 
-// const avatorRouter = require('./routes/avatorRouter');
-// app.use(avatorRouter);
+const labSettingRouter = require('./routes/settingRoutes/labSettingRouter');
+app.use(labSettingRouter);
 
-// const subscribeRouter = require('./routes/subscribeRouter');
-// app.use(subscribeRouter);
-
-// const { router: notifyRouter } = require('./routes/notifyRouter');
-// app.use(notifyRouter);
 
 app.listen(3007,()=>{
     console.log('server is running on port 3007')
