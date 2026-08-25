@@ -4,10 +4,10 @@
         <div class="member-setting-title">User Management</div>
         <div class="member-setting-right">
             <div class="member-setting-search">
-                <input class="member-setting-search-input" type="text" name="" id="" placeholder="Search users by name" v-model="keyword">
+                <input class="member-setting-search-input" type="text" name="" id="" placeholder="Search users by name or lab" v-model="keyword">
                 <div class="member-setting-search-input-icon"><VIcon :icon="SearchIcon"></VIcon></div>
             </div>
-            <div class="member-setting-button"><el-button @click="register()">新增用戶</el-button></div>
+            <div class="member-setting-button"><el-button @click="goToRegisterPage">新增用戶</el-button></div>
         </div>
     </div>
     <div class="member-setting-table">
@@ -18,16 +18,15 @@
 
 <script>
 
-import axios from 'axios';
+
 import MemberTable from './components/MemberTable.vue';
 
 import { ref } from 'vue';
-import { eventBus } from '@/utils/eventBus.js';
-import jsCookie from 'js-cookie';
-
+import { useRouter } from 'vue-router';
 import { VIcon } from 'vorium-ui'
 import { SearchIcon } from 'vorium-ui/icons'
 import 'vorium-ui/icons/icons.css'
+
 
 export default {
     name: 'MemberSetting',
@@ -37,28 +36,21 @@ export default {
     setup(){
         const memberTableRef = ref(null)
         const keyword = ref('');
-
-        async function register(){
-
-            const res = await axios.post('/api/memberSetting/register',{
-                account: 'test' + new Date(), 
-                password: 'test',
-                level: '1',
-                name: 'test'
-            },
-            {
-                headers: {
-                    'x-user-token': jsCookie.get('authToken')
-                }
-            })
-
-            eventBus.emit('handleAlert', { title:'用戶註冊資訊', message: res.data.message, type: res.data.type })
+        const router = useRouter();
+        
+        async function goToRegisterPage(){
             
-            await memberTableRef.value.getData();
+            router.replace({
+                path: '/settings/member-setting/edit',
+                query: {
+                    'method': 'add'
+                }
+            }).catch((e)=>{})
 
         }
+
         return {
-            memberTableRef, register, SearchIcon, keyword
+            memberTableRef, goToRegisterPage, SearchIcon, keyword
         }
     }
 }

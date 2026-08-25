@@ -53,24 +53,22 @@ const userSchema = new mongoose.Schema({
         type: Array,
         default: []
     },
-    detail:{
-        phoneNumber:{
-            type:String,
-            default:''
-        },
-        mailAddress:{
-            type:String,
-            default:''
-        },
-        idCard:{
-            type:String,
-            default:''
-        },
-        lab: {
-            type:String,
-            default:''
-        }
-    }
+    lab: {
+        type:String,
+        default:''
+    },
+    phoneNumber:{
+        type:String,
+        default:''
+    },
+    mailAddress:{
+        type:String,
+        default:''
+    },
+    idCard:{
+        type:String,
+        default:''
+    },
 });
 
 

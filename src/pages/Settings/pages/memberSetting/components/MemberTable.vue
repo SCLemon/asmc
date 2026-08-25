@@ -7,7 +7,7 @@
                     <th>Level</th>
                     <th>Name</th>
                     <th>ID Card</th>
-                    <th>IP Address</th>
+                    <th>Lab</th>
                     <th>Status</th>
                     <th>Options</th>
                 </tr>
@@ -17,14 +17,14 @@
                     <td>{{ user.createTime }}</td>
                     <td>Level {{ user.level }}</td>
                     <td>{{ user.name }}</td>
-                    <td>{{ user.id_card }}</td>
-                    <td>{{ user.ip }}</td>
+                    <td>{{ user.idCard }}</td>
+                    <td>{{ user.lab || '-'}}</td>
                     <td>
                         <div v-if="user.status" style="color: lightgreen;">有效</div>
                         <div v-else style="color: rgba(0,0,0,0.2);">凍結</div>
                     </td>
                     <td class="options">
-                        <el-button>查看</el-button>
+                        <el-button @click="goToUserDetail(user.token)">查看</el-button>
                         <el-button type="warning" @click="freeze(user.token)">{{ user.status ? '凍結' : '解凍' }}</el-button>
                         <el-button type="danger" @click="deleteUser(user.token)">刪除</el-button>
                     </td>
@@ -40,6 +40,7 @@ import axios from 'axios';
 import jsCookie from 'js-cookie';
 import { ref, onMounted, computed } from 'vue';
 import { ElMessageBox } from 'element-plus'
+import { useRouter } from 'vue-router';
 
 export default {
     name: 'MemberTable',
@@ -51,11 +52,13 @@ export default {
     },
     setup(props){
         
+        const router = useRouter();
         const tableData = ref([]);
 
         const filteredData = computed(()=>{
             return tableData.value.filter((user)=>{
-                return ((user.name).toLowerCase()).includes((props.keyword).toLowerCase())
+                return ((user.name).toLowerCase()).includes((props.keyword).toLowerCase()) ||
+                        ((user.lab).toLowerCase()).includes((props.keyword).toLowerCase())
             })
         })
 
@@ -72,6 +75,15 @@ export default {
             tableData.value = res.data.data
         }
 
+        function goToUserDetail(token){
+            router.replace({
+                path: '/settings/member-setting/edit',
+                query: {
+                    'method': 'revise',
+                    'targetUser': token
+                }
+            }).catch((e)=>{})
+        }
 
         async function freeze(token){
             try{
@@ -113,7 +125,7 @@ export default {
             catch(e){}
         }
         return {
-            tableData, freeze, getData, deleteUser, filteredData
+            tableData, freeze, getData, deleteUser, filteredData, goToUserDetail
         }
     }
 }

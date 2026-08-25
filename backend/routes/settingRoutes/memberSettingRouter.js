@@ -16,20 +16,23 @@ const path = require('path');
 const authMiddleware = require('../../middleware/auth.middleware');
 const { tokenCache } = require('../../cache/cache');
 
+const labModel = require('../../models/labModel');
 
 // 獲取資料
 router.get('/api/memberSetting/getData', authMiddleware(10), async (req, res) => {
 
     try {
         const users = await userModel.find({});
-
+        const labs = await labModel.find({});
+        
         const output = users.map((user) =>{
+            const lab = labs.filter(lab => user.lab == lab.token)[0];
             return {
                 createTime: user.createTime,
                 level: user.level,
                 name: user.name,
-                id_card: user.detail.idCard || '-',
-                ip: user.historyRecord[user.historyRecord.length - 1]?.ip || '-',
+                idCard: user.idCard || '-',
+                lab: lab?.name,
                 status: user.status,
                 token: user.token,
             }
@@ -49,49 +52,40 @@ router.get('/api/memberSetting/getData', authMiddleware(10), async (req, res) =>
     }
 });
 
-// 新增用戶
-router.post('/api/memberSetting/register', authMiddleware(10), async (req, res) => {
+// 獲取特定使用者資料
+router.post('/api/memberSetting/getSpecificData', authMiddleware(10), async (req, res) => {
 
-    const token =  uuidv4();
-    let { name, account, password, level } = req.body;
-
-    if (!account || !password) {
-        return res.send({
-            type:'error',
-            message:'註冊資料不可為空。'
-        });
-    }
+    const { targetUser } = req.body;
 
     try {
 
-        const existingUser = await userModel.findOne({ account });
-        if (existingUser) {
+        const user = await userModel.findOne({ token: targetUser });
+        if(!user){
             return res.send({
-                type:'error',
-                message:'帳號已存在，請選擇其他帳號。'
+                type:'success',
+                data: {},
+                message:'使用者資料不存在。'
             });
         }
 
-        const avatorDataBaseUrl = path.join(baseDir,'avator');
-        fs.mkdirSync(avatorDataBaseUrl, { recursive: true });
-        
-        const newUser = new userModel({
-            createTime: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
-            token,
-            status: true,
-            level,
-            account,
-            password,
-            name,
-        });
-
-        await newUser.save();
+        const lab = await labModel.findOne({ token: user.lab });
+        const output = {
+            account: user.account,
+            password: user.password,
+            level: user.level,
+            name: user.name,
+            idCard: user.idCard,
+            phoneNumber: user.phoneNumber,
+            mailAddress: user.mailAddress,
+            lab: user.lab,
+        }
 
         return res.send({
             type:'success',
-            message:'用戶註冊成功。' 
+            data: output,
+            message:'用戶資料獲取成功！'
         });
-
+        
     } catch (e) {
         console.log(e)
         return res.send({
@@ -175,6 +169,133 @@ router.post('/api/memberSetting/delete', authMiddleware(10), async (req, res) =>
     }
 });
 
+// 新增用戶
+router.post('/api/memberSetting/register', authMiddleware(10), async (req, res) => {
+
+    const token =  uuidv4();
+    let { name, account, password, level, lab } = req.body;
+
+    if (!account || !password || !name || !level || !Number.isInteger(level) || !lab) {
+        return res.send({
+            type:'error',
+            message:'註冊資料不可為空。'
+        });
+    }
+
+    try {
+
+        const existingUser = await userModel.findOne({ account });
+        if (existingUser) {
+            return res.send({
+                type:'error',
+                message:'帳號已存在，請選擇其他帳號。'
+            });
+        }
+
+        const avatorDataBaseUrl = path.join(baseDir,'avator');
+        fs.mkdirSync(avatorDataBaseUrl, { recursive: true });
+        
+        const newUser = new userModel({
+            createTime: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            token,
+            status: true,
+            level,
+            account,
+            password,
+            name,
+            lab
+        });
+
+        await newUser.save();
+
+        return res.send({
+            type:'success',
+            message:'用戶註冊成功。' 
+        });
+
+    } catch (e) {
+        console.log(e)
+        return res.send({
+            type:'error',
+            message:'伺服器錯誤，請洽客服人員協助。'
+        });
+    }
+});
+
+// 修改用戶
+router.post('/api/memberSetting/reviseByAdmin', authMiddleware(10), async (req, res) => {
+
+    let { targetUser, name, password, level, lab, phoneNumber, mailAddress, idCard } = req.body;
+
+    if (!password || !name || !level || !Number.isInteger(level) || !lab) {
+        return res.send({
+            type:'error',
+            message:'註冊資料不可為空。'
+        });
+    }
+
+    try {
+
+        const user = await userModel.findOne({ token: targetUser });
+        if(!user){
+            return res.send({
+                type:'error',
+                message:'使用者資料不存在。'
+            });
+        }
+        
+        user.name = name;
+        user.password = password;
+        user.level = level;
+        user.lab = lab;
+
+        user.mailAddress = mailAddress;
+        user.phoneNumber = phoneNumber;
+        user.idCard = idCard;
+
+
+        await user.save();
+
+        return res.send({
+            type:'success',
+            message:'用戶資料修改成功。' 
+        });
+
+    } catch (e) {
+        console.log(e)
+        return res.send({
+            type:'error',
+            message:'伺服器錯誤，請洽客服人員協助。'
+        });
+    }
+});
+
+// 獲取實驗室列表
+router.get('/api/memberSetting/getLabList', authMiddleware(10), async (req, res) => {
+
+    try {
+        const labs = await labModel.find({});
+
+        const output = labs.map((lab) =>{
+            return {
+                token: lab.token,
+                name: lab.name,
+            }
+        })
+        return res.send({
+            type:'success',
+            data: output,
+            message:'實驗室列表獲取成功！'
+        });
+        
+    } catch (e) {
+        console.log(e)
+        return res.send({
+            type:'error',
+            message:'伺服器錯誤，請洽客服人員協助。'
+        });
+    }
+});
 
 
 

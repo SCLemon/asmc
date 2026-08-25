@@ -8,15 +8,11 @@ const labModel = require('../../models/labModel');
 
 const {format} = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
-const fs = require('fs');
-
-const { baseDir } = require('../../config/pathConfig');
-const path = require('path');
 
 const authMiddleware = require('../../middleware/auth.middleware');
 
 
-// 獲取實驗室 // 待新增對帳單統計, 實驗室人數統計
+// 獲取實驗室  **待新增對帳單統計, 實驗室人數統計
 router.get('/api/labSetting/getData', authMiddleware(10), async (req, res) => {
 
     try {
@@ -128,7 +124,7 @@ router.put('/api/labSetting/freeze', authMiddleware(10), async (req, res) => {
     }
 });
 
-// 刪除實驗室 // 待新增若人數不為 0 則不可刪除
+// 刪除實驗室  **待新增若人數不為 0 則不可刪除
 router.post('/api/labSetting/delete', authMiddleware(10), async (req, res) => {
 
     let { targetLab } = req.body;
@@ -161,7 +157,6 @@ router.post('/api/labSetting/delete', authMiddleware(10), async (req, res) => {
         });
     }
 });
-
 
 
 
