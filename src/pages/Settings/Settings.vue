@@ -6,12 +6,16 @@
             </div>
             <div class="settings-header-input-wrapper"><VInput size="md" v-model="keyword" :suggestionList="suggestionList" :suggestionListIsLoading="isLoading"></VInput></div>
         </div>
-        <div class="settings-list-wrapper">
-            <div class="settings-list-item-wrapper" v-for="(tool, id) in filteredSettings" :key="id" @click="goTo(tool.path)">
-                <div class="settings-list-item-icon">
-                    <VIcon :icon="tool.icon" :size="36"></VIcon>
+
+        <div class="settings-list-wrapper-all" v-for="(category, categoryId) in filteredSettings" :key="categoryId">
+            <div class="settings-list-wrapper-title">{{ category.title }}</div>
+            <div class="settings-list-wrapper">
+                <div class="settings-list-item-wrapper" v-for="(tool, toolId) in category.block" :key="toolId" @click="goTo(tool.path)">
+                    <div class="settings-list-item-icon">
+                        <VIcon :icon="tool.icon" :size="36"></VIcon>
+                    </div>
+                    <div class="settings-list-item-title">{{ tool.title }}</div>
                 </div>
-                <div class="settings-list-item-title">{{ tool.title }}</div>
             </div>
         </div>
     </div>
@@ -30,10 +34,9 @@ export default {
     },
     setup(){
 
-        
         const keyword = ref('');
 
-        let list = settings.map((i)=> i.title)
+        let list = settings.flatMap((i) => i.block.map((item) => item.title))
         
         let suggestionList = reactive([]);
         
@@ -41,42 +44,53 @@ export default {
         let isLoading = ref(false);
         let requestId = 0;
 
-        watch(()=> keyword.value, (value)=>{
+        watch(() => keyword.value, (value) => {
 
-        clearTimeout(timer);
+            clearTimeout(timer);
 
-        timer = setTimeout(async ()=>{
+            timer = setTimeout(async () => {
 
-            const currentId = ++requestId;
+                const currentId = ++requestId;
 
-            isLoading.value = true;
+                isLoading.value = true;
 
-            const filterList = list.filter(i => i.toLowerCase().includes(value.toLowerCase()))
+                const filterList = list.filter(i => i.toLowerCase().includes(value.toLowerCase()))
 
-            if(currentId != requestId) return;
+                if(currentId != requestId) return;
 
-            suggestionList.splice(0,suggestionList.length, ...filterList);
+                suggestionList.splice(0, suggestionList.length, ...filterList);
 
-            isLoading.value = false;
+                isLoading.value = false;
 
-        }, 300)
+            }, 300)
 
         }, { immediate: true })
 
         const filteredSettings = computed(() => {
-            return settings.filter((tool)=> {
-                return ((tool.title).toLowerCase()).includes((keyword.value).toLowerCase())
-            })
+            const searchValue = keyword.value.toLowerCase();
+
+            return settings.map((category) => ({
+                    ...category,
+                    block: category.block.filter((tool) => {
+                        return tool.title.toLowerCase().includes(searchValue);
+                    })
+                }))
+                .filter((category) => category.block.length > 0)
         })
 
         const router = useRouter();
 
         function goTo(path) {
-            router.replace(path).catch((e)=>{})
+            router.replace(path).catch((e) => {})
         }
 
         return {
-            goTo, keyword, settings, isLoading, suggestionList, filteredSettings
+            goTo,
+            keyword,
+            settings,
+            isLoading,
+            suggestionList,
+            filteredSettings
         }
     }
 }
@@ -103,6 +117,13 @@ export default {
         width: 30%;
         margin-left: auto;
     }
+    .settings-list-wrapper-all{
+        padding: 35px 30px 0px 30px;
+    }
+    .settings-list-wrapper-title{
+        font-weight: bolder;
+        font-size: 18px;
+    }
     .settings-list-wrapper{
         width: 100%;
         height: calc(100% - 80px);
@@ -110,7 +131,7 @@ export default {
         display: grid;
         grid-template-columns: repeat(auto-fit, 100px);
         gap: 25px;
-        padding: 35px 30px 15px 30px;
+        margin-top: 25px;
     }
     .settings-list-item-wrapper{
         width: 100px;
