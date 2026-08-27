@@ -40,7 +40,7 @@ export default {
 
         async function register(){
 
-            const res = await axios.post('/api/labSetting/register',{
+            const res = await axios.post('/api/labSetting/admin/register',{
                 name: 'test'
             },
             {

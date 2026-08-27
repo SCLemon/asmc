@@ -99,7 +99,7 @@ export default {
         })
 
         async function getData(){
-            const res = await axios.post('/api/memberSetting/getSpecificDataByAdmin',{ targetUser },{
+            const res = await axios.post('/api/memberSetting/admin/getSpecificData',{ targetUser },{
                 headers:{
                     'x-user-token': jsCookie.get('authToken')
                 }
@@ -110,7 +110,7 @@ export default {
         }
 
         async function getLabList(){
-            const res = await axios.get('/api/memberSetting/getLabListByAdmin',{
+            const res = await axios.get('/api/memberSetting/admin/getLabList',{
                 headers:{
                     'x-user-token': jsCookie.get('authToken')
                 }
@@ -131,7 +131,7 @@ export default {
 
         async function register(){
 
-            const res = await axios.post('/api/memberSetting/register', user.value,
+            const res = await axios.post('/api/memberSetting/admin/register', user.value,
             {
                 headers: {
                     'x-user-token': jsCookie.get('authToken')
@@ -148,7 +148,7 @@ export default {
                 targetUser,
                 ...user.value
             }
-            const res = await axios.post('/api/memberSetting/reviseByAdmin', input,
+            const res = await axios.post('/api/memberSetting/admin/revise', input,
             {
                 headers: {
                     'x-user-token': jsCookie.get('authToken')

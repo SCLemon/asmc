@@ -67,7 +67,7 @@ export default {
         })
 
         async function getData(){
-            const res = await axios.get('/api/memberSetting/getData',{
+            const res = await axios.get('/api/memberSetting/admin/getData',{
                 headers:{
                     'x-user-token': jsCookie.get('authToken')
                 }
@@ -94,7 +94,7 @@ export default {
                         type: 'warning',
                     }
                 )
-                const res = await axios.put('/api/memberSetting/freeze',{ targetUser: token },{
+                const res = await axios.put('/api/memberSetting/admin/freeze',{ targetUser: token },{
                     headers: {
                         'x-user-token': jsCookie.get('authToken')
                     }
@@ -114,7 +114,7 @@ export default {
                         type: 'warning',
                     }
                 )
-                const res = await axios.post('/api/memberSetting/delete',{ targetUser: token },{
+                const res = await axios.post('/api/memberSetting/admin/delete',{ targetUser: token },{
                     headers: {
                         'x-user-token': jsCookie.get('authToken')
                     }

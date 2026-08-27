@@ -4,16 +4,16 @@
 const express = require('express');
 const router = express.Router();
 
-const labModel = require('../../models/labModel');
+const labModel = require('../../../models/labModel');
 
 const {format} = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
 
-const authMiddleware = require('../../middleware/auth.middleware');
+const authMiddleware = require('../../../middleware/auth.middleware');
 
 
 // 獲取實驗室  **待新增對帳單統計, 實驗室人數統計
-router.get('/api/labSetting/getData', authMiddleware(10), async (req, res) => {
+router.get('/api/labSetting/admin/getData', authMiddleware(10), async (req, res) => {
 
     try {
         const labs = await labModel.find({});
@@ -43,7 +43,7 @@ router.get('/api/labSetting/getData', authMiddleware(10), async (req, res) => {
 });
 
 // 新增實驗室
-router.post('/api/labSetting/register', authMiddleware(10), async (req, res) => {
+router.post('/api/labSetting/admin/register', authMiddleware(10), async (req, res) => {
 
     const token =  uuidv4();
     let { name } = req.body;
@@ -89,7 +89,7 @@ router.post('/api/labSetting/register', authMiddleware(10), async (req, res) => 
 });
 
 // 凍結實驗室
-router.put('/api/labSetting/freeze', authMiddleware(10), async (req, res) => {
+router.put('/api/labSetting/admin/freeze', authMiddleware(10), async (req, res) => {
 
     let { targetLab } = req.body;
 
@@ -125,7 +125,7 @@ router.put('/api/labSetting/freeze', authMiddleware(10), async (req, res) => {
 });
 
 // 刪除實驗室  **待新增若人數不為 0 則不可刪除
-router.post('/api/labSetting/delete', authMiddleware(10), async (req, res) => {
+router.post('/api/labSetting/admin/delete', authMiddleware(10), async (req, res) => {
 
     let { targetLab } = req.body;
 

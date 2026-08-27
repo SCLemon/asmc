@@ -45,12 +45,18 @@ connectToDatabase();
 const loginRouter = require('./routes/loginRouter');
 app.use(loginRouter);
 
-const memberSettingRouter = require('./routes/settingRoutes/memberSettingRouter');
-app.use(memberSettingRouter);
 
-const labSettingRouter = require('./routes/settingRoutes/labSettingRouter');
-app.use(labSettingRouter);
 
+// by Admin
+const memberSettingByAdminRouter = require('./routes/byAdmin/settingRoutes/memberSettingRouter');
+app.use(memberSettingByAdminRouter);
+
+const labSettingByAdminRouter = require('./routes/byAdmin/settingRoutes/labSettingRouter');
+app.use(labSettingByAdminRouter);
+
+// by User
+const memberSettingByUserRouter = require('./routes/byUser/settingRoutes/memberSettingRouter');
+app.use(memberSettingByUserRouter);
 
 app.listen(3007,()=>{
     console.log('server is running on port 3007')

@@ -62,7 +62,7 @@ export default {
         })
 
         async function getData(){
-            const res = await axios.get('/api/labSetting/getData',{
+            const res = await axios.get('/api/labSetting/admin/getData',{
                 headers:{
                     'x-user-token': jsCookie.get('authToken')
                 }
@@ -79,7 +79,7 @@ export default {
                         type: 'warning',
                     }
                 )
-                const res = await axios.put('/api/labSetting/freeze',{ targetLab: token },{
+                const res = await axios.put('/api/labSetting/admin/freeze',{ targetLab: token },{
                     headers: {
                         'x-user-token': jsCookie.get('authToken')
                     }
@@ -99,7 +99,7 @@ export default {
                         type: 'warning',
                     }
                 )
-                const res = await axios.post('/api/labSetting/delete',{ targetLab: token },{
+                const res = await axios.post('/api/labSetting/admin/delete',{ targetLab: token },{
                     headers: {
                         'x-user-token': jsCookie.get('authToken')
                     }

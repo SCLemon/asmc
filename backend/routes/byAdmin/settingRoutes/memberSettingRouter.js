@@ -4,22 +4,22 @@
 const express = require('express');
 const router = express.Router();
 
-const userModel = require('../../models/userModel');
+const userModel = require('../../../models/userModel');
 
 const {format} = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 
-const { baseDir } = require('../../config/pathConfig');
+const { baseDir } = require('../../../config/pathConfig');
 const path = require('path');
 
-const authMiddleware = require('../../middleware/auth.middleware');
-const { tokenCache } = require('../../cache/cache');
+const authMiddleware = require('../../../middleware/auth.middleware');
+const { tokenCache } = require('../../../cache/cache');
 
-const labModel = require('../../models/labModel');
+const labModel = require('../../../models/labModel');
 
 // 獲取資料
-router.get('/api/memberSetting/getData', authMiddleware(10), async (req, res) => {
+router.get('/api/memberSetting/admin/getData', authMiddleware(10), async (req, res) => {
 
     try {
         const users = await userModel.find({});
@@ -52,8 +52,8 @@ router.get('/api/memberSetting/getData', authMiddleware(10), async (req, res) =>
     }
 });
 
-// 獲取特定使用者資料 By Admin
-router.post('/api/memberSetting/getSpecificDataByAdmin', authMiddleware(10), async (req, res) => {
+// 獲取特定使用者資料
+router.post('/api/memberSetting/admin/getSpecificData', authMiddleware(10), async (req, res) => {
 
     const { targetUser } = req.body;
 
@@ -94,51 +94,9 @@ router.post('/api/memberSetting/getSpecificDataByAdmin', authMiddleware(10), asy
     }
 });
 
-// 獲取特定使用者資料 By User
-router.get('/api/memberSetting/getSpecificDataByUser', authMiddleware(0), async (req, res) => {
-
-    const targetUser = req.headers['x-user-token'];
-
-    try {
-        const user = await userModel.findOne({ token: targetUser });
-        const lab = await labModel.findOne({ token: user.lab });
-
-        if(!user){
-            return res.send({
-                type:'success',
-                data: {},
-                message:'使用者資料不存在。'
-            });
-        }
-
-        const output = {
-            account: user.account,
-            password: user.password,
-            level: user.level,
-            name: user.name,
-            idCard: user.idCard,
-            phoneNumber: user.phoneNumber,
-            mailAddress: user.mailAddress,
-            lab: lab?.name,
-        }
-
-        return res.send({
-            type:'success',
-            data: output,
-            message:'用戶資料獲取成功！'
-        });
-        
-    } catch (e) {
-        console.log(e)
-        return res.send({
-            type:'error',
-            message:'伺服器錯誤，請洽客服人員協助。'
-        });
-    }
-});
 
 // 凍結用戶
-router.put('/api/memberSetting/freeze', authMiddleware(10), async (req, res) => {
+router.put('/api/memberSetting/admin/freeze', authMiddleware(10), async (req, res) => {
 
     let { targetUser } = req.body;
 
@@ -176,7 +134,7 @@ router.put('/api/memberSetting/freeze', authMiddleware(10), async (req, res) => 
 });
 
 // 刪除用戶
-router.post('/api/memberSetting/delete', authMiddleware(10), async (req, res) => {
+router.post('/api/memberSetting/admin/delete', authMiddleware(10), async (req, res) => {
 
     let { targetUser } = req.body;
 
@@ -212,10 +170,10 @@ router.post('/api/memberSetting/delete', authMiddleware(10), async (req, res) =>
 });
 
 // 新增用戶
-router.post('/api/memberSetting/register', authMiddleware(10), async (req, res) => {
+router.post('/api/memberSetting/admin/register', authMiddleware(10), async (req, res) => {
 
     const token =  uuidv4();
-    let { name, account, password, level, lab } = req.body;
+    let { name, account, password, level, lab, mailAddress, phoneNumber, idCard } = req.body;
 
     if (!account || !password || !name || !level || !Number.isInteger(level) || !lab) {
         return res.send({
@@ -245,7 +203,10 @@ router.post('/api/memberSetting/register', authMiddleware(10), async (req, res) 
             account,
             password,
             name,
-            lab
+            lab,
+            mailAddress,
+            phoneNumber,
+            idCard
         });
 
         await newUser.save();
@@ -265,7 +226,7 @@ router.post('/api/memberSetting/register', authMiddleware(10), async (req, res) 
 });
 
 // 修改用戶 By Admin
-router.post('/api/memberSetting/reviseByAdmin', authMiddleware(10), async (req, res) => {
+router.post('/api/memberSetting/admin/revise', authMiddleware(10), async (req, res) => {
 
     let { targetUser, name, password, level, lab, phoneNumber, mailAddress, idCard } = req.body;
 
@@ -314,58 +275,8 @@ router.post('/api/memberSetting/reviseByAdmin', authMiddleware(10), async (req, 
     }
 });
 
-// 修改用戶 By User
-router.post('/api/memberSetting/reviseByUser', authMiddleware(0), async (req, res) => {
-
-    let { name, password, phoneNumber, mailAddress, idCard } = req.body;
-
-    const targetUser = req.headers['x-user-token'];
-    
-    if (!password || !name) {
-        return res.send({
-            type:'error',
-            message:'註冊資料不可為空。'
-        });
-    }
-
-    try {
-
-        const user = await userModel.findOne({ token: targetUser });
-        if(!user){
-            return res.send({
-                type:'error',
-                message:'使用者資料不存在。'
-            });
-        }
-        
-        user.name = name;
-        user.password = password;
-
-        user.mailAddress = mailAddress;
-        user.phoneNumber = phoneNumber;
-        user.idCard = idCard;
-
-
-        await user.save();
-
-        tokenCache.set(user.token, user);
-
-        return res.send({
-            type:'success',
-            message:'用戶資料修改成功。' 
-        });
-
-    } catch (e) {
-        console.log(e)
-        return res.send({
-            type:'error',
-            message:'伺服器錯誤，請洽客服人員協助。'
-        });
-    }
-});
-
-// 獲取實驗室列表 By Admin
-router.get('/api/memberSetting/getLabListByAdmin', authMiddleware(10), async (req, res) => {
+// 獲取實驗室列表
+router.get('/api/memberSetting/admin/getLabList', authMiddleware(10), async (req, res) => {
 
     try {
         const labs = await labModel.find({});
