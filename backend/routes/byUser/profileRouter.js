@@ -4,17 +4,17 @@
 const express = require('express');
 const router = express.Router();
 
-const userModel = require('../../../models/userModel');
+const userModel = require('../../models/userModel');
 
-const authMiddleware = require('../../../middleware/auth.middleware');
-const { tokenCache } = require('../../../cache/cache');
+const authMiddleware = require('../../middleware/auth.middleware');
+const { tokenCache } = require('../../cache/cache');
 
-const labModel = require('../../../models/labModel');
+const labModel = require('../../models/labModel');
 
 
 
 // 獲取特定使用者資料
-router.get('/api/memberSetting/user/getSpecificData', authMiddleware(0), async (req, res) => {
+router.get('/api/profile/user/getData', authMiddleware(0), async (req, res) => {
 
     const targetUser = req.headers['x-user-token'];
 
@@ -57,7 +57,7 @@ router.get('/api/memberSetting/user/getSpecificData', authMiddleware(0), async (
 });
 
 // 修改用戶
-router.post('/api/memberSetting/user/revise', authMiddleware(0), async (req, res) => {
+router.post('/api/profile/user/revise', authMiddleware(0), async (req, res) => {
 
     let { name, password, phoneNumber, mailAddress, idCard } = req.body;
 

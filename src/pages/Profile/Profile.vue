@@ -91,7 +91,7 @@ export default {
         })
 
         async function getData(){
-            const res = await axios.get('/api/memberSetting/user/getSpecificData',{
+            const res = await axios.get('/api/profile/user/getData',{
                 headers:{
                     'x-user-token': jsCookie.get('authToken')
                 }
@@ -103,7 +103,7 @@ export default {
 
         async function revise(){
 
-            const res = await axios.post('/api/memberSetting/user/revise', user.value,
+            const res = await axios.post('/api/profile/user/revise', user.value,
             {
                 headers: {
                     'x-user-token': jsCookie.get('authToken')
