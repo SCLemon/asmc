@@ -124,9 +124,10 @@ export default {
         box-sizing: border-box;
         overflow-y: scroll;
         padding-bottom: 25px;
+        padding-top: 25px;
     }
     .settings-list-wrapper-all{
-        padding: 35px 30px 0px 30px;
+        padding: 0px 30px 25px 30px;
     }
     .settings-list-wrapper-title{
         font-weight: bolder;
