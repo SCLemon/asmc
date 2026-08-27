@@ -77,7 +77,7 @@ export default {
 
         function goToUserDetail(token){
             router.replace({
-                path: '/settings/member-setting/edit',
+                path: '/settings/admin/member-setting/edit',
                 query: {
                     'method': 'revise',
                     'targetUser': token

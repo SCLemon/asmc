@@ -41,7 +41,7 @@ export default {
         async function goToRegisterPage(){
             
             router.replace({
-                path: '/settings/member-setting/edit',
+                path: '/settings/admin/member-setting/edit',
                 query: {
                     'method': 'add'
                 }

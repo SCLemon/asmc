@@ -6,15 +6,16 @@
             </div>
             <div class="settings-header-input-wrapper"><VInput size="md" v-model="keyword" :suggestionList="suggestionList" :suggestionListIsLoading="isLoading"></VInput></div>
         </div>
-
-        <div class="settings-list-wrapper-all" v-for="(category, categoryId) in filteredSettings" :key="categoryId">
-            <div class="settings-list-wrapper-title">{{ category.title }}</div>
-            <div class="settings-list-wrapper">
-                <div class="settings-list-item-wrapper" v-for="(tool, toolId) in category.block" :key="toolId" @click="goTo(tool.path)">
-                    <div class="settings-list-item-icon">
-                        <VIcon :icon="tool.icon" :size="36"></VIcon>
+        <div class="settings-list-wrapper-all-scroll">
+            <div class="settings-list-wrapper-all" v-for="(category, categoryId) in filteredSettings" :key="categoryId">
+                <div class="settings-list-wrapper-title">{{ category.title }}</div>
+                <div class="settings-list-wrapper">
+                    <div class="settings-list-item-wrapper" v-for="(tool, toolId) in category.block" :key="toolId" @click="goTo(tool.path)">
+                        <div class="settings-list-item-icon">
+                            <VIcon :icon="tool.icon" :size="36"></VIcon>
+                        </div>
+                        <div class="settings-list-item-title">{{ tool.title }}</div>
                     </div>
-                    <div class="settings-list-item-title">{{ tool.title }}</div>
                 </div>
             </div>
         </div>
@@ -117,6 +118,13 @@ export default {
         width: 30%;
         margin-left: auto;
     }
+    .settings-list-wrapper-all-scroll{
+        width: 100%;
+        height: calc(100vh - 80px);
+        box-sizing: border-box;
+        overflow-y: scroll;
+        padding-bottom: 25px;
+    }
     .settings-list-wrapper-all{
         padding: 35px 30px 0px 30px;
     }
@@ -125,8 +133,6 @@ export default {
         font-size: 18px;
     }
     .settings-list-wrapper{
-        width: 100%;
-        height: calc(100% - 80px);
         box-sizing: border-box;
         display: grid;
         grid-template-columns: repeat(auto-fit, 100px);

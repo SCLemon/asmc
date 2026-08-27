@@ -161,7 +161,7 @@ export default {
         }
 
         function goBack(){
-            router.replace('/settings/member-setting').catch((e)=>{})
+            router.replace('/settings/admin/member-setting').catch((e)=>{})
         }
 
         return {

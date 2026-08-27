@@ -15,9 +15,10 @@ import Id_Vg_Analysis from '../pages/AnalysisTools/pages/Id_Vg_Analysis/Id_Vg_An
 import Id_Vd_Analysis from '../pages/AnalysisTools/pages/Id_Vd_Analysis/Id_Vd_Analysis.vue'
 import Settings from '../pages/Settings/Settings.vue'
 
-import MemberSetting from '../pages/Settings/pages/MemberSetting/MemberSetting.vue'
-import EditMember from '../pages/Settings/pages/MemberSetting/pages/EditMember.vue'
-import LabSetting from '../pages/Settings/pages/LabSetting/LabSetting.vue'
+// setting by admin
+import MemberSettingByAdmin from '../pages/Settings/pages/byAdmin/MemberSetting/MemberSetting.vue'
+import EditMemberByAdmin from '../pages/Settings/pages/byAdmin/MemberSetting/pages/EditMember.vue'
+import LabSettingByAdmin from '../pages/Settings/pages/byAdmin/LabSetting/LabSetting.vue'
 
 
 const routes = [
@@ -67,26 +68,24 @@ const routes = [
       path: '/settings',
       component: Settings,
     },
+    // setting by admin
     {
-      path: '/settings/member-setting',
-      component: MemberSetting
+      path: '/settings/admin/member-setting',
+      component: MemberSettingByAdmin
     },
     {
-      path: '/settings/member-setting/edit',
-      component: EditMember
+      path: '/settings/admin/member-setting/edit',
+      component: EditMemberByAdmin
     },
     {
-      path: '/settings/lab-setting',
-      component: LabSetting
+      path: '/settings/admin/lab-setting',
+      component: LabSettingByAdmin
     },
+    //
     {
       path: '/',
       redirect: '/introduction'
     },
-    // {
-    //   path: '/:pathMatch(.*)*',
-    //   redirect: '/'
-    // }
 ]
 
 const router = createRouter({
