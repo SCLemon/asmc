@@ -4,8 +4,12 @@ const express = require('express');
 const router = express.Router();
 
 const userModel = require('../models/userModel');
+const labModel = require('../models/labModel')
+
 const {format} = require('date-fns');
 const { tokenCache } = require('../cache/cache');
+const labMiddleware = require('../middleware/lab.middleware');
+const authMiddleware = require('../middleware/auth.middleware')
 
 function historyGenerator(req){
     return {
@@ -32,17 +36,25 @@ router.post('/login/verify', async (req, res) => {
 
     try {
         const user = await userModel.findOne({ account, password });
+
         if (!user) {
             return res.send({ type:'error', message:'帳號或密碼錯誤。' });
         }
-        if(!user.status){
+
+        if (!user.status) {
             return res.send({ type:'error', message:'帳號已被停權。' });
+        }
+
+        // 檢查隸屬的實驗室
+        const lab = await labModel.findOne({ token: user.lab });
+
+        if (!lab || !lab.status) {
+            return res.send({ type:'error', message:'隸屬的實驗室已被停權。' });
         }
 
         const loginTime = format(new Date(), 'yyyy-MM-dd HH:mm:ss')
         user.lastOnline = loginTime;
 
-        // 使用者歷史資訊
         const history = historyGenerator(req);
 
         user.historyRecord = [
@@ -54,8 +66,8 @@ router.post('/login/verify', async (req, res) => {
 
         tokenCache.set(user.token, user);
 
-        res.cookie('authToken',user.token,{
-            maxAge:86400 * 1000 * 7, // 7 天
+        res.cookie('authToken', user.token, {
+            maxAge:86400 * 1000 * 7,
         })
 
         return res.send({
@@ -74,25 +86,20 @@ router.post('/login/verify', async (req, res) => {
 
 
 // token 驗證
-router.post('/login/token', async (req, res) => {
-    const token = req.headers['x-user-token'];
+router.post('/login/token', authMiddleware(0), labMiddleware, async (req, res) => {
+    
     const save = req.body.save;
 
-    let cachedUser = tokenCache.get(token);
-
-    if (!save && cachedUser?.status) {
-        return res.send({ type: 'success', message: '登入成功！', showAlert: false });
-    }
-
     try {
-        let user;
+
+        let user = req.user;
 
         if (save) {
             const loginTime = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
             const history = historyGenerator(req);
 
             user = await userModel.findOneAndUpdate(
-                { token, status: true },
+                { token: user.token, status: true },
                 { 
                     $set: { lastOnline: loginTime },
                     $push: { 
@@ -108,21 +115,23 @@ router.post('/login/token', async (req, res) => {
             if (!user) {
                 return res.send({ type: 'error', message: '無效使用者，請重新登入', showAlert: true });
             }
-        } 
-        else {
-            user = await userModel.findOne({ token, status: true }).lean();
-            if (!user) {
-                return res.send({ type: 'error', message: '無效使用者，請重新登入', showAlert: true });
-            }
+
+            tokenCache.set(user.token, user);
         }
 
-        tokenCache.set(token, user);
+        return res.send({ 
+            type: 'success', 
+            message: '登入成功！', 
+            showAlert: false 
+        });
 
-        return res.send({ type: 'success', message: '登入成功！', showAlert: false });
-    } 
-    catch (e) {
+    } catch (e) {
         console.error(e);
-        return res.send({ type: 'error', message: '伺服器錯誤', showAlert: true });
+        return res.send({ 
+            type: 'error', 
+            message: '伺服器錯誤', 
+            showAlert: true 
+        });
     }
 });
 
