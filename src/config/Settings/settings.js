@@ -21,7 +21,7 @@ export default [
             {
                 title: '個人資料維護',
                 icon: UserIcon,
-                path: '/settings/user/member-setting'
+                path: '/profile',
             },
             {
                 title: '實驗室狀態',

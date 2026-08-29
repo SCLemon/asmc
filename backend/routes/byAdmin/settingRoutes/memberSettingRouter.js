@@ -8,10 +8,6 @@ const userModel = require('../../../models/userModel');
 
 const {format} = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
-const fs = require('fs');
-
-const { baseDir } = require('../../../config/pathConfig');
-const path = require('path');
 
 const authMiddleware = require('../../../middleware/auth.middleware');
 const { tokenCache } = require('../../../cache/cache');
@@ -133,7 +129,7 @@ router.put('/api/memberSetting/admin/freeze', authMiddleware(10), async (req, re
     }
 });
 
-// 刪除用戶
+// 刪除用戶 -- 之後要寫一個刪除所有與其關聯的
 router.post('/api/memberSetting/admin/delete', authMiddleware(10), async (req, res) => {
 
     let { targetUser } = req.body;
@@ -191,9 +187,6 @@ router.post('/api/memberSetting/admin/register', authMiddleware(10), async (req,
                 message:'帳號已存在，請選擇其他帳號。'
             });
         }
-
-        const avatorDataBaseUrl = path.join(baseDir,'avator');
-        fs.mkdirSync(avatorDataBaseUrl, { recursive: true });
         
         const newUser = new userModel({
             createTime: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),

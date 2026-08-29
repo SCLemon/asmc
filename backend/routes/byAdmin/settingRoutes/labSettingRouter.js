@@ -158,25 +158,21 @@ router.post('/api/labSetting/admin/delete', authMiddleware(10), async (req, res)
             return res.send({ type: 'error', message: '實驗室刪除失敗（實驗室不存在）。'});
         }
 
-        // 刪除該 Lab 底下所有使用者
-        const deleteUsersResult = await userModel.deleteMany({ lab: targetLab});
+        // 檢查該 Lab 是否還有成員
+        const labMemberCount = await userModel.countDocuments({ lab: targetLab });
+        if (labMemberCount > 0) {
+            return res.send({ type: 'error', message: `實驗室刪除失敗，尚有 ${labMemberCount} 位成員。`});
+        }
 
-        // 刪除 Lab
+        // 確認無成員後刪除 Lab
         await labModel.deleteOne({ token: targetLab });
 
-        return res.send({
-            type:'success',
-            message:`實驗室刪除成功，並刪除了 ${deleteUsersResult.deletedCount} 位成員。`
-        });
+        return res.send({ type:'success',  message:'實驗室刪除成功。' });
 
-    } catch (e) {
-        console.log(e);
-        return res.send({
-            type:'error',
-            message:'伺服器錯誤，請洽客服人員協助。'
-        });
-    }
-
+        } catch (e) {
+            console.log(e);
+            return res.send({ type:'error', message:'伺服器錯誤，請洽客服人員協助。'});
+        }
 });
 
 
