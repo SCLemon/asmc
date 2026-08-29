@@ -80,7 +80,8 @@ export default {
                 path: '/settings/admin/member-setting/edit',
                 query: {
                     'method': 'revise',
-                    'targetUser': token
+                    'targetUser': token,
+                    'redirect': '/settings/admin/member-setting'
                 }
             }).catch((e)=>{})
         }

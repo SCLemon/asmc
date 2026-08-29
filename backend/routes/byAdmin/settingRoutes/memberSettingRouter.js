@@ -73,6 +73,7 @@ router.post('/api/memberSetting/admin/getSpecificData', authMiddleware(10), asyn
             phoneNumber: user.phoneNumber,
             mailAddress: user.mailAddress,
             lab: user.lab,
+            status: user.status
         }
 
         return res.send({
@@ -91,7 +92,7 @@ router.post('/api/memberSetting/admin/getSpecificData', authMiddleware(10), asyn
 });
 
 
-// 凍結用戶
+// 凍結用戶 -- 待新增移除相關的預約資訊 （除了帳單紀錄以外）
 router.put('/api/memberSetting/admin/freeze', authMiddleware(10), async (req, res) => {
 
     let { targetUser } = req.body;
@@ -129,7 +130,7 @@ router.put('/api/memberSetting/admin/freeze', authMiddleware(10), async (req, re
     }
 });
 
-// 刪除用戶 -- 之後要寫一個刪除所有與其關聯的
+// 刪除用戶 -- 待新增刪除所有與其關聯的資料 （除了帳單紀錄以外）
 router.post('/api/memberSetting/admin/delete', authMiddleware(10), async (req, res) => {
 
     let { targetUser } = req.body;

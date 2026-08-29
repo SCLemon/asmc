@@ -33,18 +33,6 @@ const userSchema = new mongoose.Schema({
         trim: true,
         default: 'User',
     },
-    userImgUrl: {
-        url: { 
-            type: String, 
-            trim: true, 
-            default: 'img/user.png' 
-        },
-        original: { 
-            type: String, 
-            trim: true, 
-            default: '' 
-        }
-    },
     lastOnline:{
         type:String,
         default:''
@@ -55,18 +43,22 @@ const userSchema = new mongoose.Schema({
     },
     lab: {
         type:String,
+        trim: true,
         default:''
     },
     phoneNumber:{
         type:String,
+        trim: true,
         default:''
     },
     mailAddress:{
         type:String,
+        trim: true,
         default:''
     },
     idCard:{
         type:String,
+        trim: true,
         default:''
     },
 });

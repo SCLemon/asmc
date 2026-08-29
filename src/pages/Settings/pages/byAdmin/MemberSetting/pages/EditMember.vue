@@ -4,6 +4,7 @@
             <div class="member-setting-edit-title">User Profile</div>
             <div class="member-setting-edit-right">
                 <div class="member-setting-edit-button"><el-button @click="send()" type="primary">儲存資訊</el-button></div>
+                <div class="member-setting-edit-button" v-if="method != 'add'"><el-button @click="freeze()" type="warning">{{user.status ? '凍結帳號': '解凍帳號'}}</el-button></div>
                 <div class="member-setting-edit-button"><el-button @click="goBack()">返回列表</el-button></div>
             </div>
         </div>
@@ -54,6 +55,7 @@ import axios from 'axios';
 import { eventBus } from '@/utils/eventBus';
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { ElMessageBox } from 'element-plus'
 export default {
     name: 'EditMember',
     setup(){
@@ -143,6 +145,28 @@ export default {
             if(res.data.type == 'success') goBack();
         }
 
+        async function freeze(){
+            try{
+                await ElMessageBox.confirm('確認凍結/解凍用戶？', '修改權限',
+                    {
+                        confirmButtonText: '確認',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                    }
+                )
+                const res = await axios.put('/api/memberSetting/admin/freeze',{ targetUser },{
+                    headers: {
+                        'x-user-token': jsCookie.get('authToken')
+                    }
+                })
+                eventBus.emit('handleAlert', { title:'用戶狀態修改', message: res.data.message, type: res.data.type })
+                await getData();
+            }
+            catch(e){
+                
+            }
+        }
+
         async function revise(){
             const input = {
                 targetUser,
@@ -161,11 +185,12 @@ export default {
         }
 
         function goBack(){
-            router.replace('/settings/admin/member-setting').catch((e)=>{})
+            const redirect = route.query.redirect || '/settings/admin/member-setting'
+            router.replace(redirect).catch((e)=>{})
         }
 
         return {
-            method, user, level_options, lab_options, send, goBack
+            method, user, level_options, lab_options, send, goBack, freeze
         }
     }
 }

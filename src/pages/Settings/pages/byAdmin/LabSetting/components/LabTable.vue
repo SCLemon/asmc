@@ -22,7 +22,7 @@
                         <div v-else style="color: rgba(0,0,0,0.2);">凍結</div>
                     </td>
                     <td class="options">
-                        <el-button>查看</el-button>
+                        <el-button @click="goToLabDetail(lab.token)">查看</el-button>
                         <el-button type="warning" @click="freeze(lab.token)">{{ lab.status ? '凍結' : '解凍' }}</el-button>
                         <el-button type="danger" @click="deleteLab(lab.token)">刪除</el-button>
                     </td>
@@ -38,6 +38,7 @@ import axios from 'axios';
 import jsCookie from 'js-cookie';
 import { ref, onMounted, computed } from 'vue';
 import { ElMessageBox } from 'element-plus'
+import { useRouter } from 'vue-router';
 
 export default {
     name: 'LabTable',
@@ -49,6 +50,8 @@ export default {
     },
     setup(props){
         
+        const router = useRouter();
+
         const tableData = ref([]);
 
         const filteredData = computed(()=>{
@@ -70,6 +73,13 @@ export default {
             tableData.value = res.data.data
         }
         
+        function goToLabDetail(token){
+            router.replace({
+                path: '/settings/admin/lab-setting/edit',
+                query: { 'targetLab': token }
+            }).catch((e)=>{})
+        }
+
         async function freeze(token){
             try{
                 await ElMessageBox.confirm('確認凍結/解凍實驗室？', '修改權限',
@@ -110,7 +120,7 @@ export default {
             catch(e){}
         }
         return {
-            tableData, freeze, getData, deleteLab, filteredData
+            tableData, freeze, getData, goToLabDetail, deleteLab, filteredData
         }
     }
 }

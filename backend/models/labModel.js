@@ -17,9 +17,20 @@ const labSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
-    detailed:{
-        type: Object,
-        default:{}
+    mailAddress:{
+        type: String,
+        trim: true,
+        default:''
+    },
+    phoneNumber:{
+        type: String,
+        trim: true,
+        default:''
+    },
+    location:{
+        type: String,
+        trim: true,
+        default:''        
     }
 });
 
