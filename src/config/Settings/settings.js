@@ -2,6 +2,7 @@ import { UserIcon } from 'vorium-ui/icons'
 export default [
     {
         title: '管理員列表',
+        level: 10,
         block: [
             {
                 title: '會員管理',
@@ -17,6 +18,7 @@ export default [
     },
     {
         title: '使用者列表',
+        level: 0,
         block: [
             {
                 title: '個人資料維護',

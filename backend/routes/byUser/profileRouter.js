@@ -16,10 +16,8 @@ const labModel = require('../../models/labModel');
 // 獲取特定使用者資料
 router.get('/api/profile/user/getData', authMiddleware(0), async (req, res) => {
 
-    const targetUser = req.headers['x-user-token'];
-
     try {
-        const user = await userModel.findOne({ token: targetUser });
+        const user = req.user;
         const lab = await labModel.findOne({ token: user.lab });
 
         if(!user){
@@ -60,8 +58,6 @@ router.get('/api/profile/user/getData', authMiddleware(0), async (req, res) => {
 router.post('/api/profile/user/revise', authMiddleware(0), async (req, res) => {
 
     let { name, password, phoneNumber, mailAddress, idCard } = req.body;
-
-    const targetUser = req.headers['x-user-token'];
     
     if (!password || !name) {
         return res.send({
@@ -72,7 +68,7 @@ router.post('/api/profile/user/revise', authMiddleware(0), async (req, res) => {
 
     try {
 
-        const user = await userModel.findOne({ token: targetUser });
+        const user = req.user;
         if(!user){
             return res.send({
                 type:'error',

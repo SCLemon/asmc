@@ -23,17 +23,41 @@
 </template>
 
 <script>
-import { ref, reactive, watch, computed } from 'vue';
+import { ref, reactive, watch, computed, onMounted } from 'vue';
 import { VInput, VScanLight, VIcon } from 'vorium-ui'
 import 'vorium-ui/dist/vorium-ui.css'
 import { useRouter } from 'vue-router'
 import settings from '../../config/Settings/settings.js'
+import axios from 'axios';
+import jsCookie from 'js-cookie';
 export default {
     name: 'settingss',
     components: {
         VInput, VScanLight, VIcon
     },
     setup(){
+
+        const level = ref(null);
+
+        onMounted(async()=>{
+            await checkPermission();
+        })
+
+        async function checkPermission(){
+            try{
+                const res = await axios.get('/api/settings/checkPermission',{
+                    headers:{
+                        'x-user-token':jsCookie.get('authToken')
+                    }
+                })
+                if(res.data.type == 'success') {
+                    level.value = res.data.data
+                }
+            }
+            catch(e){}
+        }
+        
+        const router = useRouter();
 
         const keyword = ref('');
 
@@ -76,10 +100,8 @@ export default {
                         return tool.title.toLowerCase().includes(searchValue);
                     })
                 }))
-                .filter((category) => category.block.length > 0)
+                .filter((category) => category.block.length > 0 && level.value >= category.level)
         })
-
-        const router = useRouter();
 
         function goTo(path) {
             router.replace(path).catch((e) => {})

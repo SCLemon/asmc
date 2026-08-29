@@ -180,8 +180,7 @@ export default {
             })
 
             eventBus.emit('handleAlert', { title:'用戶資料修改結果', message: res.data.message, type: res.data.type })
-            
-            if(res.data.type == 'success') goBack();
+            await getData();
         }
 
         function goBack(){
