@@ -225,7 +225,7 @@ router.post('/api/memberSetting/admin/register', authMiddleware(10), async (req,
     }
 });
 
-// 修改用戶 By Admin
+// 修改用戶
 router.post('/api/memberSetting/admin/revise', authMiddleware(10), async (req, res) => {
 
     let { targetUser, name, password, level, lab, phoneNumber, mailAddress, idCard } = req.body;

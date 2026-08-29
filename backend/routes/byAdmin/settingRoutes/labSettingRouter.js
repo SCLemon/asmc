@@ -5,6 +5,7 @@ const express = require('express');
 const router = express.Router();
 
 const labModel = require('../../../models/labModel');
+const userModel = require('../../../models/userModel');
 
 const {format} = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
@@ -12,32 +13,44 @@ const { v4: uuidv4 } = require('uuid');
 const authMiddleware = require('../../../middleware/auth.middleware');
 
 
-// 獲取實驗室  **待新增對帳單統計, 實驗室人數統計
+// 獲取實驗室  **待新增對帳單統計
 router.get('/api/labSetting/admin/getData', authMiddleware(10), async (req, res) => {
 
     try {
+
+        const users = await userModel.find({});
         const labs = await labModel.find({});
 
-        const output = labs.map((lab) =>{
+        // 統計各個 Lab 的成員數量
+        const memberCountsMap = {};
+        users.forEach((user) => {
+            if (!user.lab) return;
+            memberCountsMap[user.lab] = (memberCountsMap[user.lab] || 0) + 1;
+        });
+
+        const output = labs.map((lab) => {
             return {
                 createTime: lab.createTime,
                 token: lab.token,
                 name: lab.name,
                 status: lab.status,
-                detailed: lab.detailed
+                detailed: lab.detailed,
+                memberCounts: memberCountsMap[lab.token] || 0
             }
-        })
+        });
+
         return res.send({
-            type:'success',
+            type: 'success',
             data: output,
-            message:'實驗室列表獲取成功！'
+            message: '實驗室列表獲取成功！'
         });
         
     } catch (e) {
-        console.log(e)
+        console.log(e);
+
         return res.send({
-            type:'error',
-            message:'伺服器錯誤，請洽客服人員協助。'
+            type: 'error',
+            message: '伺服器錯誤，請洽客服人員協助。'
         });
     }
 });
@@ -124,39 +137,49 @@ router.put('/api/labSetting/admin/freeze', authMiddleware(10), async (req, res) 
     }
 });
 
-// 刪除實驗室  **待新增若人數不為 0 則不可刪除
+// 刪除實驗室
 router.post('/api/labSetting/admin/delete', authMiddleware(10), async (req, res) => {
 
     let { targetLab } = req.body;
 
     if (!targetLab) {
         return res.send({
-            type:'error', message:'實驗室刪除失敗（資料為空）。'
+            type:'error',
+            message:'實驗室刪除失敗（資料為空）。'
         });
     }
 
     try {
 
-        const deletedLab = await labModel.findOneAndDelete({ token: targetLab });
+        // 檢查實驗室是否存在
+        const lab = await labModel.findOne({ token: targetLab });
 
-        if (!deletedLab) {
-            return res.send({
-                type: 'error',
-                message: '實驗室刪除失敗（實驗室不存在）。'
-            });
+        if (!lab) {
+            return res.send({ type: 'error', message: '實驗室刪除失敗（實驗室不存在）。'});
         }
 
+        // 刪除該 Lab 底下所有使用者
+        const deleteUsersResult = await userModel.deleteMany({ lab: targetLab});
+
+        // 刪除 Lab
+        await labModel.deleteOne({ token: targetLab });
+
         return res.send({
-            type:'success', message:'實驗室刪除成功。' 
+            type:'success',
+            message:`實驗室刪除成功，並刪除了 ${deleteUsersResult.deletedCount} 位成員。`
         });
 
     } catch (e) {
-        console.log(e)
+        console.log(e);
         return res.send({
-            type:'error', message:'伺服器錯誤，請洽客服人員協助。'
+            type:'error',
+            message:'伺服器錯誤，請洽客服人員協助。'
         });
     }
+
 });
+
+
 
 
 

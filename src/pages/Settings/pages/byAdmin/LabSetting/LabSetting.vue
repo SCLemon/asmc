@@ -29,6 +29,8 @@ import { VIcon } from 'vorium-ui'
 import { SearchIcon } from 'vorium-ui/icons'
 import 'vorium-ui/icons/icons.css'
 
+import { ElMessage, ElMessageBox } from 'element-plus'
+
 export default {
     name: 'LabSetting',
     components:{
@@ -40,18 +42,26 @@ export default {
 
         async function register(){
 
-            const res = await axios.post('/api/labSetting/admin/register',{
-                name: 'test'
-            },
-            {
-                headers: {
-                    'x-user-token': jsCookie.get('authToken')
-                }
-            })
+            try{
+                const { value } = await ElMessageBox.prompt('請輸入實驗室名稱', '新增實驗室', {
+                    confirmButtonText: '確認',
+                    cancelButtonText: '取消',
+                })
 
-            eventBus.emit('handleAlert', { title:'實驗室註冊資訊', message: res.data.message, type: res.data.type })
-            
-            await memberTableRef.value.getData();
+                const res = await axios.post('/api/labSetting/admin/register',{
+                    name: value
+                },
+                {
+                    headers: {
+                        'x-user-token': jsCookie.get('authToken')
+                    }
+                })
+
+                eventBus.emit('handleAlert', { title:'實驗室註冊資訊', message: res.data.message, type: res.data.type })
+                
+                await memberTableRef.value.getData();
+            }
+            catch(e){}
 
         }
         return {
