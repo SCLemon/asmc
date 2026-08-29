@@ -24,9 +24,9 @@ export default [
                 path: '/profile',
             },
             {
-                title: '實驗室狀態',
+                title: '實驗室資訊',
                 icon: UserIcon,
-                path: '/settings/user/lab-setting'
+                path: '/settings/user/lab-setting/edit'
             },
         ]
     },

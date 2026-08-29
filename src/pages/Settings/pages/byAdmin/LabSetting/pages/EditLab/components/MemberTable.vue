@@ -1,6 +1,6 @@
 <template>
     <div class="parameter-wrapper">
-        <table class="parameter-table" v-if="tableData.length">
+        <table class="parameter-table" v-if="tableData?.length">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -54,7 +54,6 @@ export default {
             tableData.value = res.data.data
         }
         
-        // 還沒製作
         function goToMemberDetail(token){
             router.replace({
                 path: '/settings/admin/member-setting/edit',

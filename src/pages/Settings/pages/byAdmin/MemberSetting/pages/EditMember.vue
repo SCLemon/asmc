@@ -106,7 +106,7 @@ export default {
                     'x-user-token': jsCookie.get('authToken')
                 }
             })
-            user.value = res.data.data;
+            user.value = res.data.data || {};
             
             if(res.data.type == 'error') eventBus.emit('handleAlert', { title:'用戶資料獲取結果', message: res.data.message, type: res.data.type })
         }
@@ -117,7 +117,7 @@ export default {
                     'x-user-token': jsCookie.get('authToken')
                 }
             })
-            lab_options.value = res.data.data.map((lab)=>{
+            lab_options.value = res.data.data?.map((lab)=>{
                 return {
                     label: lab.name,
                     value: lab.token

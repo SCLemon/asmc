@@ -58,6 +58,9 @@ app.use(labSettingByAdminRouter);
 const profileRouter = require('./routes/byUser/profileRouter');
 app.use(profileRouter);
 
+const labSettingByUserRouter = require('./routes/byUser/settingRoutes/labSettingRouter');
+app.use(labSettingByUserRouter);
+
 app.listen(3007,()=>{
     console.log('server is running on port 3007')
 })
