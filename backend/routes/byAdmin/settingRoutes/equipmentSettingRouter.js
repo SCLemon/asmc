@@ -132,7 +132,7 @@ router.post('/api/equipmentSetting/admin/revise', authMiddleware(10), async (req
             return res.send({ type:'error', message:'儀器已存在，請選擇其他儀器名稱。'});
         }
 
-        const equipment = await equipmentModel.findOne({ token: targetEquipment });
+        const equipment = await equipmentModel.findOne({ token: targetEquipment, isDeleted: false });
         if(!equipment){
             return res.send({ type:'error', message:'儀器資料不存在。'});
         }
@@ -178,7 +178,7 @@ router.put('/api/equipmentSetting/admin/freeze', authMiddleware(10), async (req,
 
     try {
 
-        const existingEquipment = await equipmentModel.findOne({ token: targetEquipment });
+        const existingEquipment = await equipmentModel.findOne({ token: targetEquipment, isDeleted: false });
         if (!existingEquipment) {
             return res.send({
                 type:'error', message:'儀器停用失敗（儀器不存在）。'
@@ -221,7 +221,7 @@ router.put('/api/equipmentSetting/admin/restart', authMiddleware(10), async (req
 
     try {
 
-        const existingEquipment = await equipmentModel.findOne({ token: targetEquipment });
+        const existingEquipment = await equipmentModel.findOne({ token: targetEquipment, isDeleted: false });
         if (!existingEquipment) {
             return res.send({
                 type:'error', message:'儀器重啟失敗（儀器不存在）。'
@@ -257,7 +257,7 @@ router.post('/api/equipmentSetting/admin/delete', authMiddleware(10), async (req
 
     try {
 
-        const deletedEquipment = await equipmentModel.findOne({ token: targetEquipment });
+        const deletedEquipment = await equipmentModel.findOne({ token: targetEquipment, isDeleted: false });
 
         if (!deletedEquipment) {
             return res.send({ type: 'error', message: '儀器刪除失敗（儀器不存在）。'});

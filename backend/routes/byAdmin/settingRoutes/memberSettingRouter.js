@@ -13,6 +13,7 @@ const authMiddleware = require('../../../middleware/auth.middleware');
 const { tokenCache } = require('../../../cache/cache');
 
 const labModel = require('../../../models/labModel');
+const equipmentModel = require('../../../models/equipmentModel');
 
 // 獲取資料
 router.get('/api/memberSetting/admin/getData', authMiddleware(10), async (req, res) => {
@@ -87,81 +88,6 @@ router.post('/api/memberSetting/admin/getSpecificData', authMiddleware(10), asyn
         return res.send({
             type:'error',
             message:'伺服器錯誤，請洽客服人員協助。'
-        });
-    }
-});
-
-
-// 凍結用戶 -- 待新增移除相關的預約資訊 （除了帳單紀錄以外）
-router.put('/api/memberSetting/admin/freeze', authMiddleware(10), async (req, res) => {
-
-    let { targetUser } = req.body;
-
-    if (!targetUser) {
-        return res.send({
-            type:'error', message:'使用者狀態修改失敗（資料為空）。'
-        });
-    }
-
-    try {
-
-        const existingUser = await userModel.findOne({ token: targetUser });
-        if (!existingUser) {
-            return res.send({
-                type:'error', message:'使用者狀態修改失敗（用戶不存在）。'
-            });
-        }
-
-        existingUser.status = !existingUser.status;
-
-        await existingUser.save();
-
-        tokenCache.set(existingUser.token, existingUser);
-
-        return res.send({
-            type:'success', message:'使用者狀態修改成功。' 
-        });
-
-    } catch (e) {
-        console.log(e)
-        return res.send({
-            type:'error', message:'伺服器錯誤，請洽客服人員協助。'
-        });
-    }
-});
-
-// 刪除用戶 -- 待新增刪除所有與其關聯的資料 （除了帳單紀錄以外）
-router.post('/api/memberSetting/admin/delete', authMiddleware(10), async (req, res) => {
-
-    let { targetUser } = req.body;
-
-    if (!targetUser) {
-        return res.send({
-            type:'error', message:'用戶刪除失敗（資料為空）。'
-        });
-    }
-
-    try {
-
-        const deletedUser = await userModel.findOneAndDelete({ token: targetUser });
-
-        if (!deletedUser) {
-            return res.send({
-                type: 'error',
-                message: '用戶刪除失敗（用戶不存在）。'
-            });
-        }
-
-        tokenCache.delete(deletedUser.token)
-
-        return res.send({
-            type:'success', message:'使用者刪除成功。' 
-        });
-
-    } catch (e) {
-        console.log(e)
-        return res.send({
-            type:'error', message:'伺服器錯誤，請洽客服人員協助。'
         });
     }
 });
@@ -292,6 +218,112 @@ router.get('/api/memberSetting/admin/getLabList', authMiddleware(10), async (req
         return res.send({
             type:'error',
             message:'伺服器錯誤，請洽客服人員協助。'
+        });
+    }
+});
+
+
+// 凍結用戶 -- 尚未檢查預約系統
+router.put('/api/memberSetting/admin/freeze', authMiddleware(10), async (req, res) => {
+
+    let { targetUser } = req.body;
+
+    if (!targetUser) {
+        return res.send({
+            type:'error', message:'使用者狀態修改失敗（資料為空）。'
+        });
+    }
+
+    try {
+
+        const existingUser = await userModel.findOne({ token: targetUser });
+        if (!existingUser) {
+            return res.send({
+                type:'error', message:'使用者狀態修改失敗（用戶不存在）。'
+            });
+        }
+
+        existingUser.status = !existingUser.status;
+
+        // 停權時移除該使用者所有未來的設備預約 
+        if (!existingUser.status) { 
+            const today = new Date().toLocaleDateString('sv-SE'); 
+            const equipments = await equipmentModel.find({ 'reservation.user': existingUser.token, isDeleted: false }); 
+            for (const equipment of equipments) { 
+                equipment.reservation = equipment.reservation.filter((item) => { 
+                    return !(item.user === existingUser.token && item.reserve_date > today); 
+                }); 
+                await equipment.save(); 
+            }
+        }
+
+        await existingUser.save();
+
+        tokenCache.set(existingUser.token, existingUser);
+
+        return res.send({
+            type:'success', message:'使用者狀態修改成功。' 
+        });
+
+    } catch (e) {
+        console.log(e)
+        return res.send({
+            type:'error', message:'伺服器錯誤，請洽客服人員協助。'
+        });
+    }
+});
+
+// 刪除用戶 -- 尚未檢查預約系統
+router.post('/api/memberSetting/admin/delete', authMiddleware(10), async (req, res) => {
+
+    let { targetUser } = req.body;
+
+    if (!targetUser) {
+        return res.send({
+            type:'error', message:'用戶刪除失敗（資料為空）。'
+        });
+    }
+
+    try {
+
+        const deletedUser = await userModel.findOneAndDelete({ token: targetUser });
+
+        if (!deletedUser) {
+            return res.send({
+                type: 'error',
+                message: '用戶刪除失敗（用戶不存在）。'
+            });
+        }
+
+        tokenCache.delete(deletedUser.token)
+
+        // 刪除時移除該使用者所有未來的設備預約，並從使用者名單中移除
+        const today = new Date().toLocaleDateString('sv-SE'); 
+        const equipments = await equipmentModel.find({
+            isDeleted: false,
+            $or: [
+                { 'reservation.user': targetUser },
+                { users: targetUser },
+                { superUser: targetUser }
+            ]
+        });
+        for (const equipment of equipments) { 
+            equipment.reservation = equipment.reservation.filter((item) => {
+                return !(item.user === targetUser && item.reserve_date > today);
+            });
+            equipment.users = equipment.users.filter((user) => user !== targetUser);
+            if (equipment.superUser === targetUser) { equipment.superUser = ''; }
+            await equipment.save(); 
+        }
+
+        return res.send({
+            type:'success', message:'使用者刪除成功。' 
+        });
+
+    } catch (e) {
+        console.log(e)
+        return res.send({
+            type:'error', message:'伺服器錯誤，請洽客服人員協助。'
         });
     }
 });

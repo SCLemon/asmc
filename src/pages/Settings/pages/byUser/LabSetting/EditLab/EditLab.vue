@@ -43,7 +43,7 @@ import jsCookie from 'js-cookie';
 import axios from 'axios';
 import { eventBus } from '@/utils/eventBus';
 import { onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import MemberTable from './components/MemberTable.vue';
 export default {
     name: 'EditLab',
