@@ -54,6 +54,10 @@ app.use(memberSettingByAdminRouter);
 const labSettingByAdminRouter = require('./routes/byAdmin/settingRoutes/labSettingRouter');
 app.use(labSettingByAdminRouter);
 
+const equipmentSettingByAdminRouter = require('./routes/byAdmin/settingRoutes/equipmentSettingRouter');
+app.use(equipmentSettingByAdminRouter);
+
+
 // by User
 const profileRouter = require('./routes/byUser/profileRouter');
 app.use(profileRouter);

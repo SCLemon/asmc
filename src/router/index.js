@@ -20,6 +20,7 @@ import MemberSettingByAdmin from '../pages/Settings/pages/byAdmin/MemberSetting/
 import EditMemberByAdmin from '../pages/Settings/pages/byAdmin/MemberSetting/pages/EditMember.vue'
 import LabSettingByAdmin from '../pages/Settings/pages/byAdmin/LabSetting/LabSetting.vue'
 import EditLabByAdmin from '../pages/Settings/pages/byAdmin/LabSetting/pages/EditLab/EditLab.vue'
+import EquipmentSettingByAdmin from '../pages/Settings/pages/byAdmin/EquipmentSetting/EquipmentSetting.vue'
 
 // setting by user
 import EditLabByUser from '../pages/Settings/pages/byUser/LabSetting/EditLab/EditLab.vue'
@@ -87,6 +88,10 @@ const routes = [
     {
       path: '/settings/admin/lab-setting/edit',
       component: EditLabByAdmin
+    },
+        {
+      path: '/settings/admin/equipment-setting',
+      component: EquipmentSettingByAdmin
     },
 
     // by user

@@ -189,15 +189,6 @@ router.post('/api/labSetting/admin/revise', authMiddleware(10), async (req, res)
 
     try {
 
-        const lab = await labModel.findOne({ token: targetLab })
-
-        if(!lab){
-            return res.send({
-                type:'error',
-                message:'實驗室不存在。'
-            });
-        }
-
         // 檢查是否與其他實驗室重名
         const existingLab = await labModel.findOne({ name });
         if (existingLab && existingLab.token != targetLab) {
@@ -207,6 +198,15 @@ router.post('/api/labSetting/admin/revise', authMiddleware(10), async (req, res)
             });
         }
 
+        const lab = await labModel.findOne({ token: targetLab })
+
+        if(!lab){
+            return res.send({
+                type:'error',
+                message:'實驗室不存在。'
+            });
+        }
+        
         lab.name = name;
         lab.phoneNumber = phoneNumber;
         lab.mailAddress = mailAddress;

@@ -14,6 +14,11 @@ export default [
                 icon: UserIcon,
                 path: '/settings/admin/lab-setting'
             },
+            {
+                title: '儀器管理',
+                icon: UserIcon,
+                path: '/settings/admin/equipment-setting'
+            },
         ]
     },
     {
