@@ -59,6 +59,8 @@ router.post('/api/profile/user/revise', authMiddleware(0), async (req, res) => {
 
     let { name, password, phoneNumber, mailAddress, idCard } = req.body;
     
+    const targetUser = req.headers['x-user-token'];
+
     if (!password || !name) {
         return res.send({
             type:'error',
@@ -68,7 +70,8 @@ router.post('/api/profile/user/revise', authMiddleware(0), async (req, res) => {
 
     try {
 
-        const user = req.user;
+        const user = await userModel.findOne({ token: targetUser });
+
         if(!user){
             return res.send({
                 type:'error',

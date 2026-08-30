@@ -38,7 +38,7 @@
             </div>
             <div class="member-setting-edit-input-wrapper">
                 <div class="member-setting-edit-input-title">權限：</div>
-                <el-input v-model="level" style="width: 100%; height: 40px;" disabled />
+                <el-input :value="level" style="width: 100%; height: 40px;" disabled />
             </div>
         </div>
     </div>
@@ -83,7 +83,7 @@ export default {
         ]
 
         const level = computed(()=>{
-            return level_options.find(item => item.value === user.value?.level)?.label
+            return level_options.find(item => item.value == user.value?.level)?.label
         })
 
         onMounted(async ()=>{
