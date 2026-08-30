@@ -190,7 +190,7 @@ router.put('/api/equipmentSetting/admin/freeze', authMiddleware(10), async (req,
         // 移除所有未來的預約資訊
         const today = new Date().toLocaleDateString('sv-SE');
         existingEquipment.reservation = existingEquipment.reservation.filter((item) => {
-            return item.reserve_date < today;
+            return item.reserve_date <= today
         });
         
         await existingEquipment.save();
@@ -208,7 +208,7 @@ router.put('/api/equipmentSetting/admin/freeze', authMiddleware(10), async (req,
     }
 });
 
-// 重啟儀器 -- 尚未檢查預約系統
+// 重啟儀器
 router.put('/api/equipmentSetting/admin/restart', authMiddleware(10), async (req, res) => {
 
     let { targetEquipment } = req.body;
@@ -268,7 +268,7 @@ router.post('/api/equipmentSetting/admin/delete', authMiddleware(10), async (req
         // 移除所有未來的預約資訊
         const today = new Date().toLocaleDateString('sv-SE');
         deletedEquipment.reservation = deletedEquipment.reservation.filter((item) => {
-            return item.reserve_date < today;
+            return item.reserve_date <= today
         });
 
         await deletedEquipment.save();
@@ -313,6 +313,86 @@ router.get('/api/equipmentSetting/admin/getUserList', authMiddleware(10), async 
     }
 });
 
+
+// 禁用 or 解禁 or 刪除他人預約
+router.post('/api/equipmentSetting/admin/handleReserve', authMiddleware(10), async (req, res) => {
+
+    const { targetEquipment, date } = req.body;
+
+    if (!targetEquipment || !date || date.length !== 2) {
+        return res.send({ type:'error', data: [], message:'請求資料不完整。'});
+    }
+
+    try {
+
+        const equipment = await equipmentModel.findOne({ token: targetEquipment, isDeleted: false });
+
+        if(!equipment){
+            return res.send({ type:'error', data: [], message:'儀器資料不存在。'});
+        }
+
+        const startDate = new Date(date[0]);
+        const endDate = new Date(date[1]);
+
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+
+        const weekList = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+
+        const reservationMap = {};
+
+        equipment.reservation.forEach((item) => {
+
+            if (!reservationMap[item.reserve_date]) {
+                reservationMap[item.reserve_date] = [];
+            }
+
+            reservationMap[item.reserve_date].push({
+                token: item.token,
+                user: item.user,
+                reserve_period: item.reserve_period,
+                status: item.status
+            });
+        });
+
+        const output = [];
+
+        const currentDate = new Date(startDate);
+
+        while (currentDate <= endDate) {
+
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            const day = String(currentDate.getDate()).padStart(2, '0');
+
+            const dateString = `${year}-${month}-${day}`;
+
+            output.push({
+                title: weekList[currentDate.getDay()],
+                date: dateString,
+                date_period: reservationMap[dateString] || []
+            });
+
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        return res.send({
+            type:'success',
+            data: output,
+            message:'儀器預約資料獲取成功！'
+        });
+        
+    } catch (e) {
+        console.log(e);
+
+        return res.send({
+            type:'error',
+            data: [],
+            message:'伺服器錯誤，請洽客服人員協助。'
+        });
+    }
+
+});
 
 
 module.exports = router;

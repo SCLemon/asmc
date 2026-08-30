@@ -23,12 +23,13 @@
             </div>
         </div>
         <div class="equipment-detail-picker-wrapper">
-            <div>
+            <div class="equipment-detail-picker-block equipment-detail-picker-block-1">
                 <div class="equipment-detail-user-picker-title">授權名單</div>
                 <el-transfer v-model="info.users"  :titles="['Unauthorized', 'Authorized']"  filterable filter-placeholder="Search By Name" :data="userList"/>
             </div>
-            <div class="equipment-detail-reservation-picker-wrapper">
-
+            <div class="equipment-detail-picker-block">
+                <div class="equipment-detail-user-picker-title">預約現況</div>
+                <equipment-reservation :target-equipment="targetEquipment"></equipment-reservation>
             </div>
         </div>
 
@@ -41,9 +42,12 @@ import jsCookie from 'js-cookie';
 import { eventBus } from '@/utils/eventBus.js';
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-
+import EquipmentReservation from './EquipmentReservation.vue';
 export default {
     name: 'EquipmentDetail',
+    components:{
+        EquipmentReservation
+    },
     props:{
         targetEquipment:{
             type: String,
@@ -205,12 +209,17 @@ export default {
     .equipment-detail-picker-wrapper{
         width: 100%;
         display: flex;
-        align-items: center;
     }
     .equipment-detail-user-picker-title{
         height: 40px;
         font-weight: bolder;
         font-size: 18px;
-        margin-bottom: 10px;
+    }
+    .equipment-detail-picker-block{
+        width: 50%;
+        flex-shrink: 0;
+    }
+    .equipment-detail-picker-block-1{
+        min-width: 650px;
     }
 </style>
