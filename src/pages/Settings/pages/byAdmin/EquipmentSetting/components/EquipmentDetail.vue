@@ -43,6 +43,7 @@ import { eventBus } from '@/utils/eventBus.js';
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import EquipmentReservation from './EquipmentReservation.vue';
+import { ElMessageBox } from 'element-plus';
 export default {
     name: 'EquipmentDetail',
     components:{
@@ -110,6 +111,15 @@ export default {
 
         async function freeze(){
             try{
+
+                await ElMessageBox.confirm('確認停用儀器？', '停用儀器',
+                    {
+                        confirmButtonText: '確認',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                    }
+                )
+
                 const res = await axios.put('/api/equipmentSetting/admin/freeze',{ targetEquipment: props.targetEquipment },{
                     headers: {
                         'x-user-token': jsCookie.get('authToken')
@@ -121,7 +131,17 @@ export default {
             catch(e){}
         }
         async function restart(){
+            
             try{
+
+                await ElMessageBox.confirm('確認重啟儀器？', '重啟',
+                    {
+                        confirmButtonText: '確認',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                    }
+                )
+
                 const res = await axios.put('/api/equipmentSetting/admin/restart',{ targetEquipment: props.targetEquipment },{
                     headers: {
                         'x-user-token': jsCookie.get('authToken')
@@ -135,6 +155,15 @@ export default {
 
         async function remove(){
             try{
+                
+                await ElMessageBox.confirm('確認刪除儀器？', '刪除儀器',
+                    {
+                        confirmButtonText: '確認',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                    }
+                )
+
                 const res = await axios.post('/api/equipmentSetting/admin/delete',{ targetEquipment: props.targetEquipment },{
                     headers: {
                         'x-user-token': jsCookie.get('authToken')

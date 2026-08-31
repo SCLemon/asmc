@@ -6,12 +6,14 @@ const router = express.Router();
 
 const userModel = require('../../models/userModel');
 const equipmentModel = require('../../models/equipmentModel');
+const labModel = require('../..//models/labModel');
 
 const {format} = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
 
 const authMiddleware = require('../../middleware/auth.middleware');
 const labMiddleware = require('../../middleware/lab.middleware');
+
 
 // 獲取儀器列表 -- ok
 router.get('/api/reservation/user/getData', authMiddleware(0), labMiddleware, async (req, res) => {
@@ -40,8 +42,8 @@ router.get('/api/reservation/user/getData', authMiddleware(0), labMiddleware, as
     }
 });
 
-// 獲取特定儀器資料 -- 這要回傳管理員資料
-router.post('/api/reservation/user/getSpecificData', authMiddleware(0), labMiddleware, async (req, res) => {
+// 獲取管理員資料
+router.post('/api/reservation/user/getSuperUserInfo', authMiddleware(0), labMiddleware, async (req, res) => {
 
     const { targetEquipment } = req.body;
 
@@ -56,9 +58,23 @@ router.post('/api/reservation/user/getSpecificData', authMiddleware(0), labMiddl
             });
         }
 
+        const superUser = await userModel.findOne({ token: equipment.superUser });
+
+        let output = {}
+        if(superUser) {
+
+            const superUserLab = await labModel.findOne({ token: superUser.lab })
+            
+            output = {
+                name: superUser.name,
+                mailAddress: superUser.mailAddress,
+                lab: superUserLab?.name
+            }
+        }
+
         return res.send({
             type:'success',
-            data: equipment,
+            data: output,
             message:'儀器資料獲取成功！'
         });
         
@@ -225,6 +241,14 @@ router.post('/api/reservation/user/handleReserve', authMiddleware(0), labMiddlew
             // 確認預約是否為目前使用者本人
             if (reservation.user !== req.user.token) {
                 return res.send({ type:'error', message:'無法取消其他使用者的預約。'});
+            }
+
+            // 已簽到不可取消
+            if (reservation.status == 2) {
+                return res.send({
+                    type:'error',
+                    message:'取消預約失敗（該預約已簽到）。'
+                });
             }
 
             // 預約開始前至少一小時才可以取消

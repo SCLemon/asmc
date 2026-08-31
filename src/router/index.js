@@ -25,6 +25,7 @@ import EquipmentSettingByAdmin from '../pages/Settings/pages/byAdmin/EquipmentSe
 
 // setting by user
 import EditLabByUser from '../pages/Settings/pages/byUser/LabSetting/EditLab/EditLab.vue'
+import ReservationRecordByUser from '../pages/Settings/pages/byUser/ReservationRecord/ReservationRecord.vue'
 
 
 const routes = [
@@ -105,7 +106,10 @@ const routes = [
       path: '/settings/user/lab-setting/edit',
       component: EditLabByUser
     },
-
+    {
+      path: '/settings/user/reservation-record',
+      component: ReservationRecordByUser
+    },
     {
       path: '/',
       redirect: '/introduction'

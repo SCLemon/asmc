@@ -6,6 +6,7 @@ const router = express.Router();
 
 const labModel = require('../../../models/labModel');
 const userModel = require('../../../models/userModel');
+const equipmentModel = require('../../../models/equipmentModel');
 
 const {format} = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
@@ -101,38 +102,85 @@ router.post('/api/labSetting/admin/register', authMiddleware(10), async (req, re
     }
 });
 
-// 凍結實驗室 -- 待新增移除相關的預約資訊
+// 凍結實驗室
 router.put('/api/labSetting/admin/freeze', authMiddleware(10), async (req, res) => {
 
     let { targetLab } = req.body;
 
     if (!targetLab) {
         return res.send({
-            type:'error', message:'實驗室狀態修改失敗（資料為空）。'
+            type:'error',
+            message:'實驗室狀態修改失敗（資料為空）。'
         });
     }
 
     try {
 
         const existingLab = await labModel.findOne({ token: targetLab });
+
         if (!existingLab) {
             return res.send({
-                type:'error', message:'實驗室狀態修改失敗（用戶不存在）。'
+                type:'error',
+                message:'實驗室狀態修改失敗（實驗室不存在）。'
             });
         }
 
         existingLab.status = !existingLab.status;
 
+        // 實驗室停權時，移除該實驗室使用者所有未來預約
+        if (!existingLab.status) {
+
+            // 找出該實驗室所有使用者
+            const users = await userModel.find({
+                lab: targetLab
+            }).select('token').lean();
+
+            const userTokens = users.map((user) => user.token);
+
+            if (userTokens.length > 0) {
+
+                const now = new Date();
+
+                // 找出有該實驗室使用者預約的設備
+                const equipments = await equipmentModel.find({
+                    isDeleted: false,
+                    'reservation.user': { $in: userTokens }
+                });
+
+                for (const equipment of equipments) {
+
+                    equipment.reservation = equipment.reservation.filter((item) => {
+
+                        // 不是該實驗室的使用者 → 保留
+                        if (!userTokens.includes(item.user)) {
+                            return true;
+                        }
+
+                        const reserveDateTime = new Date(`${item.reserve_date}T${item.reserve_period}:00`);
+
+                        // 保留已經開始或已經結束的預約
+                        // 移除當前時間以後的預約
+                        return reserveDateTime < now;
+                    });
+
+                    await equipment.save();
+                }
+            }
+        }
+
         await existingLab.save();
 
         return res.send({
-            type:'success', message:'實驗室狀態修改成功。' 
+            type:'success',
+            message:'實驗室狀態修改成功。'
         });
 
     } catch (e) {
-        console.log(e)
+        console.log(e);
+
         return res.send({
-            type:'error', message:'伺服器錯誤，請洽客服人員協助。'
+            type:'error',
+            message:'伺服器錯誤，請洽客服人員協助。'
         });
     }
 });

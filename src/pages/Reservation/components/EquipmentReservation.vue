@@ -141,7 +141,7 @@ export default {
     .calendar-wrapper{
         width: 100%;
         margin-top: 20px;
-        height: calc(100vh - 150px);
+        height: calc(100vh - 200px);
         display: flex;
         box-sizing: border-box;
         gap: 10px;

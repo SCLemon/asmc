@@ -68,6 +68,10 @@ app.use(labSettingByUserRouter);
 const reservationByUserRouter = require('./routes/byUser/ReservationRouter');
 app.use(reservationByUserRouter)
 
+const reservationRecordByUserRouter = require('./routes/byUser/settingRoutes/reservationRecordRouter');
+app.use(reservationRecordByUserRouter)
+
+
 // global
 const settingsRouter = require('./routes/settingsRouter');
 app.use(settingsRouter) 

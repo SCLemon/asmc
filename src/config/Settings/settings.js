@@ -35,6 +35,11 @@ export default [
                 icon: UserIcon,
                 path: '/settings/user/lab-setting/edit'
             },
+            {
+                title: '預約記錄',
+                icon: UserIcon,
+                path: '/settings/user/reservation-record'
+            },
         ]
     },
 ]

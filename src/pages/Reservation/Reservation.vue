@@ -10,6 +10,11 @@
             </div>
         </div>
     </div>
+    <div class="equipment-superUser-wrapper" v-if="selected">
+        <div class="equipment-superUser-item">管理員名稱： {{ superUser.name }}</div>
+        <div class="equipment-superUser-item">隸屬實驗室： {{ superUser.lab }}</div>
+        <div class="equipment-superUser-item">聯絡方式： {{ superUser.mailAddress }}</div>
+    </div>
     <EquipmentReservation v-if="selected" :target-equipment="selected"></EquipmentReservation>
   </div>
 </template>
@@ -18,7 +23,7 @@
 
 import axios from 'axios';
 
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { eventBus } from '@/utils/eventBus.js';
 import jsCookie from 'js-cookie';
 
@@ -26,7 +31,6 @@ import { VIcon } from 'vorium-ui'
 import { SearchIcon } from 'vorium-ui/icons'
 import 'vorium-ui/icons/icons.css'
 
-import { ElMessageBox } from 'element-plus'
 import EquipmentReservation from './components/EquipmentReservation.vue';
 
 
@@ -40,6 +44,8 @@ export default {
         const selected = ref('')
 
         const lists = ref([])
+
+        const superUser = ref({});
 
         onMounted(async ()=>{
             await getData();
@@ -61,8 +67,32 @@ export default {
 
         }
 
+        async function getSuperUser(){
+
+            try{
+
+                const res = await axios.post('/api/reservation/user/getSuperUserInfo',{
+                    targetEquipment: selected.value
+                },
+                {
+                    headers: {
+                        'x-user-token': jsCookie.get('authToken')
+                    }
+                })
+                if(res.data.type == 'success') superUser.value = res.data.data
+            }
+            catch(e){}
+
+        }
+
+        watch(()=> selected.value, async()=>{
+            if(selected.value) await getSuperUser();
+        },
+        { immediate: true, deep: true })
+        
+
         return {
-            SearchIcon, selected, lists
+            SearchIcon, selected, lists, superUser
         }
     }
 }
@@ -100,14 +130,16 @@ export default {
         display: flex;
         align-items: center;
     }
-    .equipment-setting-button>.el-button{
-        padding: 20px 15px 20px 15px;
-    }
-    .equipment-setting-table{
-        height: calc(100% - 80px);
-        overflow: hidden;
-    }
     :deep(.el-select__wrapper){
         height: 40px;
+    }
+    .equipment-superUser-wrapper{
+        width: 100%;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        margin-bottom: 15px;
+        font-size: 14px;
     }
 </style>
