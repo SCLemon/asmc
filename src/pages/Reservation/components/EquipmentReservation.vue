@@ -26,7 +26,7 @@
 
 <script>
 import axios from 'axios';
-import { ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import jsCookie from 'js-cookie';
 import { eventBus } from '@/utils/eventBus.js';
 import { ElMessageBox } from 'element-plus'
@@ -110,8 +110,21 @@ export default {
             catch(e){}
         }
 
-        
-        
+        let timer = null;
+
+        onMounted(()=>{
+            timer = setInterval(async() => {
+                if(props.targetEquipment) await getData();
+            }, 5000);
+        })
+
+        onUnmounted(()=>{
+            if(timer){
+                clearInterval(timer);
+                timer = null;
+            }
+        })
+
         watch(()=> props.targetEquipment, async ()=>{
             if(props.targetEquipment) await getData();
         },

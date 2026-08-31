@@ -18,7 +18,7 @@
 
 <script>
 import axios from 'axios';
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 import jsCookie from 'js-cookie';
 import { eventBus } from '@/utils/eventBus.js';
 import { ElMessageBox } from 'element-plus'
@@ -69,7 +69,7 @@ export default {
                     await ElMessageBox.confirm('確認更改預約狀態？', '更改預約狀態',
                         {
                             confirmButtonText: '禁用選項',
-                            cancelButtonText: '取消預約或解禁',
+                            cancelButtonText: '取消他人預約或解禁',
                             type: 'warning',
                             distinguishCancelAndClose: true
                         }
@@ -101,6 +101,20 @@ export default {
             }
         }
 
+        let timer = null;
+
+        onMounted(()=>{
+            timer = setInterval(async() => {
+                if(props.targetEquipment) await getData();
+            }, 5000);
+        })
+
+        onUnmounted(()=>{
+            if(timer){
+                clearInterval(timer);
+                timer = null;
+            }
+        })
         
         
         watch(()=> props.targetEquipment, async ()=>{
