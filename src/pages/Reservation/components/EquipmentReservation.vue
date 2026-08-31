@@ -5,9 +5,17 @@
         <div class="calendar-wrapper">
             <div class="calendar-item-wrapper-all" v-for="item in reservationData" :key="item.date">
                 <div class="calendar-item-title">{{ item.title }}</div>
-
                 <div class="calendar-item-wrapper">
-                    <div :class="`calendar-item calendar-item-status-${getPeriod(item, period)?.status}`" v-for="period in periodList" :key="period" @click="handle(getPeriod(item, period), item.date, period)">
+                    <div
+                        :class="{
+                            'calendar-item': true,
+                            [`calendar-item-status-${getPeriod(item, period)?.status}`]: !isPast(item.date, period),
+                            'calendar-item-status--1': isPast(item.date, period) || (getPeriod(item, period)?.status == -1)
+                        }"
+                        v-for="period in periodList"
+                        :key="period"
+                        @click="getPeriod(item, period)?.status != -1 && !isPast(item.date, period) ? handle(getPeriod(item, period), item.date, period) : ''"
+                    >
                         {{ period }}
                     </div>
                 </div>
@@ -37,6 +45,10 @@ export default {
         const periodList = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}:00`);
 
         const reservationData = ref([]);
+
+        function isPast(date, period) {
+            return new Date(`${date}T${period}:00`) <= new Date();
+        }
 
         async function getData(){
             try{
@@ -95,9 +107,7 @@ export default {
                 eventBus.emit('handleAlert', { title:'儀器預約結果', message: res.data.message, type: res.data.type })
                 await getData();
             }
-            catch(e){
-                console.log(e)
-            }
+            catch(e){}
         }
 
         
@@ -108,7 +118,7 @@ export default {
         { immediate: true, deep: true })
 
         return {
-            date, getData, reservationData, handle, periodList, getPeriod
+            date, getData, reservationData, handle, periodList, getPeriod, isPast
         }
     }
 }
@@ -167,6 +177,11 @@ export default {
         background: rgba(0,0,0,0.05);
         color: white;
 
+    }
+    .calendar-item-status--1:hover{
+        cursor: not-allowed;
+        background: rgba(0,0,0,0.05);
+        color: white;
     }
     /* 已預約 */
     .calendar-item-status-1{
