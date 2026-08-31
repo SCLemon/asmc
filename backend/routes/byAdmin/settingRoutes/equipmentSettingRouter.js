@@ -314,8 +314,8 @@ router.get('/api/equipmentSetting/admin/getUserList', authMiddleware(10), async 
 });
 
 
-// 禁用 or 解禁 or 刪除他人預約
-router.post('/api/equipmentSetting/admin/handleReserve', authMiddleware(10), async (req, res) => {
+// 獲取預約狀態
+router.post('/api/equipmentSetting/admin/getSpecificReservationData', authMiddleware(10), async (req, res) => {
 
     const { targetEquipment, date } = req.body;
 
@@ -344,15 +344,16 @@ router.post('/api/equipmentSetting/admin/handleReserve', authMiddleware(10), asy
         equipment.reservation.forEach((item) => {
 
             if (!reservationMap[item.reserve_date]) {
-                reservationMap[item.reserve_date] = [];
+                reservationMap[item.reserve_date] = {};
             }
 
-            reservationMap[item.reserve_date].push({
-                token: item.token,
+            reservationMap[item.reserve_date][item.reserve_period] = {
+                reserveId: item.reserveId,
                 user: item.user,
                 reserve_period: item.reserve_period,
-                status: item.status
-            });
+                status: item.status,
+                payment: item.payment
+            };
         });
 
         const output = [];
@@ -367,10 +368,30 @@ router.post('/api/equipmentSetting/admin/handleReserve', authMiddleware(10), asy
 
             const dateString = `${year}-${month}-${day}`;
 
+            const date_period = [];
+
+            for (let hour = 0; hour < 24; hour++) {
+
+                const period = `${String(hour).padStart(2, '0')}:00`;
+
+                date_period.push(
+                    reservationMap[dateString]?.[period] || {
+                        reserveId: '',
+                        user: '',
+                        reserve_period: period,
+                        status: 0,
+                        payment: {
+                            amount: 0,
+                            status: false
+                        }
+                    }
+                );
+            }
+
             output.push({
                 title: weekList[currentDate.getDay()],
                 date: dateString,
-                date_period: reservationMap[dateString] || []
+                date_period
             });
 
             currentDate.setDate(currentDate.getDate() + 1);
@@ -394,5 +415,70 @@ router.post('/api/equipmentSetting/admin/handleReserve', authMiddleware(10), asy
 
 });
 
+// 禁用 or 解禁 or 刪除他人預約
+router.post('/api/equipmentSetting/admin/handleReserve', authMiddleware(10), async (req, res) => {
+
+    const { targetEquipment, reserveId, method, reserve_date, reserve_period } = req.body;
+
+    if (!targetEquipment || method === undefined || !reserve_date || !reserve_period) {
+        return res.send({ type:'error', message:'請求資料不完整。'});
+    }
+
+    try {
+
+        // method: disabled 為禁用，若有預約資料則刪除原 reservation 後重新建立 status 為 -1 的預約項目，若無則直接建立
+        // method: enabled 為取消他人預約與解禁，刪除原 reservation
+        const equipment = await equipmentModel.findOne({ token: targetEquipment, isDeleted: false });
+        if (!equipment) return res.send({ type:'error', message:'儀器資料不存在。'});
+
+        const reservation = equipment.reservation.find((item) => item.reserveId === reserveId);
+
+        if (method === 'disabled') {
+
+            const newReservation = {
+                reserveId: uuidv4(),
+                user: req.user.token,
+                reserve_date,
+                reserve_period,
+                status: -1,
+                payment: {
+                    amount: 0,
+                    status: true
+                }
+            };
+
+            if (reservation) equipment.reservation = equipment.reservation.filter((item) => { return item.reserveId !== reserveId; });
+            equipment.reservation.push(newReservation);
+
+        } 
+        else if (method === 'enabled') {
+
+            if (!reservation) return res.send({ type:'error', message:'預約資料不存在。'});
+
+            equipment.reservation = equipment.reservation.filter((item) => {
+                return item.reserveId !== reserveId;
+            });
+
+        } 
+        else return res.send({ type:'error', message:'無效的操作。'});
+
+        await equipment.save();
+
+        return res.send({
+            type:'success',
+            message: method === 'disabled' ? '預約時段禁用成功！' : '預約取消/解禁成功！'
+        });
+        
+    } catch (e) {
+        console.log(e);
+
+        return res.send({
+            type:'error',
+            data: [],
+            message:'伺服器錯誤，請洽客服人員協助。'
+        });
+    }
+
+});
 
 module.exports = router;

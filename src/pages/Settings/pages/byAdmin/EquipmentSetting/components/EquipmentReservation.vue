@@ -1,11 +1,15 @@
 <template>
     <div>
-        <el-date-picker v-model="date" type="daterange" single-panel style="width: 100%; box-sizing: border-box;"  readonly/>
+        <el-date-picker v-model="date" type="daterange" single-panel style="width: 100%; box-sizing: border-box;" readonly/>
+
         <div class="calendar-wrapper">
             <div class="calendar-item-wrapper-all" v-for="item in reservationData" :key="item.date">
                 <div class="calendar-item-title">{{ item.title }}</div>
+
                 <div class="calendar-item-wrapper">
-                    <div class="calendar-item" v-for="period in periodList" :key="period" @click="handle(item.date, period)">{{ period }}</div>
+                    <div :class="`calendar-item calendar-item-status-${getPeriod(item, period)?.status}`" v-for="period in periodList" :key="period" @click="handle(getPeriod(item, period), item.date, period)">
+                        {{ period }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -17,6 +21,7 @@ import axios from 'axios';
 import { ref, watch } from 'vue';
 import jsCookie from 'js-cookie';
 import { eventBus } from '@/utils/eventBus.js';
+import { ElMessageBox } from 'element-plus'
 
 export default {
     name: 'EquipmentReservation',
@@ -27,11 +32,9 @@ export default {
         }
     },
     setup(props){
+        
         const date = ref([new Date().getTime(), new Date().setDate(new Date().getDate() + 6)]);
-
-        const periodList = Array.from({ length: 24 }, (_, i) => {
-            return `${String(i).padStart(2, '0')}:00`;
-        });
+        const periodList = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}:00`);
 
         const reservationData = ref([]);
 
@@ -52,17 +55,46 @@ export default {
             }
         }
 
-        async function handle(date, period){
+        function getPeriod(item, period) { // 返回 reserve 項目
+            return item.date_period.find((i) => i.reserve_period === period);
+        }
+
+        async function handle(reserve, date, period){
+
+            // method: disabled 禁用選項  enabled 解禁或取消他人預約
+            let method = undefined;
+
             try{
-                // const res = await axios.post('/api/equipmentSetting/admin/getSpecificReservationData',{ targetEquipment: props.targetEquipment, date: date.value },{
-                //     headers: {
-                //         'x-user-token': jsCookie.get('authToken')
-                //     }
-                // });
+                try{
+                    await ElMessageBox.confirm('確認更改預約狀態？', '更改預約狀態',
+                        {
+                            confirmButtonText: '禁用選項',
+                            cancelButtonText: '取消預約或解禁',
+                            type: 'warning',
+                            distinguishCancelAndClose: true
+                        }
+                    )
+                    method = 'disabled';
+                }
+                catch(e){
+                    if(e == 'cancel') method = 'enabled';
+                    else return
+                }
 
-                // reservationData.value = res.data.data;
+                const res = await axios.post('/api/equipmentSetting/admin/handleReserve',
+                    {   
+                        targetEquipment: props.targetEquipment, reserveId: reserve?.reserveId, 
+                        method, reserve_date: date, reserve_period: period 
+                    },
+                    {
+                        headers: {
+                            'x-user-token': jsCookie.get('authToken')
+                        }
+                    }
+                );
 
-                // if(res.data.type == 'error') eventBus.emit('handleAlert', { title:'儀器獲取資訊', message: res.data.message, type: res.data.type })
+                eventBus.emit('handleAlert', { title:'預約狀態更改結果', message: res.data.message, type: res.data.type })
+                await getData();
             }
             catch(e){
                 console.log(e)
@@ -77,7 +109,7 @@ export default {
         { immediate: true, deep: true })
 
         return {
-            date, getData, periodList, reservationData, handle
+            date, getData, reservationData, handle, periodList, getPeriod
         }
     }
 }
@@ -123,10 +155,24 @@ export default {
         margin-bottom: 10px;
         box-shadow: 0 0 3px rgba(0,0,0,0.12);
         transition: background 0.75s ease;
+        background: white;
     }
     .calendar-item:hover{
         cursor: pointer;
         background: black;
         color: white;
     }
+
+    /* 禁用中 */
+    .calendar-item-status--1{
+        background: rgba(0,0,0,0.05);
+        color: white;
+
+    }
+    /* 已預約 */
+    .calendar-item-status-1{
+        background: black;
+        color: white;
+    }
+
 </style>

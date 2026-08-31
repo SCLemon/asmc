@@ -37,7 +37,7 @@ const equipmentSchema = new mongoose.Schema({
     reservation:{
         type: [
             {
-                token:{ // 預約序號
+                reserveId:{ // 預約序號
                     type: String,
                     trim: true,
                 },
@@ -53,9 +53,19 @@ const equipmentSchema = new mongoose.Schema({
                     type: String,
                     trim: true,
                 },
-                status:{ // 0. 禁用選項 1. 可預約 2. 已預約 3. 已簽到
+                status:{ // -1. 禁用  0.可預約 1. 已預約 2. 已簽到
                     type: Number,
                     default: 1
+                },
+                payment:{
+                    amount: {
+                        type: Number,
+                        default: 0
+                    },
+                    status: { // 是否已付款
+                        type: Boolean,
+                        default: false,
+                    }
                 }
             }
         ],
