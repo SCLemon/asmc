@@ -133,14 +133,14 @@ export default {
     .calendar-wrapper{
         width: 100%;
         margin-top: 20px;
-        height: 300px;
+        height: 390px;
         display: flex;
         box-sizing: border-box;
         gap: 10px;
     }
     .calendar-item-wrapper-all{
         width: calc(100% / 7);
-        height: 300px;
+        height: 100%;
         box-sizing: border-box;
     }
     .calendar-item-title{

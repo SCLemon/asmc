@@ -251,4 +251,15 @@ export default {
     .equipment-detail-picker-block-1{
         min-width: 650px;
     }
+    :deep(.el-transfer-panel) {
+        height: 450px;
+        width: 225px;
+    }
+
+    :deep(.el-transfer-panel__body) {
+        height: 400px;
+    }
+    :deep(.el-transfer__buttons){
+
+    }
 </style>
