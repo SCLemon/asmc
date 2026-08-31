@@ -115,49 +115,78 @@ router.post('/api/equipmentSetting/admin/register', authMiddleware(10), async (r
     }
 });
 
-// 修改儀器資訊 -- 尚未檢查預約系統
+// 修改儀器資訊 -- ok
 router.post('/api/equipmentSetting/admin/revise', authMiddleware(10), async (req, res) => {
 
     let { targetEquipment, name, rate, superUser, users } = req.body;
 
     if (!name || !Number.isInteger(rate)) {
-        return res.send({ type:'error',  message:'修改資料不可為空。'});
+        return res.send({ type:'error', message:'修改資料不可為空。'});
     }
 
     try {
 
         // 檢查是否與其他儀器重名
         const existingEquipment = await equipmentModel.findOne({ name, isDeleted: false });
+
         if (existingEquipment && existingEquipment.token != targetEquipment) {
             return res.send({ type:'error', message:'儀器已存在，請選擇其他儀器名稱。'});
         }
 
-        const equipment = await equipmentModel.findOne({ token: targetEquipment, isDeleted: false });
-        if(!equipment){
+        const equipment = await equipmentModel.findOne({
+            token: targetEquipment,
+            isDeleted: false
+        });
+
+        if (!equipment) {
             return res.send({ type:'error', message:'儀器資料不存在。'});
         }
+
+        // 取得原本的使用者名單
+        const oldUsers = equipment.users;
+
+        // 找出被移除的使用者
+        const removedUsers = oldUsers.filter((user) => {
+            return !users.includes(user);
+        });
 
         equipment.name = name;
         equipment.rate = rate;
         equipment.superUser = superUser;
         equipment.users = users;
 
-        // 從 equipment.reservation 中的未來預約紀錄中刪除不在 users 名單中的預約項目
-        const today = new Date().toLocaleDateString('sv-SE');
-        equipment.reservation = equipment.reservation.filter((item) => {
-            if (item.reserve_date <= today) return true;
-            return users.includes(item.user);
-        });
+        // 移除被刪除使用者當前時間以後的預約
+        if (removedUsers.length > 0) {
+
+            const now = new Date();
+
+            equipment.reservation = equipment.reservation.filter((item) => {
+
+                // 不是被移除的使用者 → 保留
+                if (!removedUsers.includes(item.user)) {
+                    return true;
+                }
+
+                // 被移除的使用者 → 判斷預約時間
+                const reserveDateTime = new Date(
+                    `${item.reserve_date}T${item.reserve_period}:00`
+                );
+
+                // 只保留已經過去的預約
+                return reserveDateTime < now;
+            });
+        }
 
         await equipment.save();
 
         return res.send({
             type:'success',
-            message:'儀器資料修改成功。' 
+            message:'儀器資料修改成功。'
         });
 
     } catch (e) {
-        console.log(e)
+        console.log(e);
+
         return res.send({
             type:'error',
             message:'伺服器錯誤，請洽客服人員協助。'
@@ -165,50 +194,64 @@ router.post('/api/equipmentSetting/admin/revise', authMiddleware(10), async (req
     }
 });
 
-// 停用儀器 -- 尚未檢查預約系統
+// 停用儀器 -- ok
 router.put('/api/equipmentSetting/admin/freeze', authMiddleware(10), async (req, res) => {
 
     let { targetEquipment } = req.body;
 
     if (!targetEquipment) {
         return res.send({
-            type:'error', message:'儀器停用失敗（資料為空）。'
+            type:'error',
+            message:'儀器停用失敗（資料為空）。'
         });
     }
 
     try {
 
-        const existingEquipment = await equipmentModel.findOne({ token: targetEquipment, isDeleted: false });
+        const existingEquipment = await equipmentModel.findOne({
+            token: targetEquipment,
+            isDeleted: false
+        });
+
         if (!existingEquipment) {
             return res.send({
-                type:'error', message:'儀器停用失敗（儀器不存在）。'
+                type:'error',
+                message:'儀器停用失敗（儀器不存在）。'
             });
         }
 
         existingEquipment.status = false;
 
-        // 移除所有未來的預約資訊
-        const today = new Date().toLocaleDateString('sv-SE');
+        // 移除當前時間以後的預約資訊
+        const now = new Date();
+
         existingEquipment.reservation = existingEquipment.reservation.filter((item) => {
-            return item.reserve_date <= today
+
+            const reserveDateTime = new Date(
+                `${item.reserve_date}T${item.reserve_period}:00`
+            );
+
+            // 保留已經過去的預約
+            return reserveDateTime < now;
         });
-        
+
         await existingEquipment.save();
-        
 
         return res.send({
-            type:'success', message:'儀器停用成功。' 
+            type:'success',
+            message:'儀器停用成功。'
         });
 
     } catch (e) {
-        console.log(e)
+        console.log(e);
+
         return res.send({
-            type:'error', message:'伺服器錯誤，請洽客服人員協助。'
+            type:'error',
+            message:'伺服器錯誤，請洽客服人員協助。'
         });
     }
 });
-
-// 重啟儀器
+// 重啟儀器 -- ok
 router.put('/api/equipmentSetting/admin/restart', authMiddleware(10), async (req, res) => {
 
     let { targetEquipment } = req.body;
@@ -244,43 +287,60 @@ router.put('/api/equipmentSetting/admin/restart', authMiddleware(10), async (req
     }
 });
 
-// 刪除儀器 -- 尚未檢查預約系統
+// 刪除儀器 -- ok
 router.post('/api/equipmentSetting/admin/delete', authMiddleware(10), async (req, res) => {
 
     let { targetEquipment } = req.body;
 
     if (!targetEquipment) {
         return res.send({
-            type:'error', message:'儀器刪除失敗（資料為空）。'
+            type:'error',
+            message:'儀器刪除失敗（資料為空）。'
         });
     }
 
     try {
 
-        const deletedEquipment = await equipmentModel.findOne({ token: targetEquipment, isDeleted: false });
+        const deletedEquipment = await equipmentModel.findOne({
+            token: targetEquipment,
+            isDeleted: false
+        });
 
         if (!deletedEquipment) {
-            return res.send({ type: 'error', message: '儀器刪除失敗（儀器不存在）。'});
+            return res.send({
+                type: 'error',
+                message: '儀器刪除失敗（儀器不存在）。'
+            });
         }
 
         deletedEquipment.isDeleted = true;
 
-        // 移除所有未來的預約資訊
-        const today = new Date().toLocaleDateString('sv-SE');
+        // 移除當前時間以後的預約資訊
+        const now = new Date();
+
         deletedEquipment.reservation = deletedEquipment.reservation.filter((item) => {
-            return item.reserve_date <= today
+
+            const reserveDateTime = new Date(
+                `${item.reserve_date}T${item.reserve_period}:00`
+            );
+
+            // 保留當前時間以前的預約
+            return reserveDateTime < now;
         });
 
         await deletedEquipment.save();
 
         return res.send({
-            type:'success', message:'儀器刪除成功。' 
+            type:'success',
+            message:'儀器刪除成功。'
         });
 
     } catch (e) {
-        console.log(e)
+        console.log(e);
+
         return res.send({
-            type:'error', message:'伺服器錯誤，請洽客服人員協助。'
+            type:'error',
+            message:'伺服器錯誤，請洽客服人員協助。'
         });
     }
 });
