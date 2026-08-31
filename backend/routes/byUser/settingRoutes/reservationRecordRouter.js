@@ -235,7 +235,7 @@ router.post('/api/reservationRecord/user/signIn', authMiddleware(0), async (req,
 
             await equipment.save();
 
-            return res.send({ type:'error', message:'逾時簽到（已超過預約開始時間 15 分鐘）。'});
+            return res.send({ type:'success', message:'逾時簽到（已超過預約開始時間 15 分鐘）。'});
         }
 
         // 修改為已簽到
