@@ -223,7 +223,7 @@ router.get('/api/memberSetting/admin/getLabList', authMiddleware(10), async (req
 });
 
 
-// 凍結用戶 -- 尚未檢查預約系統
+// 凍結用戶
 router.put('/api/memberSetting/admin/freeze', authMiddleware(10), async (req, res) => {
 
     let { targetUser } = req.body;
@@ -245,14 +245,27 @@ router.put('/api/memberSetting/admin/freeze', authMiddleware(10), async (req, re
 
         existingUser.status = !existingUser.status;
 
-        // 停權時移除該使用者所有未來的設備預約 
+        // 停權時移除該使用者當前時段以後所有設備預約
         if (!existingUser.status) { 
-            const today = new Date().toLocaleDateString('sv-SE'); 
-            const equipments = await equipmentModel.find({ 'reservation.user': existingUser.token, isDeleted: false }); 
+
+            const now = new Date();
+
+            const equipments = await equipmentModel.find({
+                'reservation.user': existingUser.token,
+                isDeleted: false
+            }); 
+
             for (const equipment of equipments) { 
-                equipment.reservation = equipment.reservation.filter((item) => { 
-                    return !(item.user === existingUser.token && item.reserve_date > today); 
+
+                equipment.reservation = equipment.reservation.filter((item) => {
+
+                    if (item.user !== existingUser.token) return true;
+
+                    const reserveDateTime = new Date(`${item.reserve_date}T${item.reserve_period}:00`);
+
+                    return reserveDateTime < now;
                 }); 
+
                 await equipment.save(); 
             }
         }
@@ -273,7 +286,7 @@ router.put('/api/memberSetting/admin/freeze', authMiddleware(10), async (req, re
     }
 });
 
-// 刪除用戶 -- 尚未檢查預約系統
+// 刪除用戶
 router.post('/api/memberSetting/admin/delete', authMiddleware(10), async (req, res) => {
 
     let { targetUser } = req.body;
@@ -295,10 +308,11 @@ router.post('/api/memberSetting/admin/delete', authMiddleware(10), async (req, r
             });
         }
 
-        tokenCache.delete(deletedUser.token)
+        tokenCache.delete(deletedUser.token);
 
-        // 刪除時移除該使用者所有未來的設備預約，並從使用者名單中移除
-        const today = new Date().toLocaleDateString('sv-SE'); 
+        // 刪除時移除該使用者當前時段以後所有設備預約，並從使用者名單中移除
+        const now = new Date();
+
         const equipments = await equipmentModel.find({
             isDeleted: false,
             $or: [
@@ -307,12 +321,24 @@ router.post('/api/memberSetting/admin/delete', authMiddleware(10), async (req, r
                 { superUser: targetUser }
             ]
         });
+
         for (const equipment of equipments) { 
+
             equipment.reservation = equipment.reservation.filter((item) => {
-                return !(item.user === targetUser && item.reserve_date > today);
+
+                if (item.user !== targetUser) return true;
+
+                const reserveDateTime = new Date(`${item.reserve_date}T${item.reserve_period}:00`);
+
+                return reserveDateTime < now;
             });
+
             equipment.users = equipment.users.filter((user) => user !== targetUser);
-            if (equipment.superUser === targetUser) { equipment.superUser = ''; }
+
+            if (equipment.superUser === targetUser) {
+                equipment.superUser = '';
+            }
+
             await equipment.save(); 
         }
 
