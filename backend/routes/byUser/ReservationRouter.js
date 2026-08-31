@@ -17,7 +17,7 @@ const labMiddleware = require('../../middleware/lab.middleware');
 router.get('/api/reservation/user/getData', authMiddleware(0), labMiddleware, async (req, res) => {
 
     try {
-        const equipments = await equipmentModel.find({ isDeleted: false, users: req.user.token })
+        const equipments = await equipmentModel.find({ isDeleted: false, status: true, users: req.user.token })
         const output = equipments.map((equipment) =>{
             return {
                 value: equipment.token,
@@ -47,7 +47,7 @@ router.post('/api/reservation/user/getSpecificData', authMiddleware(0), labMiddl
 
     try {
 
-        const equipment = await equipmentModel.findOne({ token: targetEquipment, isDeleted: false, users: req.user.token });
+        const equipment = await equipmentModel.findOne({ token: targetEquipment, status: true, isDeleted: false, users: req.user.token });
         if(!equipment){
             return res.send({
                 type:'error',
@@ -71,7 +71,7 @@ router.post('/api/reservation/user/getSpecificData', authMiddleware(0), labMiddl
     }
 });
 
-// 獲取預約狀態
+// 獲取預約狀態 -- ok
 router.post('/api/reservation/user/getSpecificReservationData', authMiddleware(0), labMiddleware, async (req, res) => {
 
     const { targetEquipment, date } = req.body;
@@ -82,7 +82,7 @@ router.post('/api/reservation/user/getSpecificReservationData', authMiddleware(0
 
     try {
 
-        const equipment = await equipmentModel.findOne({ token: targetEquipment, isDeleted: false, users: req.user.token });
+        const equipment = await equipmentModel.findOne({ token: targetEquipment, status: true, isDeleted: false, users: req.user.token });
 
         if(!equipment){
             return res.send({ type:'error', data: [], message:'儀器資料不存在。'});
@@ -176,7 +176,7 @@ router.post('/api/reservation/user/handleReserve', authMiddleware(0), labMiddlew
 
     try {
 
-        const equipment = await equipmentModel.findOne({ token: targetEquipment, isDeleted: false, users: req.user.token });
+        const equipment = await equipmentModel.findOne({ token: targetEquipment, status: true, isDeleted: false, users: req.user.token });
 
         if (!equipment) return res.send({ type:'error', message:'儀器資料不存在。'});
 
