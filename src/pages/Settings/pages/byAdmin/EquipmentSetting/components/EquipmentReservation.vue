@@ -61,14 +61,14 @@ export default {
 
         async function handle(reserve, date, period){
 
-            // method: disabled 禁用選項  enabled 解禁或取消他人預約
+            // method: disabled 禁用時段  enabled 解禁或取消他人預約
             let method = undefined;
 
             try{
                 try{
-                    await ElMessageBox.confirm('確認更改預約狀態？', '更改預約狀態',
+                    await ElMessageBox.confirm(`確認更改 ${reserve.username} 的預約狀態？`, '更改預約狀態',
                         {
-                            confirmButtonText: '禁用選項',
+                            confirmButtonText: '禁用時段',
                             cancelButtonText: '取消他人預約或解禁',
                             type: 'warning',
                             distinguishCancelAndClose: true

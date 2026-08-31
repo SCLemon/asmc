@@ -385,7 +385,10 @@ router.post('/api/equipmentSetting/admin/getSpecificReservationData', authMiddle
 
     try {
 
-        const equipment = await equipmentModel.findOne({ token: targetEquipment, isDeleted: false });
+        const equipment = await equipmentModel.findOne({
+            token: targetEquipment,
+            isDeleted: false
+        });
 
         if(!equipment){
             return res.send({ type:'error', data: [], message:'儀器資料不存在。'});
@@ -399,6 +402,27 @@ router.post('/api/equipmentSetting/admin/getSpecificReservationData', authMiddle
 
         const weekList = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
 
+        // 找出所有 reservation 中的 user token
+        const userTokens = [
+            ...new Set(
+                equipment.reservation
+                    .map((item) => item.user)
+                    .filter(Boolean)
+            )
+        ];
+
+        // 一次取得所有使用者
+        const users = await userModel.find({
+            token: { $in: userTokens }
+        }).select('token name').lean();
+
+        // 建立 token -> name 對照表
+        const userMap = {};
+
+        users.forEach((user) => {
+            userMap[user.token] = user.name;
+        });
+
         const reservationMap = {};
 
         equipment.reservation.forEach((item) => {
@@ -410,6 +434,7 @@ router.post('/api/equipmentSetting/admin/getSpecificReservationData', authMiddle
             reservationMap[item.reserve_date][item.reserve_period] = {
                 reserveId: item.reserveId,
                 user: item.user,
+                username: userMap[item.user] || '',
                 reserve_period: item.reserve_period,
                 status: item.status,
                 payment: item.payment
@@ -438,6 +463,7 @@ router.post('/api/equipmentSetting/admin/getSpecificReservationData', authMiddle
                     reservationMap[dateString]?.[period] || {
                         reserveId: '',
                         user: '',
+                        username: '',
                         reserve_period: period,
                         status: 0,
                         payment: {

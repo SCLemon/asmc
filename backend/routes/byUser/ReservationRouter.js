@@ -15,7 +15,7 @@ const authMiddleware = require('../../middleware/auth.middleware');
 const labMiddleware = require('../../middleware/lab.middleware');
 
 
-// 獲取儀器列表 -- ok
+// 獲取儀器列表
 router.get('/api/reservation/user/getData', authMiddleware(0), labMiddleware, async (req, res) => {
 
     try {
@@ -87,7 +87,7 @@ router.post('/api/reservation/user/getSuperUserInfo', authMiddleware(0), labMidd
     }
 });
 
-// 獲取預約狀態 -- ok
+// 獲取預約狀態
 router.post('/api/reservation/user/getSpecificReservationData', authMiddleware(0), labMiddleware, async (req, res) => {
 
     const { targetEquipment, date } = req.body;
@@ -124,6 +124,7 @@ router.post('/api/reservation/user/getSpecificReservationData', authMiddleware(0
                 reserveId: item.reserveId,
                 reserve_period: item.reserve_period,
                 status: item.status,
+                isMine: item.user = req.user.token
             };
         });
 

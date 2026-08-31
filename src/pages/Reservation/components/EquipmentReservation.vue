@@ -9,14 +9,14 @@
                     <div
                         :class="{
                             'calendar-item': true,
-                            [`calendar-item-status-${getPeriod(item, period)?.status}`]: !isPast(item.date, period),
+                            [`calendar-item-status-${getPeriod(item, period)?.status}`]: !isPast(item.date, period) && !(getPeriod(item, period).isMine),
+                            'calendar-item-status-is-Mine': getPeriod(item, period)?.status!= -1 && !isPast(item.date, period) && getPeriod(item, period).isMine,
                             'calendar-item-status--1': isPast(item.date, period) || (getPeriod(item, period)?.status == -1)
                         }"
-                        v-for="period in periodList"
-                        :key="period"
-                        @click="getPeriod(item, period)?.status != -1 && !isPast(item.date, period) ? handle(getPeriod(item, period), item.date, period) : ''"
-                    >
-                        {{ period }}
+                        v-for="period in periodList" :key="period"
+                        @click="getPeriod(item, period)?.status != -1 && !isPast(item.date, period)? handle(getPeriod(item, period), item.date, period) : ''">
+                        {{ isPast(item.date, period) || getPeriod(item, period)?.status == -1 ? '-' : period }}
+                        <div class="calendar-item-is-Mine"><VIcon :icon="UserIcon" v-if="getPeriod(item, period)?.status!= -1 && getPeriod(item, period).isMine"></vIcon></div>
                     </div>
                 </div>
             </div>
@@ -30,6 +30,9 @@ import { onMounted, onUnmounted, ref, watch } from 'vue';
 import jsCookie from 'js-cookie';
 import { eventBus } from '@/utils/eventBus.js';
 import { ElMessageBox } from 'element-plus'
+import { VIcon } from 'vorium-ui';
+import { UserIcon } from 'vorium-ui/icons'
+import 'vorium-ui/icons/icons.css'
 
 export default {
     name: 'EquipmentReservation',
@@ -38,6 +41,9 @@ export default {
             type: String,
             default: '',
         }
+    },
+    components:{
+        VIcon
     },
     setup(props){
         
@@ -131,7 +137,7 @@ export default {
         { immediate: true, deep: true })
 
         return {
-            date, getData, reservationData, handle, periodList, getPeriod, isPast
+            date, getData, reservationData, handle, periodList, getPeriod, isPast, UserIcon
         }
     }
 }
@@ -178,6 +184,7 @@ export default {
         box-shadow: 0 0 3px rgba(0,0,0,0.12);
         transition: background 0.75s ease;
         background: white;
+        position: relative;
     }
     .calendar-item:hover{
         cursor: pointer;
@@ -187,19 +194,30 @@ export default {
 
     /* 禁用中 */
     .calendar-item-status--1{
-        background: rgba(0,0,0,0.05);
-        color: white;
-
+        background: transparent;
+        color: black;
+        box-shadow: none;
     }
     .calendar-item-status--1:hover{
         cursor: not-allowed;
-        background: rgba(0,0,0,0.05);
-        color: white;
+        background: transparent;
+        color: black
     }
+
     /* 已預約 */
     .calendar-item-status-1{
+        background: rgba(170,170,170);
+        color: white;
+    }
+
+    /* 個人預約 */
+    .calendar-item-status-is-Mine{
         background: black;
         color: white;
+    }
+    .calendar-item-is-Mine{
+        position: absolute;
+        right: 20px;
     }
 
 </style>
