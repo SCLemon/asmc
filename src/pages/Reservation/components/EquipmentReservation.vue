@@ -15,7 +15,7 @@
                         }"
                         v-for="period in periodList" :key="period"
                         @click="getPeriod(item, period)?.status != -1 && !isPast(item.date, period)? handle(getPeriod(item, period), item.date, period) : ''">
-                        {{ isPast(item.date, period) || getPeriod(item, period)?.status == -1 ? '-' : period }}
+                        {{ getPeriodLabel(item, period) }}
                         <div class="calendar-item-is-Mine"><VIcon :icon="UserIcon" v-if="getPeriod(item, period)?.status!= -1 && getPeriod(item, period).isMine"></vIcon></div>
                     </div>
                 </div>
@@ -75,6 +75,25 @@ export default {
 
         function getPeriod(item, period) { // 返回 reserve 項目
             return item.date_period.find((i) => i.reserve_period === period);
+        }
+
+        function getPeriodLabel(item, period) {
+
+            const data = getPeriod(item, period);
+
+            if (isPast(item.date, period) || data?.status === -1) {
+                return '-';
+            }
+
+            if (data?.status === 2) {
+                return '已簽到';
+            }
+
+            if (data?.status === 3) {
+                return '逾時簽到';
+            }
+
+            return period;
         }
 
         async function handle(reserve, date, period){
@@ -137,7 +156,7 @@ export default {
         { immediate: true, deep: true })
 
         return {
-            date, getData, reservationData, handle, periodList, getPeriod, isPast, UserIcon
+            date, getData, reservationData, handle, periodList, getPeriod, getPeriodLabel, isPast, UserIcon
         }
     }
 }
@@ -206,6 +225,16 @@ export default {
 
     /* 已預約 */
     .calendar-item-status-1{
+        background: rgba(170,170,170);
+        color: white;
+    }
+    /* 已簽到 */
+    .calendar-item-status-2{
+        background: rgba(170,170,170);
+        color: white;
+    }
+    /* 逾時簽到 */
+    .calendar-item-status-3{
         background: rgba(170,170,170);
         color: white;
     }

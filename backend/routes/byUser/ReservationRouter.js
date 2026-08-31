@@ -124,7 +124,7 @@ router.post('/api/reservation/user/getSpecificReservationData', authMiddleware(0
                 reserveId: item.reserveId,
                 reserve_period: item.reserve_period,
                 status: item.status,
-                isMine: item.user = req.user.token
+                isMine: item.user == req.user.token
             };
         });
 
@@ -245,7 +245,7 @@ router.post('/api/reservation/user/handleReserve', authMiddleware(0), labMiddlew
             }
 
             // 已簽到不可取消
-            if (reservation.status == 2) {
+            if (reservation.status == 2 || reservation.status == 3) {
                 return res.send({
                     type:'error',
                     message:'取消預約失敗（該預約已簽到）。'

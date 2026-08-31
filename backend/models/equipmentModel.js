@@ -53,7 +53,7 @@ const equipmentSchema = new mongoose.Schema({
                     type: String,
                     trim: true,
                 },
-                status:{ // -1. 禁用  0.可預約 1. 已預約 2. 已簽到
+                status:{ // -1. 禁用  0. 可預約 1. 已預約 2. 已簽到 3. 逾時簽到
                     type: Number,
                     default: 1
                 },

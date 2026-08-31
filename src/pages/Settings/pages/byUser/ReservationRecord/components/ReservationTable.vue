@@ -15,6 +15,9 @@
                     <td>{{ record.reserve_period}}</td>
                     <td>{{ record.equipment }}</td>
                     <td class="options">
+                        <el-button type="warning" @click="record?.signIn?.canSignIn?signIn(record.reserveId):''" 
+                                :disabled="!(record?.signIn?.canSignIn)">{{ record?.signIn?.showButtonText }}
+                        </el-button>
                         <el-button type="danger" @click="deleteReserve(record.reserveId)">刪除</el-button>
                     </td>
                 </tr>
@@ -29,7 +32,6 @@ import axios from 'axios';
 import jsCookie from 'js-cookie';
 import { ref, onMounted, computed } from 'vue';
 import { ElMessageBox } from 'element-plus'
-import { useRouter } from 'vue-router';
 
 export default {
     name: 'ReserveationTable',
@@ -63,6 +65,26 @@ export default {
         }
 
 
+        async function signIn(reserveId){
+            try{
+                await ElMessageBox.confirm('確認預約簽到？', '預約簽到',
+                    {
+                        confirmButtonText: '確認',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                    }
+                )
+                const res = await axios.post('/api/reservationRecord/user/signIn',{ reserveId },{
+                    headers: {
+                        'x-user-token': jsCookie.get('authToken')
+                    }
+                })
+                eventBus.emit('handleAlert', { title:'預約簽到結果', message: res.data.message, type: res.data.type })
+                await getData();
+            }
+            catch(e){}
+        }
+
         async function deleteReserve(reserveId){
             try{
                 await ElMessageBox.confirm('確認刪除預約？', '刪除預約',
@@ -83,7 +105,7 @@ export default {
             catch(e){}
         }
         return {
-            tableData, getData, deleteReserve, filteredData
+            tableData, getData, deleteReserve, filteredData, signIn
         }
     }
 }
@@ -143,7 +165,7 @@ export default {
 
     .parameter-table th:nth-child(4),
     .parameter-table td:nth-child(4) {
-        width: 15%;
+        width: 25%;
         word-break: break-all;
     }
 

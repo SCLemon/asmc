@@ -9,26 +9,51 @@ const equipmentModel = require('../../../models/equipmentModel');
 const authMiddleware = require('../../../middleware/auth.middleware');
 
 
-// 獲取使用者個人的所有預約記錄 （以最新的排在最上面）
+// 獲取使用者個人的所有預約記錄（以最新的排在最上面）
 router.get('/api/reservationRecord/user/getData', authMiddleware(0), async (req, res) => {
 
     try {
 
-        const equipments = await equipmentModel.find({ 'reservation.user': req.user.token }).lean();
+        const equipments = await equipmentModel.find({
+            'reservation.user': req.user.token,
+        }).lean();
 
         const output = [];
 
+        const now = new Date();
+
         equipments.forEach((equipment) => {
 
-            equipment.reservation.forEach((reservation) => {
+            // 剔除進用項 -- 因為管理員本身禁用的紀錄會被記錄在一起
+            equipment.reservation.filter(item => item.status != -1).forEach((reservation) => {
 
                 if (reservation.user !== req.user.token) return;
 
+                const reserveDateTime = new Date(`${reservation.reserve_date}T${reservation.reserve_period}:00`);
+
+                const signInDeadline = new Date(reserveDateTime.getTime() + 15 * 60 * 1000);
+
+                let signIn = {};
+                
+                if(reservation.status == 1){
+                    signIn = {
+                        canSignIn: reservation.status == 1 && now >= reserveDateTime,
+                        showButtonText: now < reserveDateTime ? '尚未開放' : now >= signInDeadline ? '逾時簽到': '開放簽到'
+                    }
+                }
+                else if(reservation.status == 2) {
+                    signIn = { canSignIn: false, showButtonText: '完成簽到' }
+                }
+                else if(reservation.status == 3) {
+                    signIn = { canSignIn: false, showButtonText: '逾時簽到' }
+                }
+                
                 output.push({
                     equipment: equipment.name,
                     reserveId: reservation.reserveId,
                     reserve_date: reservation.reserve_date,
                     reserve_period: reservation.reserve_period,
+                    signIn
                 });
 
             });
@@ -62,7 +87,7 @@ router.get('/api/reservationRecord/user/getData', authMiddleware(0), async (req,
 
 });
 
-// 取消預約 （直接根據 reserveId 還有檢查是否為自己的預約記錄）
+// 取消預約
 router.post('/api/reservationRecord/user/cancel', authMiddleware(0), async (req, res) => {
 
     const { reserveId } = req.body;
@@ -101,7 +126,7 @@ router.post('/api/reservationRecord/user/cancel', authMiddleware(0), async (req,
         }
 
         // 已簽到不可取消
-        if (reservation.status == 2) {
+        if (reservation.status == 2 || reservation.status == 3) {
             return res.send({
                 type:'error',
                 message:'取消預約失敗（該預約已簽到）。'
@@ -146,6 +171,90 @@ router.post('/api/reservationRecord/user/cancel', authMiddleware(0), async (req,
 
 });
 
+// 預約簽到
+router.post('/api/reservationRecord/user/signIn', authMiddleware(0), async (req, res) => {
+
+    const { reserveId } = req.body;
+
+    if (!reserveId) {
+        return res.send({ type:'error', message:'簽到失敗（資料為空）。' });
+    }
+
+    try {
+
+        // 找出包含該預約的儀器
+        const equipment = await equipmentModel.findOne({ 'reservation.reserveId': reserveId, isDeleted: false });
+
+        if (!equipment) {
+            return res.send({ type:'error', message:'簽到失敗（預約資料不存在）。' });
+        }
+
+        // 找出指定預約
+        const reservation = equipment.reservation.find((item) => { return item.reserveId === reserveId; });
+
+        if (!reservation) { return res.send({ type:'error', message:'簽到失敗（預約資料不存在）。' }); }
+
+        // 確認是否為本人預約
+        if (reservation.user !== req.user.token) { return res.send({ type:'error', message:'簽到失敗（無法簽到其他使用者的預約）。'}); }
+
+        // 確認目前狀態為「已預約」
+        if (reservation.status !== 1) {
+
+            if (reservation.status === 2) {
+                return res.send({ type:'error', message:'簽到失敗（該預約已簽到）。' });
+            }
+
+            if (reservation.status === 0) {
+                return res.send({ type:'error', message:'簽到失敗（該時段尚未被預約）。'});
+            }
+            
+            if (reservation.status === -1) {
+                return res.send({ type:'error', message:'簽到失敗（該時段已被禁用）。'});
+            }
+
+            return res.send({
+                type:'error',
+                message:'簽到失敗（該預約目前無法簽到）。'
+            });
+        }
+
+        // 計算預約開始時間
+        const reserveDateTime = new Date(`${reservation.reserve_date}T${reservation.reserve_period}:00`);
+
+        const now = new Date();
+
+        // 尚未到預約時間
+        if (now < reserveDateTime) return res.send({ type:'error', message:'簽到失敗（尚未到預約時間）。'});
+
+        // 預約開始後 15 分鐘
+        const signInDeadline = new Date(reserveDateTime.getTime() + 15 * 60 * 1000);
+
+        // 超過簽到時間
+        if (now > signInDeadline) {
+            reservation.status = 3; // 記錄為逾時簽到
+
+            await equipment.save();
+
+            return res.send({ type:'error', message:'逾時簽到（已超過預約開始時間 15 分鐘）。'});
+        }
+
+        // 修改為已簽到
+        reservation.status = 3;
+
+        await equipment.save();
+
+        return res.send({ type:'success', message:'簽到成功！' });
+
+    } catch (e) {
+        console.log(e);
+
+        return res.send({
+            type:'error',
+            message:'伺服器錯誤，請洽客服人員協助。'
+        });
+    }
+
+});
 
 
 

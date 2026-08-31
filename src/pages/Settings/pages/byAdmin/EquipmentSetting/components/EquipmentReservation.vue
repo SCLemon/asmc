@@ -181,10 +181,19 @@ export default {
     .calendar-item-status--1{
         background: rgba(0,0,0,0.05);
         color: white;
-
     }
     /* 已預約 */
     .calendar-item-status-1{
+        background: black;
+        color: white;
+    }
+    /* 已簽到 */
+    .calendar-item-status-2{
+        background: black;
+        color: white;
+    }
+    /* 逾時簽到 */
+    .calendar-item-status-3{
         background: black;
         color: white;
     }
