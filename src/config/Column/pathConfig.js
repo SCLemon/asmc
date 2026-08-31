@@ -12,8 +12,8 @@ export default {
             icon: EditIcon,
         },
         {
-            name: 'Machine Reservation',
-            path: '/machine-reservation',
+            name: 'Reservation',
+            path: '/reservation',
             icon: CalendarIcon,
         },
         {

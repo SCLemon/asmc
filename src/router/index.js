@@ -10,6 +10,7 @@ import AnalysisTools from '../pages/AnalysisTools/AnalysisTools.vue'
 import UserLogin from '../pages/UserLogin/UserLogin.vue'
 
 import Profile from '../pages/Profile/Profile.vue'
+import Reservation from '../pages/Reservation/Reservation.vue'
 
 import Id_Vg_Analysis from '../pages/AnalysisTools/pages/Id_Vg_Analysis/Id_Vg_Analysis.vue'
 import Id_Vd_Analysis from '../pages/AnalysisTools/pages/Id_Vd_Analysis/Id_Vd_Analysis.vue'
@@ -24,6 +25,7 @@ import EquipmentSettingByAdmin from '../pages/Settings/pages/byAdmin/EquipmentSe
 
 // setting by user
 import EditLabByUser from '../pages/Settings/pages/byUser/LabSetting/EditLab/EditLab.vue'
+
 
 const routes = [
     {
@@ -47,6 +49,10 @@ const routes = [
     {
       path: '/profile',
       component: Profile
+    },
+    {
+      path: '/reservation',
+      component: Reservation
     },
     {
       path: '/analysis-tools',

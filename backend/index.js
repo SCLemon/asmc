@@ -65,6 +65,9 @@ app.use(profileRouter);
 const labSettingByUserRouter = require('./routes/byUser/settingRoutes/labSettingRouter');
 app.use(labSettingByUserRouter);
 
+const reservationByUserRouter = require('./routes/byUser/ReservationRouter');
+app.use(reservationByUserRouter)
+
 // global
 const settingsRouter = require('./routes/settingsRouter');
 app.use(settingsRouter) 
