@@ -57,7 +57,7 @@ router.post('/api/reservation/user/getSuperUserInfo', authMiddleware(0), labMidd
             return res.send({
                 type:'error',
                 data: {},
-                message:'儀器資料不存在。'
+                message:'儀器管理員資訊不存在。'
             });
         }
 
@@ -78,7 +78,7 @@ router.post('/api/reservation/user/getSuperUserInfo', authMiddleware(0), labMidd
         return res.send({
             type:'success',
             data: output,
-            message:'儀器資料獲取成功！'
+            message:'儀器管理員資訊獲取成功！'
         });
         
     } catch (e) {

@@ -115,6 +115,16 @@ export default {
                         type: 'warning',
                     }
                 )
+                const { value } = await ElMessageBox.prompt('請輸入操作確認提示：「確認刪除」。', '輸入刪除指令',
+                    {
+                        confirmButtonText: '確認',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                    }
+                )
+
+                if(value != '確認刪除') return eventBus.emit('handleAlert', { title:'用戶刪除結果', message: '刪除指令輸入錯誤', type: 'error' })
+
                 const res = await axios.post('/api/memberSetting/admin/delete',{ targetUser: token },{
                     headers: {
                         'x-user-token': jsCookie.get('authToken')
