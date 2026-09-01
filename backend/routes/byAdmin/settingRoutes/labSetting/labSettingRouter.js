@@ -21,12 +21,45 @@ router.get('/api/labSetting/admin/getData', authMiddleware(10), async (req, res)
 
         const users = await userModel.find({});
         const labs = await labModel.find({});
+        const equipments = await equipmentModel.find({
+            isDeleted: false
+        }).lean();
 
         // 統計各個 Lab 的成員數量
         const memberCountsMap = {};
+
+        // user token -> lab token
+        const userLabMap = {};
+
         users.forEach((user) => {
+
             if (!user.lab) return;
+
             memberCountsMap[user.lab] = (memberCountsMap[user.lab] || 0) + 1;
+
+            userLabMap[user.token] = user.lab;
+        });
+
+        // 統計各個 Lab 未付款金額
+        const unpaidMap = {};
+
+        equipments.forEach((equipment) => {
+
+            equipment.reservation.forEach((reservation) => {
+
+                // 只統計未付款
+                if (reservation.payment?.status !== false) return;
+
+                const labToken = userLabMap[reservation.user];
+
+                // 找不到使用者所屬 Lab
+                if (!labToken) return;
+
+                const amount = Number(reservation.payment?.amount) || 0;
+
+                unpaidMap[labToken] = (unpaidMap[labToken] || 0) + amount;
+            });
+
         });
 
         const output = labs.map((lab) => {
@@ -36,8 +69,9 @@ router.get('/api/labSetting/admin/getData', authMiddleware(10), async (req, res)
                 name: lab.name,
                 status: lab.status,
                 detailed: lab.detailed,
-                memberCounts: memberCountsMap[lab.token] || 0
-            }
+                memberCounts: memberCountsMap[lab.token] || 0,
+                unpaid: unpaidMap[lab.token] || 0
+            };
         });
 
         return res.send({

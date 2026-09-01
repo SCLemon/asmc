@@ -16,7 +16,7 @@
                     <td>{{ lab.createTime }}</td>
                     <td>{{ lab.name }}</td>
                     <td>{{ lab.memberCounts || 0 }} 人</td>
-                    <td>$ {{ lab.unpaid || 12210 }}</td>
+                    <td>$ {{ lab.unpaid || 0 }}</td>
                     <td>
                         <div v-if="lab.status" style="color: lightgreen;">有效</div>
                         <div v-else style="color: rgba(0,0,0,0.2);">凍結</div>
@@ -24,7 +24,7 @@
                     <td class="options">
                         <el-button @click="goToLabDetail(lab.token)">查看</el-button>
                         <el-button type="warning" @click="freeze(lab.token)">{{ lab.status ? '凍結' : '解凍' }}</el-button>
-                        <el-button type="danger" @click="deleteLab(lab.token)">刪除</el-button>
+                        <el-button type="danger" @click="deleteLab(lab)">刪除</el-button>
                     </td>
                 </tr>
             </tbody>
@@ -100,7 +100,7 @@ export default {
             catch(e){}
         }
 
-        async function deleteLab(token){
+        async function deleteLab(lab){
             try{
                 await ElMessageBox.confirm('確認刪除實驗室？', '刪除實驗室',
                     {
@@ -109,7 +109,16 @@ export default {
                         type: 'warning',
                     }
                 )
-                const res = await axios.post('/api/labSetting/admin/delete',{ targetLab: token },{
+                if(lab.unpaid && lab.unpaid > 0){
+                    await ElMessageBox.confirm('該實驗室帳款未結清，仍要刪除實驗室？', '帳款未結清',
+                        {
+                            confirmButtonText: '確認',
+                            cancelButtonText: '取消',
+                            type: 'warning',
+                        }
+                    )
+                }
+                const res = await axios.post('/api/labSetting/admin/delete',{ targetLab: lab.token },{
                     headers: {
                         'x-user-token': jsCookie.get('authToken')
                     }
