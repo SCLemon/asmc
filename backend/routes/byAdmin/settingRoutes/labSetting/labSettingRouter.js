@@ -14,7 +14,7 @@ const { v4: uuidv4 } = require('uuid');
 const authMiddleware = require('../../../../middleware/auth.middleware');
 
 
-// 獲取實驗室  **待新增對帳單統計
+// 獲取實驗室
 router.get('/api/labSetting/admin/getData', authMiddleware(10), async (req, res) => {
 
     try {
@@ -24,6 +24,8 @@ router.get('/api/labSetting/admin/getData', authMiddleware(10), async (req, res)
         const equipments = await equipmentModel.find({
             isDeleted: false
         }).lean();
+
+        const now = new Date();
 
         // 統計各個 Lab 的成員數量
         const memberCountsMap = {};
@@ -40,19 +42,27 @@ router.get('/api/labSetting/admin/getData', authMiddleware(10), async (req, res)
             userLabMap[user.token] = user.lab;
         });
 
-        // 統計各個 Lab 未付款金額
+        // 統計各個 Lab 過去且未付款的金額
         const unpaidMap = {};
 
         equipments.forEach((equipment) => {
 
             equipment.reservation.forEach((reservation) => {
 
+                // 預約日期 + 時間
+                const reserveDateTime = new Date(
+                    `${reservation.reserve_date}T${reservation.reserve_period}:00`
+                );
+
+                // 只統計已經過去的預約
+                if (reserveDateTime >= now) return;
+
                 // 只統計未付款
                 if (reservation.payment?.status !== false) return;
 
+                // 找出使用者所屬 Lab
                 const labToken = userLabMap[reservation.user];
 
-                // 找不到使用者所屬 Lab
                 if (!labToken) return;
 
                 const amount = Number(reservation.payment?.amount) || 0;
@@ -79,8 +89,9 @@ router.get('/api/labSetting/admin/getData', authMiddleware(10), async (req, res)
             data: output,
             message: '實驗室列表獲取成功！'
         });
-        
+
     } catch (e) {
+
         console.log(e);
 
         return res.send({

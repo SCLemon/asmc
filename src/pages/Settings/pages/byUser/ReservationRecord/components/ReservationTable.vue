@@ -15,10 +15,13 @@
                     <td>{{ record.reserve_period}}</td>
                     <td>{{ record.equipment }}</td>
                     <td class="options">
-                        <el-button type="warning" @click="record?.signIn?.canSignIn?signIn(record.reserveId):''" 
+                        <div v-if="record?.signIn?.showBtn">
+                            <el-button type="warning" @click="record?.signIn?.canSignIn?signIn(record.reserveId):''" 
                                 :disabled="!(record?.signIn?.canSignIn)">{{ record?.signIn?.showButtonText }}
-                        </el-button>
-                        <el-button type="danger" @click="deleteReserve(record.reserveId)">刪除</el-button>
+                            </el-button>
+                            <el-button type="danger" v-if="record.showCancelBtn" @click="deleteReserve(record.reserveId)">刪除</el-button>
+                        </div>
+                        <div v-else style="color: rgba(0,0,0,0.2);">{{ record?.signIn?.showButtonText }}</div>
                     </td>
                 </tr>
             </tbody>

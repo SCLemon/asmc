@@ -9,6 +9,12 @@ const equipmentModel = require('../../../models/equipmentModel');
 const authMiddleware = require('../../../middleware/auth.middleware');
 
 
+// 預約開始前至少前幾分鐘才可以取消
+const LimitMinute = 60;
+
+// 逾時簽到門檻
+const LateMinute = 15;
+
 // 獲取使用者個人的所有預約記錄（以最新的排在最上面）
 router.get('/api/reservationRecord/user/getData', authMiddleware(0), async (req, res) => {
 
@@ -24,36 +30,39 @@ router.get('/api/reservationRecord/user/getData', authMiddleware(0), async (req,
 
         equipments.forEach((equipment) => {
 
-            // 剔除禁用項 -- 因為管理員本身禁用的紀錄會被記錄在一起
             equipment.reservation.forEach((reservation) => {
 
                 if (reservation.user !== req.user.token) return;
 
                 const reserveDateTime = new Date(`${reservation.reserve_date}T${reservation.reserve_period}:00`);
 
-                const signInDeadline = new Date(reserveDateTime.getTime() + 15 * 60 * 1000);
+                const signInDeadline = new Date(reserveDateTime.getTime() + LateMinute * 60 * 1000);
 
                 let signIn = {};
-                
                 if(reservation.status == 1){
                     signIn = {
+                        showBtn: true,
                         canSignIn: reservation.status == 1 && now >= reserveDateTime,
                         showButtonText: now < reserveDateTime ? '尚未開放' : now >= signInDeadline ? '逾時簽到': '開放簽到'
                     }
                 }
                 else if(reservation.status == 2) {
-                    signIn = { canSignIn: false, showButtonText: '已簽到' }
+                    signIn = { showBtn: false, canSignIn: false, showButtonText: '已簽到' }
                 }
                 else if(reservation.status == 3) {
-                    signIn = { canSignIn: false, showButtonText: '已簽到' }
+                    signIn = { showBtn: false, canSignIn: false, showButtonText: '已簽到' }
                 }
                 
+                // 預約開始前至少 X 分鐘才可以取消
+                const cancelDeadline = new Date(reserveDateTime.getTime() - LimitMinute * 60 * 1000);
+
                 output.push({
                     equipment: equipment.name,
                     reserveId: reservation.reserveId,
                     reserve_date: reservation.reserve_date,
                     reserve_period: reservation.reserve_period,
-                    signIn
+                    signIn,
+                    showCancelBtn : !(now >= cancelDeadline)
                 });
 
             });
@@ -87,7 +96,7 @@ router.get('/api/reservationRecord/user/getData', authMiddleware(0), async (req,
 
 });
 
-// 取消預約
+// 取消預約 -- 前 X 分鐘內無法取消
 router.post('/api/reservationRecord/user/cancel', authMiddleware(0), async (req, res) => {
 
     const { reserveId } = req.body;
@@ -138,13 +147,13 @@ router.post('/api/reservationRecord/user/cancel', authMiddleware(0), async (req,
 
         const now = new Date();
 
-        // 預約開始前至少一小時才可以取消
-        const cancelDeadline = new Date(reserveDateTime.getTime() - 60 * 60 * 1000);
+        // 預約開始前至少 X 分鐘才可以取消
+        const cancelDeadline = new Date(reserveDateTime.getTime() - LimitMinute * 60 * 1000);
 
         if (now >= cancelDeadline) {
             return res.send({
                 type:'error',
-                message:'取消預約失敗（預約開始前一小時內無法取消）。'
+                message:`取消預約失敗（預約開始前 ${LimitMinute} 分鐘內無法取消）。`
             });
         }
 
@@ -226,8 +235,8 @@ router.post('/api/reservationRecord/user/signIn', authMiddleware(0), async (req,
         // 尚未到預約時間
         if (now < reserveDateTime) return res.send({ type:'error', message:'簽到失敗（尚未到預約時間）。'});
 
-        // 預約開始後 15 分鐘
-        const signInDeadline = new Date(reserveDateTime.getTime() + 15 * 60 * 1000);
+        // 預約開始後 X 分鐘
+        const signInDeadline = new Date(reserveDateTime.getTime() + LateMinute * 60 * 1000);
 
         // 超過簽到時間
         if (now > signInDeadline) {
@@ -235,7 +244,7 @@ router.post('/api/reservationRecord/user/signIn', authMiddleware(0), async (req,
 
             await equipment.save();
 
-            return res.send({ type:'success', message:'逾時簽到（已超過預約開始時間 15 分鐘）。'});
+            return res.send({ type:'success', message:`逾時簽到（已超過預約開始時間 ${LateMinute} 分鐘）。`});
         }
 
         // 修改為已簽到

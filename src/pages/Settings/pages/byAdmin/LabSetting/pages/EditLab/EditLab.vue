@@ -176,6 +176,7 @@ export default {
         gap: 15px;
     }
     .lab-setting-edit-detailed-block{
+        width: 50%;
         height: 100%;
         box-sizing: border-box;
         overflow: hidden;

@@ -65,7 +65,7 @@ router.get('/api/labSetting/payment/admin/getData', authMiddleware(10), async (r
                 const reserveDateTime = new Date(`${reservation.reserve_date}T${reservation.reserve_period}:00`);
 
                 // 只取「已經過去」的預約
-                // if (reserveDateTime >= now) return;
+                if (reserveDateTime >= now) return;
 
                 const payment = reservation.payment || { amount: 0, status: false };
 
