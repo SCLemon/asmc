@@ -1,7 +1,7 @@
 import { UserIcon } from 'vorium-ui/icons'
 export default [
     {
-        title: '管理員列表',
+        title: '平台管理員列表',
         level: 10,
         block: [
             {
@@ -22,8 +22,19 @@ export default [
         ]
     },
     {
+        title: '儀器管理員列表',
+        level: 4,
+        block: [
+            {
+                title: '儀器管理',
+                icon: UserIcon,
+                path: '/settings/superUser/equipment-setting'
+            },
+        ]
+    },
+    {
         title: '使用者列表',
-        level: 0,
+        level: 1,
         block: [
             {
                 title: '個人資料維護',

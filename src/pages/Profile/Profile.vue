@@ -105,7 +105,7 @@ export default {
         const router = useRouter();
         function logout(){
             jsCookie.remove('authToken');
-            router.replace('/user/login').catch((e)=>{})
+            router.replace('/login').catch((e)=>{})
         }
 
         return {

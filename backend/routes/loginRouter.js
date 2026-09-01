@@ -122,6 +122,9 @@ router.post('/login/token', authMiddleware(0), labMiddleware, async (req, res) =
         return res.send({ 
             type: 'success', 
             message: '登入成功！', 
+            data:{
+                level: req.user.level
+            },
             showAlert: false 
         });
 

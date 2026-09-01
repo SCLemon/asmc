@@ -60,6 +60,9 @@ app.use(paymentRecordByAdminRouter);
 const equipmentSettingByAdminRouter = require('./routes/byAdmin/settingRoutes/equipmentSettingRouter');
 app.use(equipmentSettingByAdminRouter);
 
+// by SuperUser
+const equipmentSettingBySuperUserRouter = require('./routes/bySuperUser/settingRoutes/equipmentSettingRouter');
+app.use(equipmentSettingBySuperUserRouter);
 
 // by User
 const profileRouter = require('./routes/byUser/profileRouter');

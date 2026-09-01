@@ -92,13 +92,6 @@ export default {
         width: 35px;
         aspect-ratio: 1/1;
     }
-    /* column-menu */
-    .column-menu-wrapper{
-       
-    }
-    .column-menu-item{
-
-    }
     /* column-setting */
     .column-setting-wrapper{
         position: absolute;

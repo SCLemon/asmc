@@ -18,7 +18,7 @@ export default {
         },
         {
             name: 'Cloud Materials',
-            path: '/cloud-materials',
+            path: '/cloud',
             icon: BookIcon,
         },
         {

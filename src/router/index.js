@@ -23,6 +23,9 @@ import LabSettingByAdmin from '../pages/Settings/pages/byAdmin/LabSetting/LabSet
 import EditLabByAdmin from '../pages/Settings/pages/byAdmin/LabSetting/pages/EditLab/EditLab.vue'
 import EquipmentSettingByAdmin from '../pages/Settings/pages/byAdmin/EquipmentSetting/EquipmentSetting.vue'
 
+// setting by superUser
+import EquipmentSettingBySuperUser from '../pages/Settings/pages/bySuperUser/EquipmentSetting/EquipmentSetting.vue'
+
 // setting by user
 import EditLabByUser from '../pages/Settings/pages/byUser/LabSetting/EditLab/EditLab.vue'
 import ReservationRecordByUser from '../pages/Settings/pages/byUser/ReservationRecord/ReservationRecord.vue'
@@ -72,7 +75,7 @@ const routes = [
       component: Id_Vd_Analysis,
     },
     {
-      path: '/user/login',
+      path: '/login',
       component: UserLogin,
     },
     {
@@ -96,11 +99,15 @@ const routes = [
       path: '/settings/admin/lab-setting/edit',
       component: EditLabByAdmin
     },
-        {
+    {
       path: '/settings/admin/equipment-setting',
       component: EquipmentSettingByAdmin
     },
-
+    // by superUser
+    {
+      path: '/settings/superUser/equipment-setting',
+      component: EquipmentSettingBySuperUser
+    },
     // by user
     {
       path: '/settings/user/lab-setting/edit',
@@ -121,30 +128,46 @@ const router = createRouter({
   routes
 })
 
+import levelRoutes from '../config/Router/level_routes_config.js'
+
 router.beforeEach(async (to, from) => {
-  
-  if(to.fullPath === '/user/login' || to.fullPath.includes('/introduction')) return true;
+
+  // 找出目前路徑的權限設定
+  const requiredRoute = levelRoutes.find((group) => {
+    return group.paths.some((path) => to.fullPath.includes(path));
+  });
+
+  // 無需驗證
+  if (requiredRoute?.level === null) return true;
 
   const token = jsCookie.get('authToken');
 
-  if (!token && to.path !== '/user/login') {
-    return { path: '/user/login', query: { redirect: to.fullPath } }
+  // 沒有 Token
+  if (!token) {
+    return { path: '/login', query: { redirect: to.fullPath }};
   }
-  
-  const res = await axios.post('/login/token',{ save: false },{
-    headers:{
-      'x-user-token': token
-    }
-  })
 
-  if(res.data.type == 'success') return true;
-  else{
-    if (to.path !== '/user/login') {
-      return { path: '/user/login', query: { redirect: to.fullPath } }
+  const res = await axios.post('/login/token',{ save: false },
+    {
+      headers: {
+        'x-user-token': token
+      }
     }
+  );
+
+  const level = res.data?.data?.level || null;
+
+  // Token 無效
+  if (res.data.type !== 'success') {
+    return { path: '/login', query: { redirect: to.fullPath }};
   }
-  
 
+  // 檢查路徑權限
+  if (requiredRoute && level < requiredRoute.level) {
+    return { path: '/login', query: { redirect: to.fullPath }};
+  }
+
+  return true;
 });
 
 export default router
