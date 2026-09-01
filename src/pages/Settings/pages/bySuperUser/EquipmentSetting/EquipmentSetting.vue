@@ -91,7 +91,7 @@ export default {
         width: fit-content;
     }
     .equipment-setting-search{
-        width: 300px;
+        width: 500px;
         height: 40px;
         box-sizing: border-box;
         border: 0;

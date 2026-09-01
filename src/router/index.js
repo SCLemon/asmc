@@ -152,7 +152,7 @@ router.beforeEach(async (to, from) => {
   // 沒有 Token
   if (!token) return { path: '/login',  query: { redirect: to.fullPath } };
 
-  const res = await axios.post( '/login/token', { save: false },
+  const res = await axios.post('/login/token', { save: false },
     {
       headers: {
         'x-user-token': token
