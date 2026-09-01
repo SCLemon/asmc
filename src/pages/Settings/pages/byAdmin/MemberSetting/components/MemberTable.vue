@@ -108,7 +108,7 @@ export default {
 
         async function deleteUser(token){
             try{
-                await ElMessageBox.confirm('確認刪除用戶？', '刪除用戶',
+                await ElMessageBox.confirm('此操作將永久刪除所有與其相關之資料（包含帳務）。', '刪除用戶',
                     {
                         confirmButtonText: '確認',
                         cancelButtonText: '取消',
