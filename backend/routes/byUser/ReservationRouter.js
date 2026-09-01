@@ -15,6 +15,9 @@ const authMiddleware = require('../../middleware/auth.middleware');
 const labMiddleware = require('../../middleware/lab.middleware');
 
 
+// 前幾分鐘要取消
+const { LimitMinute } = require('../globalConfig/reservationConfig')
+
 // 獲取儀器列表
 router.get('/api/reservation/user/getData', authMiddleware(0), labMiddleware, async (req, res) => {
 
@@ -252,11 +255,11 @@ router.post('/api/reservation/user/handleReserve', authMiddleware(0), labMiddlew
                 });
             }
 
-            // 預約開始前至少一小時才可以取消
-            const cancelDeadline = new Date(reserveDateTime.getTime() - 60 * 60 * 1000);
+            // 預約開始前至少 X 分鐘才可以取消
+            const cancelDeadline = new Date(reserveDateTime.getTime() - LimitMinute * 60 * 1000);
 
             if (now >= cancelDeadline) {
-                return res.send({ type:'error', message:'預約開始前一小時內無法取消預約。'});
+                return res.send({ type:'error', message:`預約開始前 ${ LimitMinute } 分鐘內無法取消預約。`});
             }
 
             equipment.reservation = equipment.reservation.filter((item) => {

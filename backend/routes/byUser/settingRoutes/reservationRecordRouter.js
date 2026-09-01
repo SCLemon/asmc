@@ -9,11 +9,7 @@ const equipmentModel = require('../../../models/equipmentModel');
 const authMiddleware = require('../../../middleware/auth.middleware');
 
 
-// 預約開始前至少前幾分鐘才可以取消
-const LimitMinute = 60;
-
-// 逾時簽到門檻
-const LateMinute = 15;
+const { LimitMinute, LateMinute } = require('../../globalConfig/reservationConfig')
 
 // 獲取使用者個人的所有預約記錄（以最新的排在最上面）
 router.get('/api/reservationRecord/user/getData', authMiddleware(0), async (req, res) => {
