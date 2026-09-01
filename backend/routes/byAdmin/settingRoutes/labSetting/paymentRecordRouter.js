@@ -16,15 +16,15 @@ const authMiddleware = require('../../../../middleware/auth.middleware');
 
 
 // 獲取訂單列表
-router.get('/api/labSetting/payment/admin/getData', authMiddleware(10), async (req, res) => {
+router.post('/api/labSetting/payment/admin/getData', authMiddleware(10), async (req, res) => {
+
+    const { targetLab } = req.body;
 
     try {
 
-        const labToken = req.user.lab;
+        const lab = await labModel.findOne({ token: targetLab });
 
-        const targetLab = await labModel.findOne({ token: labToken });
-
-        if (!targetLab) {
+        if (!lab) {
             return res.send({
                 type: 'error',
                 data: [],
@@ -33,7 +33,7 @@ router.get('/api/labSetting/payment/admin/getData', authMiddleware(10), async (r
         }
 
         // 找出該實驗室所有使用者
-        const users = await userModel.find({ lab: labToken }).select('token name').lean();
+        const users = await userModel.find({ lab: targetLab }).select('token name').lean();
 
         const userTokens = users.map((user) => user.token);
 

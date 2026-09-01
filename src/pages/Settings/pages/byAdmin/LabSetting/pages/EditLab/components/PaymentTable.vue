@@ -37,6 +37,10 @@ import { ElMessageBox } from 'element-plus'
 export default {
     name: 'PaymentTable',
     props:{
+        targetLab:{
+            type: String,
+            required: true,
+        }
     },
     setup(props, context){
         
@@ -47,7 +51,10 @@ export default {
         })
 
         async function getData(){
-            const res = await axios.get('/api/labSetting/payment/admin/getData',{
+            const res = await axios.post('/api/labSetting/payment/admin/getData',{
+                targetLab: props.targetLab
+            },
+            {
                 headers:{
                     'x-user-token': jsCookie.get('authToken')
                 }

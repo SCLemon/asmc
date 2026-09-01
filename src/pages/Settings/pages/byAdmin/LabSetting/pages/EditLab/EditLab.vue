@@ -35,7 +35,7 @@
                     <div>Payment Records</div>
                     <div class="payment-summary">已付款：${{ paymentSummary?.paidAmount }} / 未付款：${{ paymentSummary?.unpaidAmount }} </div>
                 </div>
-                <payment-table @change="handlePaymentSummary"></payment-table>
+                <payment-table @change="handlePaymentSummary" :targetLab="targetLab"></payment-table>
             </div>
         </div>
     </div>
