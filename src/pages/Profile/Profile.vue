@@ -50,6 +50,9 @@ import axios from 'axios';
 import { eventBus } from '@/utils/eventBus';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+
+import level_options from '../../config/Settings/level_options';
+
 export default {
     name: 'Profile',
     setup(){
@@ -66,21 +69,6 @@ export default {
         })
 
         const lab_options = ref([])
-
-        const level_options = [
-            {
-                value: 1,
-                label: '其他實驗室成員',
-            },
-            {
-                value: 4,
-                label: 'ASMC 實驗室成員',
-            },
-            {
-                value: 10,
-                label: '平台管理員',
-            },
-        ]
 
         const level = computed(()=>{
             return level_options.find(item => item.value == user.value?.level)?.label

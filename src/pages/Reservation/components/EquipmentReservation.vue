@@ -16,7 +16,7 @@
                         v-for="period in periodList" :key="period"
                         @click="getPeriod(item, period)?.status != -1 && !isPast(item.date, period)? handle(getPeriod(item, period), item.date, period) : ''">
                         {{ getPeriodLabel(item, period) }}
-                        <div class="calendar-item-is-Mine"><VIcon :icon="UserIcon" v-if="getPeriod(item, period)?.status!= -1 && getPeriod(item, period).isMine"></vIcon></div>
+                        <div class="calendar-item-is-Mine"><VIcon :icon="UserIcon" v-if="!isPast(item.date, period) && getPeriod(item, period)?.status!= -1 && getPeriod(item, period).isMine"></vIcon></div>
                     </div>
                 </div>
             </div>
@@ -90,7 +90,7 @@ export default {
             }
 
             if (data?.status === 3) {
-                return '逾時簽到';
+                return '已簽到';
             }
 
             return period;

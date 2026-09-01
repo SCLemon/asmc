@@ -123,7 +123,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   
-  if(to.fullPath === '/user/login' || to.fullPath === '/introduction/home') return true;
+  if(to.fullPath === '/user/login' || to.fullPath.includes('/introduction')) return true;
 
   const token = jsCookie.get('authToken');
 

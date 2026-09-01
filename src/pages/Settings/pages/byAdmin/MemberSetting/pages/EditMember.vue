@@ -56,6 +56,9 @@ import { eventBus } from '@/utils/eventBus';
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessageBox } from 'element-plus'
+
+import level_options from '../../../../../../config/Settings/level_options';
+
 export default {
     name: 'EditMember',
     setup(){
@@ -78,22 +81,6 @@ export default {
         })
 
         const lab_options = ref([])
-
-        const level_options = [
-            {
-                value: 1,
-                label: '其他實驗室成員',
-            },
-            {
-                value: 4,
-                label: 'ASMC 實驗室成員',
-            },
-            {
-                value: 10,
-                label: '平台管理員',
-            },
-        ]
-
 
         onMounted(async ()=>{
             await getData();
