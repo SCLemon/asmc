@@ -30,10 +30,6 @@ import { useRoute, useRouter } from 'vue-router';
 export default {
     name: 'MemberTable',
     props:{
-        targetLab:{
-            type: String,
-            required: true,
-        }
     },
     setup(props){
         

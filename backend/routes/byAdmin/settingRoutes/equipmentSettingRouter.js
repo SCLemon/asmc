@@ -523,7 +523,7 @@ router.post('/api/equipmentSetting/admin/handleReserve', authMiddleware(10), asy
 
             const newReservation = {
                 reserveId: uuidv4(),
-                user: req.user.token,
+                user: 'system',
                 reserve_date,
                 reserve_period,
                 status: -1,

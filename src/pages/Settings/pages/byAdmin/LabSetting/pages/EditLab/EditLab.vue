@@ -31,8 +31,11 @@
                 <member-table :targetLab="targetLab"></member-table>
             </div>
             <div class="lab-setting-edit-detailed-block">
-                <div class="lab-setting-edit-detailed-block-title">Payment Records</div>
-                <member-table :targetLab="targetLab"></member-table>
+                <div class="lab-setting-edit-detailed-block-title-2">
+                    <div>Payment Records</div>
+                    <div class="payment-summary">已付款：${{ paymentSummary?.paidAmount }} / 未付款：${{ paymentSummary?.unpaidAmount }} </div>
+                </div>
+                <payment-table @change="handlePaymentSummary"></payment-table>
             </div>
         </div>
     </div>
@@ -44,11 +47,14 @@ import axios from 'axios';
 import { eventBus } from '@/utils/eventBus';
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+
 import MemberTable from './components/MemberTable.vue';
+import PaymentTable from './components/PaymentTable.vue'
+
 export default {
     name: 'EditLab',
     components:{
-        MemberTable
+        MemberTable, PaymentTable
     },
     setup(){
         
@@ -102,8 +108,13 @@ export default {
             router.replace('/settings/admin/lab-setting').catch((e)=>{})
         }
 
+        const paymentSummary = ref({});
+        function handlePaymentSummary(summary){
+            paymentSummary.value = summary;
+        }
+
         return {
-            lab, revise, goBack, targetLab
+            lab, revise, goBack, targetLab, paymentSummary, handlePaymentSummary
         }
     }
 }
@@ -176,6 +187,21 @@ export default {
         line-height: 40px;
         font-size: 18px;
         font-weight: bolder;
+    }
+    .lab-setting-edit-detailed-block-title-2{
+        width: 100%;
+        height: 40px;
+        line-height: 40px;
+        font-size: 18px;
+        font-weight: bolder;
+        display: flex;
+        align-items: center;
+    }
+    .payment-summary{
+        margin-left: auto;
+        margin-right: 5px;
+        font-weight: normal;
+        font-size: 14px;
     }
     :deep(.el-select__wrapper){
         height: 40px;

@@ -4,14 +4,14 @@
 const express = require('express');
 const router = express.Router();
 
-const labModel = require('../../../models/labModel');
-const userModel = require('../../../models/userModel');
-const equipmentModel = require('../../../models/equipmentModel');
+const labModel = require('../../../../models/labModel');
+const userModel = require('../../../../models/userModel');
+const equipmentModel = require('../../../../models/equipmentModel');
 
 const {format} = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
 
-const authMiddleware = require('../../../middleware/auth.middleware');
+const authMiddleware = require('../../../../middleware/auth.middleware');
 
 
 // 獲取實驗室  **待新增對帳單統計

@@ -24,8 +24,8 @@ router.get('/api/reservationRecord/user/getData', authMiddleware(0), async (req,
 
         equipments.forEach((equipment) => {
 
-            // 剔除進用項 -- 因為管理員本身禁用的紀錄會被記錄在一起
-            equipment.reservation.filter(item => item.status != -1).forEach((reservation) => {
+            // 剔除禁用項 -- 因為管理員本身禁用的紀錄會被記錄在一起
+            equipment.reservation.forEach((reservation) => {
 
                 if (reservation.user !== req.user.token) return;
 

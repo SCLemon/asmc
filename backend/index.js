@@ -51,8 +51,11 @@ app.use(loginRouter);
 const memberSettingByAdminRouter = require('./routes/byAdmin/settingRoutes/memberSettingRouter');
 app.use(memberSettingByAdminRouter);
 
-const labSettingByAdminRouter = require('./routes/byAdmin/settingRoutes/labSettingRouter');
+const labSettingByAdminRouter = require('./routes/byAdmin/settingRoutes/labSetting/labSettingRouter');
 app.use(labSettingByAdminRouter);
+
+const paymentRecordByAdminRouter = require('./routes/byAdmin/settingRoutes/labSetting/paymentRecordRouter');
+app.use(paymentRecordByAdminRouter);
 
 const equipmentSettingByAdminRouter = require('./routes/byAdmin/settingRoutes/equipmentSettingRouter');
 app.use(equipmentSettingByAdminRouter);
@@ -62,8 +65,11 @@ app.use(equipmentSettingByAdminRouter);
 const profileRouter = require('./routes/byUser/profileRouter');
 app.use(profileRouter);
 
-const labSettingByUserRouter = require('./routes/byUser/settingRoutes/labSettingRouter');
+const labSettingByUserRouter = require('./routes/byUser/settingRoutes/labSetting/labSettingRouter');
 app.use(labSettingByUserRouter);
+
+const paymentRecordByUserRouter = require('./routes/byUser/settingRoutes/labSetting/paymentRecordRouter');
+app.use(paymentRecordByUserRouter );
 
 const reservationByUserRouter = require('./routes/byUser/ReservationRouter');
 app.use(reservationByUserRouter)

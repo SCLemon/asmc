@@ -4,13 +4,13 @@
 const express = require('express');
 const router = express.Router();
 
-const labModel = require('../../../models/labModel');
-const userModel = require('../../../models/userModel');
+const labModel = require('../../../../models/labModel');
+const userModel = require('../../../../models/userModel');
 
 const {format} = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
 
-const authMiddleware = require('../../../middleware/auth.middleware');
+const authMiddleware = require('../../../../middleware/auth.middleware');
 
 
 // 修改實驗室
