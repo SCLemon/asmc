@@ -90,7 +90,7 @@ export default {
             }
 
             if (data?.status === 3) {
-                return '已簽到';
+                return '逾時簽到';
             }
 
             return period;

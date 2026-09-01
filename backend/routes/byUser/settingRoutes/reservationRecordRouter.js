@@ -42,10 +42,10 @@ router.get('/api/reservationRecord/user/getData', authMiddleware(0), async (req,
                     }
                 }
                 else if(reservation.status == 2) {
-                    signIn = { canSignIn: false, showButtonText: '完成簽到' }
+                    signIn = { canSignIn: false, showButtonText: '已簽到' }
                 }
                 else if(reservation.status == 3) {
-                    signIn = { canSignIn: false, showButtonText: '逾時簽到' }
+                    signIn = { canSignIn: false, showButtonText: '已簽到' }
                 }
                 
                 output.push({
