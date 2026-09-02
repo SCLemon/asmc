@@ -4,9 +4,18 @@ const cheerio = require('cheerio');
 const key = 'U3VwZXJBZG06NzIxNTY4'
 
 const system = {
-    '001': 'http://192.168.0.100',
-    '002': 'http://192.168.0.3',
-    '003': 'http://192.168.0.3'
+    '001': {
+        label:'R212-1',
+        ip: 'http://192.168.0.100',
+    },
+    '002': {
+        label:'R212-2',
+        ip: 'http://192.168.0.2',
+    },
+    '003': {
+        label:'R108',
+        ip: 'http://192.168.0.3',
+    }
 }
 
 async function wakeup(systemId) {
@@ -14,7 +23,7 @@ async function wakeup(systemId) {
     try {
 
         await axios.get(
-            `${system[systemId]}/userlist.htm`,
+            `${system[systemId].ip}/userlist.htm`,
             {
                 headers: {
                     Authorization: `Basic ${key}`
@@ -65,7 +74,7 @@ async function addUser(systemId, uAddr, uid1, uid2) {
     }
 
     try {
-        const res = await axios.post(`${system[systemId]}/UserParam.cgi`,
+        const res = await axios.post(`${system[systemId].ip}/UserParam.cgi`,
             new URLSearchParams(data).toString(),
             {  
                 headers: {
@@ -110,7 +119,7 @@ async function deleteUser(systemId, uAddr) {
     }
 
     try {
-        const res = await axios.post(`${system[systemId]}/UserParam.cgi`,
+        const res = await axios.post(`${system[systemId].ip}/UserParam.cgi`,
             new URLSearchParams(data).toString(),
             {
                 headers: {
@@ -144,7 +153,7 @@ async function getUserList(systemId, uAddr) {
         const getPage = async () => {
 
             const res = await axios.post(
-                `${system[systemId]}/UserList.cgi`,
+                `${system[systemId].ip}/UserList.cgi`,
 
                 new URLSearchParams({
                     uAddr: uAddr,
@@ -242,7 +251,7 @@ async function getEventLog(systemId, page) {
         page = Math.max(1, Number(page) || 1);
 
         // 取得 EventLog 頁面
-        const response = await axios.get(`${system[systemId]}/EventLog.htm`,
+        const response = await axios.get(`${system[systemId].ip}/EventLog.htm`,
             {
                 headers: {
                     Authorization: `Basic ${key}`
@@ -268,7 +277,7 @@ async function getEventLog(systemId, page) {
         const formvalue = $('[name="formvalue"]').val();
 
         // POST EventLog
-        const result = await axios.post(`${system[systemId]}/EventLog.cgi`,
+        const result = await axios.post(`${system[systemId].ip}/EventLog.cgi`,
 
             new URLSearchParams({
                 eStart: String(eStart),
@@ -348,7 +357,7 @@ async function getEventLog(systemId, page) {
 
 
 module.exports = {
-    addUser, deleteUser, getUserList, getEventLog
+    addUser, deleteUser, getUserList, getEventLog, system
 }
 
 

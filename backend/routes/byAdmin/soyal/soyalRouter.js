@@ -9,8 +9,31 @@ const userModel = require('../../../models/userModel');
 
 const authMiddleware = require('../../../middleware/auth.middleware');
 
-const { addUser, deleteUser, getUserList, getEventLog } = require('../../../utils/soyal');
+const { addUser, deleteUser, getUserList, getEventLog, system } = require('../../../utils/soyal');
 
+
+// 獲取可用裝置列表
+router.get('/api/door-access-control/admin/getDevice', authMiddleware(10), async (req, res) => {
+
+    let output = Object.values(system).map(sys => sys.label);
+
+    try{
+        return res.send({
+            type:'success',
+            data: output,
+            message:'裝置列表獲取成功。' 
+        });
+    }
+    catch(e){
+        console.log(e)
+        return res.send({
+            type:'error',
+            data: [],
+            message:'伺服器錯誤，請洽客服人員協助。'
+        });
+    }
+
+});
 
 // 獲取特定門禁的使用者名單
 router.post('/api/door-access-control/admin/getUserList', authMiddleware(10), async (req, res) => {
