@@ -19,6 +19,11 @@ export default [
                 icon: UserIcon,
                 path: '/settings/admin/equipment-setting'
             },
+            {
+                title: '門禁管理',
+                icon: UserIcon,
+                path: '/settings/admin/door-access-control'
+            },
         ]
     },
     {

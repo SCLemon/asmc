@@ -46,7 +46,7 @@ async function wakeup(systemId) {
 
 
 // 新增 or 修改使用者 -- ok
-async function addUser(systemId, uAddr, uid1, uid2) {
+async function addUser(systemId, uAddr, uName, uid1, uid2) {
 
     const online = await wakeup(systemId);
 
@@ -58,7 +58,7 @@ async function addUser(systemId, uAddr, uid1, uid2) {
 
     const data = {
         uAddr,
-        uName: '',
+        uName: uName,
         uMode: 'Card Only',
         uPIN: 0,
         uUIDsite: uid1,
@@ -82,10 +82,18 @@ async function addUser(systemId, uAddr, uid1, uid2) {
                 },
             }
         );
+        return {
+            message: '門禁用戶新增/修改成功。',
+            type: 'success'
+        };
 
     } 
     catch (e) {
         console.log(e);
+        return {
+            message: '門禁用戶新增/修改失敗。',
+            type: 'error'
+        };
     }
 
 }
@@ -127,12 +135,20 @@ async function deleteUser(systemId, uAddr) {
                 },
             }
         );
+        return {
+            message: '門禁用戶刪除成功。',
+            type: 'success'
+        };
 
     } 
     catch (e) {
 
         console.log(e);
 
+        return {
+            message: '門禁用戶刪除失敗。',
+            type: 'error'
+        };
     }
 
 }
@@ -163,7 +179,7 @@ async function getUserList(systemId, uAddr) {
 
                 {
                     headers: {
-                        Authorization: `Basic ${key}`
+                        Authorization: `Basic ${key}`,
                     },
                 }
             );
@@ -197,7 +213,6 @@ async function getUserList(systemId, uAddr) {
                 });
 
             });
-
             return users;
 
         };
@@ -208,6 +223,7 @@ async function getUserList(systemId, uAddr) {
         await new Promise(resolve => setTimeout(resolve, 300));
 
         const users2 = await getPage();
+
 
         // 合併
         const users = [
@@ -220,13 +236,22 @@ async function getUserList(systemId, uAddr) {
             return a.address - b.address;
         });
 
-        return users;
+        return {
+            message: `門禁用戶列表獲取成功。`,
+            data: users,
+            type: 'success'
+        };
 
-    } catch (e) {
+    } 
+    catch (e) {
 
         console.log(e);
 
-        return [];
+        return {
+            message: '門禁用戶列表獲取失敗。',
+            data: [],
+            type: 'error'
+        };
 
     }
 
@@ -346,7 +371,7 @@ async function getEventLog(systemId, page) {
         console.log(e);
 
         return {
-            message: e.message || '取得 Event Log 失敗。',
+            message: '取得 Event Log 失敗。',
             data: [],
             type: 'error'
         };

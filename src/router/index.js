@@ -22,6 +22,7 @@ import EditMemberByAdmin from '../pages/Settings/pages/byAdmin/MemberSetting/pag
 import LabSettingByAdmin from '../pages/Settings/pages/byAdmin/LabSetting/LabSetting.vue'
 import EditLabByAdmin from '../pages/Settings/pages/byAdmin/LabSetting/pages/EditLab/EditLab.vue'
 import EquipmentSettingByAdmin from '../pages/Settings/pages/byAdmin/EquipmentSetting/EquipmentSetting.vue'
+import DoorAccessControl from '../pages/Settings/pages/byAdmin/DoorAccessControl/DoorAccessControl.vue'
 
 // setting by superUser
 import EquipmentSettingBySuperUser from '../pages/Settings/pages/bySuperUser/EquipmentSetting/EquipmentSetting.vue'
@@ -102,6 +103,10 @@ const routes = [
     {
       path: '/settings/admin/equipment-setting',
       component: EquipmentSettingByAdmin
+    },
+    {
+      path: '/settings/admin/door-access-control',
+      component: DoorAccessControl
     },
     // by superUser
     {
