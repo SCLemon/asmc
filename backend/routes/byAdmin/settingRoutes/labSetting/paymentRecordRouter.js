@@ -20,8 +20,17 @@ router.post('/api/labSetting/payment/admin/getData', authMiddleware(10), async (
 
     const { targetLab } = req.body;
 
+    if (!targetLab) {
+        return res.send({
+            type: 'error',
+            data: [],
+            message: '實驗室資料不可為空。'
+        });
+    }
+
     try {
 
+        // 確認實驗室存在
         const lab = await labModel.findOne({ token: targetLab });
 
         if (!lab) {
@@ -32,14 +41,17 @@ router.post('/api/labSetting/payment/admin/getData', authMiddleware(10), async (
             });
         }
 
-        // 找出該實驗室所有使用者
-        const users = await userModel.find({ lab: targetLab }).select('token name').lean();
+        // 找出包含該 Lab 預約的所有設備
+        const equipments = await equipmentModel.find({
+            'reservation.lab': targetLab
+        }).lean();
 
-        const userTokens = users.map((user) => user.token);
+        // 取得所有使用者名稱
+        const users = await userModel.find({})
+            .select('token name')
+            .lean();
 
-        // 找出該實驗室使用者有預約的所有設備
-        const equipments = await equipmentModel.find({ 'reservation.user': { $in: userTokens }}).lean();
-
+        // 建立 user token -> username 對照表
         const userMap = {};
 
         users.forEach((user) => {
@@ -51,33 +63,45 @@ router.post('/api/labSetting/payment/admin/getData', authMiddleware(10), async (
         let paidAmount = 0;
         let unpaidAmount = 0;
 
-        // 現在時間
         const now = new Date();
 
         equipments.forEach((equipment) => {
 
             equipment.reservation.forEach((reservation) => {
 
-                // 只取該實驗室使用者的預約
-                if (!userTokens.includes(reservation.user)) return;
+                // 只取指定 Lab 的預約
+                if (reservation.lab !== targetLab) return;
 
                 // 預約日期 + 時間
-                const reserveDateTime = new Date(`${reservation.reserve_date}T${reservation.reserve_period}:00`);
+                const reserveDateTime = new Date(
+                    `${reservation.reserve_date}T${reservation.reserve_period}:00`
+                );
 
-                // 只取「已經過去」的預約
+                // 只取已經過去的預約
                 if (reserveDateTime >= now) return;
 
-                const payment = reservation.payment || { amount: 0, status: false };
+                // 如果沒有 payment，使用預設值
+                const payment = reservation.payment || {
+                    amount: 0,
+                    status: false
+                };
 
                 const amount = Number(payment.amount) || 0;
 
-                // 統計付款金額
-                if (payment.status) paidAmount += amount;
-                else unpaidAmount += amount;
+                // 統計已付款 / 未付款金額
+                if (payment.status === true) {
+                    paidAmount += amount;
+                } else {
+                    unpaidAmount += amount;
+                }
 
                 output.push({
                     equipment: equipment.name,
+                    equipmentToken: equipment.token,
                     reserveId: reservation.reserveId,
+                    reserve_date: reservation.reserve_date,
+                    reserve_period: reservation.reserve_period,
+                    status: reservation.status,
                     username: userMap[reservation.user] || '',
                     payment
                 });
@@ -86,12 +110,16 @@ router.post('/api/labSetting/payment/admin/getData', authMiddleware(10), async (
 
         });
 
-        // 依預約時間由新到舊
+        // 依預約時間由新到舊排序
         output.sort((a, b) => {
 
-            const dateTimeA = new Date(`${a.reserve_date}T${a.reserve_period}:00`).getTime();
+            const dateTimeA = new Date(
+                `${a.reserve_date}T${a.reserve_period}:00`
+            ).getTime();
 
-            const dateTimeB = new Date(`${b.reserve_date}T${b.reserve_period}:00`).getTime();
+            const dateTimeB = new Date(
+                `${b.reserve_date}T${b.reserve_period}:00`
+            ).getTime();
 
             return dateTimeB - dateTimeA;
 
@@ -120,6 +148,7 @@ router.post('/api/labSetting/payment/admin/getData', authMiddleware(10), async (
         });
 
     }
+
 });
 
 // 變更金額

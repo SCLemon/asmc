@@ -482,6 +482,7 @@ router.post('/api/equipmentSetting/superUser/handleReserve', authMiddleware(4), 
             const newReservation = {
                 reserveId: uuidv4(),
                 user: 'system',
+                lab: 'system',
                 reserve_date,
                 reserve_period,
                 status: -1,

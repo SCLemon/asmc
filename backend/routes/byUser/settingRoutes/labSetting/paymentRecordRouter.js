@@ -32,13 +32,33 @@ router.get('/api/labSetting/payment/user/getData', authMiddleware(0), async (req
             });
         }
 
-        // 找出該實驗室所有使用者
-        const users = await userModel.find({ lab: labToken }).select('token name').lean();
+        // 找出包含該實驗室預約的所有設備
+        const equipments = await equipmentModel.find({
+            'reservation.lab': labToken
+        }).lean();
 
-        const userTokens = users.map((user) => user.token);
+        // 收集該實驗室預約的所有使用者
+        const userTokens = [];
 
-        // 找出該實驗室使用者有預約的所有設備
-        const equipments = await equipmentModel.find({ 'reservation.user': { $in: userTokens }}).lean();
+        equipments.forEach((equipment) => {
+
+            equipment.reservation.forEach((reservation) => {
+
+                // 只收集該實驗室的使用者
+                if (reservation.lab !== labToken) return;
+
+                if (reservation.user && !userTokens.includes(reservation.user)) {
+                    userTokens.push(reservation.user);
+                }
+
+            });
+
+        });
+
+        // 找出預約使用者名稱
+        const users = await userModel.find({
+            token: { $in: userTokens }
+        }).select('token name').lean();
 
         const userMap = {};
 
@@ -51,33 +71,45 @@ router.get('/api/labSetting/payment/user/getData', authMiddleware(0), async (req
         let paidAmount = 0;
         let unpaidAmount = 0;
 
-        // 現在時間
         const now = new Date();
 
         equipments.forEach((equipment) => {
 
             equipment.reservation.forEach((reservation) => {
 
-                // 只取該實驗室使用者的預約
-                if (!userTokens.includes(reservation.user)) return;
+                // 只取該實驗室的預約
+                if (reservation.lab !== labToken) return;
 
                 // 預約日期 + 時間
-                const reserveDateTime = new Date(`${reservation.reserve_date}T${reservation.reserve_period}:00`);
+                const reserveDateTime = new Date(
+                    `${reservation.reserve_date}T${reservation.reserve_period}:00`
+                );
 
-                // 只取「已經過去」的預約
+                // 只取已經過去的預約
                 if (reserveDateTime >= now) return;
 
-                const payment = reservation.payment || { amount: 0, status: false };
+                const payment = reservation.payment || {
+                    amount: 0,
+                    status: false
+                };
 
                 const amount = Number(payment.amount) || 0;
 
                 // 統計付款金額
-                if (payment.status) paidAmount += amount;
-                else unpaidAmount += amount;
+                if (payment.status === true) {
+                    paidAmount += amount;
+                } else {
+                    unpaidAmount += amount;
+                }
 
                 output.push({
                     equipment: equipment.name,
+                    equipmentToken: equipment.token,
+                    reserveId: reservation.reserveId,
                     username: userMap[reservation.user] || '',
+                    reserve_date: reservation.reserve_date,
+                    reserve_period: reservation.reserve_period,
+                    status: reservation.status,
                     payment
                 });
 
@@ -85,12 +117,16 @@ router.get('/api/labSetting/payment/user/getData', authMiddleware(0), async (req
 
         });
 
-        // 依預約時間由新到舊
+        // 依預約時間由新到舊排序
         output.sort((a, b) => {
 
-            const dateTimeA = new Date(`${a.reserve_date}T${a.reserve_period}:00`).getTime();
+            const dateTimeA = new Date(
+                `${a.reserve_date}T${a.reserve_period}:00`
+            ).getTime();
 
-            const dateTimeB = new Date(`${b.reserve_date}T${b.reserve_period}:00`).getTime();
+            const dateTimeB = new Date(
+                `${b.reserve_date}T${b.reserve_period}:00`
+            ).getTime();
 
             return dateTimeB - dateTimeA;
 

@@ -30,16 +30,12 @@ router.get('/api/labSetting/admin/getData', authMiddleware(10), async (req, res)
         // 統計各個 Lab 的成員數量
         const memberCountsMap = {};
 
-        // user token -> lab token
-        const userLabMap = {};
-
         users.forEach((user) => {
 
             if (!user.lab) return;
 
             memberCountsMap[user.lab] = (memberCountsMap[user.lab] || 0) + 1;
 
-            userLabMap[user.token] = user.lab;
         });
 
         // 統計各個 Lab 過去且未付款的金額
@@ -60,14 +56,15 @@ router.get('/api/labSetting/admin/getData', authMiddleware(10), async (req, res)
                 // 只統計未付款
                 if (reservation.payment?.status !== false) return;
 
-                // 找出使用者所屬 Lab
-                const labToken = userLabMap[reservation.user];
+                // 直接使用 reservation 所屬的 Lab
+                const labToken = reservation.lab;
 
                 if (!labToken) return;
 
                 const amount = Number(reservation.payment?.amount) || 0;
 
                 unpaidMap[labToken] = (unpaidMap[labToken] || 0) + amount;
+
             });
 
         });
@@ -98,7 +95,9 @@ router.get('/api/labSetting/admin/getData', authMiddleware(10), async (req, res)
             type: 'error',
             message: '伺服器錯誤，請洽客服人員協助。'
         });
+
     }
+
 });
 
 // 新增實驗室

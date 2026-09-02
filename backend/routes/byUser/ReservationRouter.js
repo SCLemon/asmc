@@ -226,6 +226,7 @@ router.post('/api/reservation/user/handleReserve', authMiddleware(0), labMiddlew
             const newReservation = {
                 reserveId: uuidv4(),
                 user: req.user.token,
+                lab: req.user.lab,
                 reserve_date,
                 reserve_period,
                 status: 1,

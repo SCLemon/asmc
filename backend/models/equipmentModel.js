@@ -45,6 +45,10 @@ const equipmentSchema = new mongoose.Schema({
                     type: String,
                     trim: true,
                 },
+                lab:{
+                    type: String,
+                    trim: true,
+                },
                 reserve_date:{
                     type: String,
                     trim: true,
