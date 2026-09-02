@@ -11,6 +11,7 @@ import UserLogin from '../pages/UserLogin/UserLogin.vue'
 
 import Profile from '../pages/Profile/Profile.vue'
 import Reservation from '../pages/Reservation/Reservation.vue'
+import Cloud from '../pages/Cloud/Cloud.vue'
 
 import Id_Vg_Analysis from '../pages/AnalysisTools/pages/Id_Vg_Analysis/Id_Vg_Analysis.vue'
 import Id_Vd_Analysis from '../pages/AnalysisTools/pages/Id_Vd_Analysis/Id_Vd_Analysis.vue'
@@ -58,6 +59,10 @@ const routes = [
     {
       path: '/reservation',
       component: Reservation
+    },
+    {
+      path: '/cloud',
+      component: Cloud
     },
     {
       path: '/analysis-tools',
