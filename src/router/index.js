@@ -138,46 +138,56 @@ import levelRoutes from '../config/Router/level_routes_config.js'
 router.beforeEach(async (to, from) => {
 
   // 找出目前路徑的最高權限設定
-  const requiredRoute = levelRoutes.filter((group) => {
-      return group.paths.some((path) => to.fullPath.includes(path));
-  })
-  .reduce((highest, current) => {
-      if (!highest || (current.level ?? 0) > (highest.level ?? 0)) {
+  const requiredRoute = levelRoutes
+    .filter((group) => {
+      return group.paths.some((path) => to.path.includes(path));
+    })
+    .reduce((highest, current) => {
+      if (!highest || (current.level ?? -1) > (highest.level ?? -1)) {
         return current;
       }
-
       return highest;
-  }, null);
+    }, null);
 
   // 無需驗證
   if (requiredRoute?.level === null) return true;
 
+  // 找不到權限設定
+  if (!requiredRoute) return true;
+
   const token = jsCookie.get('authToken');
 
   // 沒有 Token
-  if (!token) return { path: '/login',  query: { redirect: to.fullPath } };
+  if (!token) {
+    return { path: '/login', query: { redirect: to.fullPath } };
+  }
 
-  const res = await axios.post('/login/token', { save: false },
-    {
+  try {
+    const res = await axios.post('/login/token', { save: false }, {
       headers: {
         'x-user-token': token
       }
+    });
+
+    const level = res.data?.data?.level ?? null;
+
+    // Token 無效
+    if (res.data.type !== 'success') {
+      return { path: '/login', query: { redirect: to.fullPath } };
     }
-  );
 
-  const level = res.data?.data?.level || null;
+    // 檢查路徑權限
+    if (level < requiredRoute.level) {
+      return { path: '/login', query: { redirect: to.fullPath } };
+    }
 
-  // Token 無效
-  if (res.data.type !== 'success') {
+    return true;
+
+  } catch (e) {
+    console.log(e);
     return { path: '/login', query: { redirect: to.fullPath } };
   }
 
-  // 檢查路徑權限
-  if (requiredRoute && level < requiredRoute.level) {
-    return { path: '/login', query: { redirect: to.fullPath } };
-  }
-
-  return true;
 });
 
 export default router
