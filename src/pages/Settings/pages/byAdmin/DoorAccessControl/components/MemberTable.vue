@@ -16,7 +16,7 @@
                     <td>{{ user.cardUID == '65535:65535' ? '-' : user.cardUID }}</td>
                     <td class="options">
                         <el-button @click="openDialog(user.address)">指派</el-button>
-                        <el-button type="danger" @click="clear(user.address)">清除</el-button>
+                        <el-button type="danger" @click="clear(user.address)" :disabled="(user.cardUID == '65535:65535')">清除</el-button>
                     </td>
                 </tr>
             </tbody>

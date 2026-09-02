@@ -31,15 +31,13 @@ async function wakeup(systemId) {
                 timeout: 5000
             }
         );
-
+        
         return true;
 
-    } catch (e) {
-
+    } 
+    catch (e) {
         console.log(`System ${systemId} Offline`);
-
         return false;
-
     }
 
 }
