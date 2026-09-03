@@ -17,7 +17,98 @@ const { format } = require('date-fns');
 
 const cloudModel = require('../../models/cloudModel')
 
+// 獲取 Cloud 資料 -- ok
+router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
 
+    const { parent } = req.body;
+
+    try {
+
+        const cloud = await cloudModel.find({
+            parent: parent || null
+        })
+        .select('token createTime name type file.size file.mimeType -_id')
+        .lean();
+
+        const folders = [];
+        const files = [];
+
+        cloud.forEach(item => {
+
+            if (item.type === 'folder') {
+                folders.push(item);
+            }
+
+            else if (item.type === 'file') {
+                files.push(item);
+            }
+
+        });
+
+        const historyList = [
+            {
+                label: 'ASMC 雲端硬碟',
+                path: ''
+            }
+        ];
+
+        if (parent) {
+
+            const parents = [];
+
+            let currentToken = parent;
+
+            while (currentToken) {
+
+                const folder = await cloudModel.findOne({
+                    token: currentToken,
+                    type: 'folder'
+                })
+                .select('token name parent -_id')
+                .lean();
+
+                if (!folder) break;
+
+                parents.unshift({
+                    label: folder.name,
+                    path: folder.token
+                });
+
+                currentToken = folder.parent;
+
+            }
+
+            historyList.push(...parents);
+
+        }
+
+        return res.send({
+            type: 'success',
+            data: {
+                folders,
+                files
+            },
+            historyList,
+            message: 'Cloud 資料獲取成功！'
+        });
+
+    } catch (e) {
+
+        console.log(e);
+
+        return res.send({
+            type: 'error',
+            data: {
+                folders: [],
+                files: []
+            },
+            historyList: [],
+            message: '伺服器錯誤，請洽客服人員協助。'
+        });
+
+    }
+
+});
 
 // 上傳檔案 -- ok
 router.post('/api/cloud/user/upload', authMiddleware(7), upload.single('file'), autoCleanupTmp, async (req, res) => {
@@ -49,13 +140,20 @@ router.post('/api/cloud/user/upload', authMiddleware(7), upload.single('file'), 
         // tmp → baseDir/asmc
         await fs.promises.rename(req.file.path, filePath);
 
+
+        // 修正中文檔名編碼
+        const originalName = Buffer.from(
+            req.file.originalname,
+            'latin1'
+        ).toString('utf8');
+
         try {
 
             const file = new cloudModel({
 
                 token: uuidv4(),
 
-                name: req.file.originalname,
+                name: originalName,
 
                 type: 'file',
 
@@ -98,79 +196,6 @@ router.post('/api/cloud/user/upload', authMiddleware(7), upload.single('file'), 
 
         return res.send({
             type: 'error',
-            message: '伺服器錯誤，請洽客服人員協助。'
-        });
-
-    }
-
-});
-
-
-// 獲取 Cloud 資料 -- ok
-router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
-
-    const { parent } = req.body;
-
-    try {
-
-        const cloud = await cloudModel.find({
-            parent: parent || null
-        })
-        .select('token createTime name type file.size file.mimeType -_id')
-        .lean();
-
-        const historyList = [
-            {
-                label: '我的雲端硬碟',
-                path: ''
-            }
-        ];
-
-        if (parent) {
-
-            const parents = [];
-
-            let currentToken = parent;
-
-            while (currentToken) {
-
-                const folder = await cloudModel.findOne({
-                    token: currentToken,
-                    type: 'folder'
-                })
-                .select('token name parent -_id')
-                .lean();
-
-                if (!folder) break;
-
-                parents.unshift({
-                    label: folder.name,
-                    path: folder.token
-                });
-
-                currentToken = folder.parent;
-
-            }
-
-            historyList.push(...parents);
-
-        }
-
-        return res.send({
-            type: 'success',
-            data: cloud,
-            historyList,
-            message: 'Cloud 資料獲取成功！'
-        });
-
-    } catch (e) {
-
-        console.log(e);
-
-        return res.send({
-            type: 'error',
-            data: [],
-            historyList: [],
             message: '伺服器錯誤，請洽客服人員協助。'
         });
 

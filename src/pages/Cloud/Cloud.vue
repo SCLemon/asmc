@@ -4,22 +4,26 @@
             <div class="cloud-navigatior-history-list">
                 <div v-for="(item, id) in historyList" :key="id" class="cloud-navigatior-history-item-wrapper">
                     <VIcon :icon="ChevronRightIcon" :size="16" v-if="id" :style="{color: (id == (historyList.length - 1)) ? 'black':'rgba(0,0,0,0.2)'}"></VIcon>
-                    <div class="cloud-navigatior-history-item" :class="{ 'cloud-navigatior-history-item-selected': id == (historyList.length - 1)}">{{ item.label }}</div>
+                    <div class="cloud-navigatior-history-item" @click="goTo(item.path)" :class="{ 'cloud-navigatior-history-item-selected': id == (historyList.length - 1)}">{{ item.label }}</div>
                 </div>
             </div>
             <div class="cloud-add-button" @click="openUploadFolders">
                 <div class="cloud-add-button-text"><VIcon :icon="PlusIcon"></VIcon>新增</div>
             </div>
         </div>
-        <dashboard :parent="''"></dashboard>
+        <folder-list v-if="folderList.length" :folder-list="folderList"></folder-list>
+        <file-list v-if="fileList.length" :file-list="fileList"></file-list>
         <input ref="inputFileEl" type="file" name="" id="" multiple @change="handleUploadFiles" style="display: none;">
-        <input ref="inputFolderEl" type="file" webkitdirectory multiple @change="handleUploadFolder" style="display: none;"/>
+        <input ref="inputFolderEl" type="file" webkitdirectory @change="handleUploadFolder" style="display: none;"/>
     </div>
 </template>
 
 <script>
 import { useRoute, useRouter } from 'vue-router';
-import Dashboard from './components/Dashboard.vue';
+
+import FolderList from './components/FolderList.vue';
+import FileList from './components/FileList.vue';
+
 import { computed, ref, nextTick, watch, onMounted } from 'vue';
 
 import { VIcon } from 'vorium-ui'
@@ -35,7 +39,7 @@ import { useCloudUploadFolders } from './hooks/useCloudUploadFolders.js'
 export default {
     name: 'Cloud',
     components:{
-        Dashboard, VIcon
+        FileList, FolderList, VIcon
     },
     setup(){
 
@@ -44,12 +48,22 @@ export default {
 
         const historyWrapper = ref(null)
 
-        const historyList = ref([
-            { label:'我的雲端硬碟', path:'' },
-        ]);
+        const historyList = ref([{ label:'ASMC 雲端硬碟', path:'' }]);
+        const folderList = ref([])
+        const fileList = ref([]);
+        
 
         const currentParent = computed(()=>{
-            return route.path.replace('/cloud','');
+            return route.params.token ?? '';
+        })
+
+        function goTo(token){
+            router.replace(`/cloud/${token}`).catch(e=>{});
+        }
+
+        onMounted(async()=>{
+            scrollToRight()
+            await getData()
         })
 
         // 獲取當前資料夾
@@ -65,8 +79,8 @@ export default {
             })
 
             historyList.value = res.data.historyList;
-
-            console.log(res.data.data)
+            folderList.value = res.data.data?.folders ?? [];
+            fileList.value = res.data.data?.files ?? [];
 
             if(res.data.type == 'error'){
                 eventBus.emit('handleAlert',{ title:'雲端資料獲取結果', message:res.data.message, type:res.data.type })
@@ -99,18 +113,12 @@ export default {
 
         watch(historyList,()=>{
             scrollToRight()
-        },
-        { deep:true, immediate:true })
+        },{ deep:true, immediate:true })
 
 
-        onMounted(async()=>{
-
-            scrollToRight()
-
-            await getData()
-
-        })
-
+        watch(currentParent, async()=>{
+            await getData();
+        }, { deep: true })
 
         return {
             inputFileEl,
@@ -124,7 +132,10 @@ export default {
             openUploadFiles,
             handleUploadFiles,
             openUploadFolders,
-            handleUploadFolder
+            handleUploadFolder,
+            folderList,
+            fileList,
+            goTo
         }
 
     }
@@ -136,7 +147,7 @@ export default {
         width: 100%;
         overflow: hidden;
         position: relative;
-        padding-left: 5px;
+        padding-left: 25px;
         padding-right: 550px;
         box-sizing: border-box;
         height: 80px;
@@ -156,6 +167,11 @@ export default {
         padding-right: 15px;
         color: rgba(0,0,0,0.2);
         flex-shrink: 0;
+        transition: all 0.25s ease;
+    }
+    .cloud-navigatior-history-item:hover{
+        cursor: pointer;
+        color: black;
     }
     .cloud-navigatior-history-item-wrapper{
         display: flex;
@@ -169,7 +185,7 @@ export default {
         width: 95px;
         height: 50px;
         position: fixed;
-        right: 20px;
+        right: 30px;
         border-radius: 15px;
         display: flex;
         align-items: center;

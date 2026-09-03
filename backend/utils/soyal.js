@@ -6,7 +6,7 @@ const key = 'U3VwZXJBZG06NzIxNTY4'
 const system = {
     '001': {
         label:'R212-1',
-        ip: 'http://192.168.0.100',
+        ip: 'http://192.168.0.5',
     },
     '002': {
         label:'R212-2',

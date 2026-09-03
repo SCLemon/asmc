@@ -1,7 +1,7 @@
 import { ref, reactive } from 'vue'
 import axios from 'axios'
 import jsCookie from 'js-cookie'
-import { eventBus } from '@/utils/eventBus.js';
+import { eventBus } from '../../../utils/eventBus';
 
 export function useCloudUploadFolders(currentParent, getData) {
 

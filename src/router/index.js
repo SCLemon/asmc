@@ -61,7 +61,7 @@ const routes = [
       component: Reservation
     },
     {
-      path: '/cloud',
+      path: '/cloud/:token?',
       component: Cloud
     },
     {
