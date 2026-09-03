@@ -10,12 +10,16 @@ const fs = require('fs');
 const path = require('path');
 
 const { upload, autoCleanupTmp } = require('../../config/multer.config');
-const { baseDir } = require('./pathConfig');
+const { baseDir } = require('../../config/pathConfig');
 
+const { v4: uuidv4 } = require('uuid');
 const { format } = require('date-fns');
 
+const cloudModel = require('../../models/cloudModel')
 
-// 上傳檔案
+
+
+// 上傳檔案 -- ok
 router.post('/api/cloud/user/upload', authMiddleware(7), upload.single('file'), autoCleanupTmp, async (req, res) => {
 
     const { parent } = req.body;
@@ -102,18 +106,60 @@ router.post('/api/cloud/user/upload', authMiddleware(7), upload.single('file'), 
 });
 
 
-// 獲取 Cloud 資料
+// 獲取 Cloud 資料 -- ok
 router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
 
     const { parent } = req.body;
 
     try {
 
-        const cloud = await cloudModel.find({ parent: parent || null }).lean();
+        const cloud = await cloudModel.find({
+            parent: parent || null
+        })
+        .select('token createTime name type file.size file.mimeType -_id')
+        .lean();
+
+        const historyList = [
+            {
+                label: '我的雲端硬碟',
+                path: ''
+            }
+        ];
+
+        if (parent) {
+
+            const parents = [];
+
+            let currentToken = parent;
+
+            while (currentToken) {
+
+                const folder = await cloudModel.findOne({
+                    token: currentToken,
+                    type: 'folder'
+                })
+                .select('token name parent -_id')
+                .lean();
+
+                if (!folder) break;
+
+                parents.unshift({
+                    label: folder.name,
+                    path: folder.token
+                });
+
+                currentToken = folder.parent;
+
+            }
+
+            historyList.push(...parents);
+
+        }
 
         return res.send({
             type: 'success',
             data: cloud,
+            historyList,
             message: 'Cloud 資料獲取成功！'
         });
 
@@ -124,6 +170,7 @@ router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
         return res.send({
             type: 'error',
             data: [],
+            historyList: [],
             message: '伺服器錯誤，請洽客服人員協助。'
         });
 
@@ -227,100 +274,6 @@ router.put('/api/cloud/user/revise', authMiddleware(7), async (req, res) => {
         return res.send({
             type: 'success',
             message: '名稱修改成功。'
-        });
-
-    } catch (e) {
-
-        console.log(e);
-
-        return res.send({
-            type: 'error',
-            message: '伺服器錯誤，請洽客服人員協助。'
-        });
-
-    }
-
-});
-
-
-// 移動 Cloud
-router.put('/api/cloud/user/move', authMiddleware(7), async (req, res) => {
-
-    const { targetCloud, parent } = req.body;
-
-    if (!targetCloud) return res.send({ type: 'error', message: '資料不可為空。' });
-
-    try {
-
-        const cloud = await cloudModel.findOne({ token: targetCloud });
-
-        if (!cloud) return res.send({ type: 'error', message: '檔案或資料夾不存在。' });
-
-        // 移動到根目錄
-        if (!parent) {
-
-            cloud.parent = null;
-
-        } else {
-
-            // 防止移動到自己
-            if (parent === targetCloud) return res.send({ type: 'error', message: '無法將資料夾移動至自己。' });
-
-            // 確認目標資料夾存在
-            const parentFolder = await cloudModel.findOne({
-                token: parent,
-                type: 'folder'
-            });
-
-            if (!parentFolder) return res.send({ type: 'error', message: '目標資料夾不存在。' });
-
-            // 防止資料夾移動到自己的子資料夾
-            if (cloud.type === 'folder') {
-
-                let currentParent = parent;
-
-                while (currentParent) {
-
-                    if (currentParent === targetCloud) {
-                        return res.send({
-                            type: 'error',
-                            message: '無法將資料夾移動至自己的子資料夾。'
-                        });
-                    }
-
-                    const currentFolder = await cloudModel.findOne({
-                        token: currentParent,
-                        type: 'folder'
-                    }).select('parent').lean();
-
-                    if (!currentFolder) break;
-
-                    currentParent = currentFolder.parent;
-
-                }
-
-            }
-
-            // 檢查目標資料夾是否有相同名稱
-            const existingCloud = await cloudModel.findOne({
-                token: { $ne: targetCloud },
-                parent,
-                name: cloud.name
-            });
-
-            if (existingCloud) return res.send({ type: 'error', message: '目標資料夾下已有相同名稱。' });
-
-            cloud.parent = parent;
-
-        }
-
-        cloud.updateTime = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
-
-        await cloud.save();
-
-        return res.send({
-            type: 'success',
-            message: '移動成功。'
         });
 
     } catch (e) {

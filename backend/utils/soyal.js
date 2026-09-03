@@ -15,6 +15,10 @@ const system = {
     '003': {
         label:'R108',
         ip: 'http://192.168.0.3',
+    },
+    '004': {
+        label:'R209',
+        ip: 'http://192.168.0.4',
     }
 }
 
@@ -382,6 +386,5 @@ async function getEventLog(systemId, page) {
 module.exports = {
     addUser, deleteUser, getUserList, getEventLog, system
 }
-
 
 
