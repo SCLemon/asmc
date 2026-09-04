@@ -160,7 +160,6 @@ export function useCloudUploadFolders(currentParent, getData) {
 
             }
 
-            // ⚠️ 假設後端回傳 data.token
             folderMap.set(
                 folderPath,
                 result.data.token

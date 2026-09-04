@@ -24,32 +24,20 @@ router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
 
     try {
 
-        const cloud = await cloudModel.find({
-            parent: parent || null
-        })
-        .select('token createTime name type file.size file.mimeType -_id')
-        .lean();
+        const cloud = await cloudModel.find({ parent: parent || null }).select('token createTime name type file.size file.mimeType -_id').lean();
 
         const folders = [];
         const files = [];
 
         cloud.forEach(item => {
 
-            if (item.type === 'folder') {
-                folders.push(item);
-            }
-
-            else if (item.type === 'file') {
-                files.push(item);
-            }
+            if (item.type === 'folder') folders.push(item);
+            else if (item.type === 'file') files.push(item);
 
         });
 
         const historyList = [
-            {
-                label: 'ASMC 雲端硬碟',
-                path: ''
-            }
+            { label: 'ASMC 雲端硬碟', token: '' }
         ];
 
         if (parent) {
@@ -60,12 +48,7 @@ router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
 
             while (currentToken) {
 
-                const folder = await cloudModel.findOne({
-                    token: currentToken,
-                    type: 'folder'
-                })
-                .select('token name parent -_id')
-                .lean();
+                const folder = await cloudModel.findOne({ token: currentToken, type: 'folder' }).select('token name parent -_id').lean();
 
                 if (!folder) break;
 
@@ -84,10 +67,7 @@ router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
 
         return res.send({
             type: 'success',
-            data: {
-                folders,
-                files
-            },
+            data: { folders, files },
             historyList,
             message: 'Cloud 資料獲取成功！'
         });
@@ -98,10 +78,7 @@ router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
 
         return res.send({
             type: 'error',
-            data: {
-                folders: [],
-                files: []
-            },
+            data: { folders: [], files: [] },
             historyList: [],
             message: '伺服器錯誤，請洽客服人員協助。'
         });
