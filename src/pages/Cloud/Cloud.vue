@@ -74,7 +74,6 @@ export default {
 
         const showAddList = ref(false)
         
-
         const currentParent = computed(()=>{
             return route.params.token ?? '';
         })
@@ -92,7 +91,6 @@ export default {
         });
 
         function goTo(token){
-            console.log(token)
             router.replace(`/cloud/${token}`).catch(e=>{});
         }
 

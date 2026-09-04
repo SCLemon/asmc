@@ -25,8 +25,6 @@ import { eventBus } from '@/utils/eventBus.js';
 
 import jsCookie from 'js-cookie'
 import axios from 'axios'
-
-import { computed } from 'vue'
 import { useRoute } from 'vue-router';
 
 export default {
