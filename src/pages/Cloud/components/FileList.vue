@@ -1,6 +1,6 @@
 <template>
     <div class="file-list-wrapper">
-        <div class="file-item" v-for="(file, id) in fileList" :key="id">
+        <div class="file-item" v-for="(file, id) in fileList" :key="id" @click="preview(file.token)">
             <div class="file-item-icon"><VIcon :icon="FileIcon" :size="16"></VIcon></div>
             <div class="file-item-title">{{ file.name }}</div>
             <div class="file-item-size">{{ ((file?.file?.size) / 1024).toFixed(1) }} KB</div>
@@ -17,8 +17,10 @@ import { VIcon } from 'vorium-ui'
 import { FileIcon, MoreVerticalIcon } from 'vorium-ui/icons'
 import 'vorium-ui/icons/icons.css'
 import MoreList from './components/MoreList.vue';
+import axios from 'axios'
 
 import { ref } from 'vue'
+import jsCookie from 'js-cookie';
 
 export default {
     name: 'FileList',
@@ -42,8 +44,27 @@ export default {
 
         }
 
+        async function preview(token) {
+            try {
+                const response = await axios.get(`/api/cloud/user/download/${token}`,
+                    {
+                        responseType: 'blob',
+                        headers: {
+                            'x-user-token': jsCookie.get('authToken')
+                        }
+                    }
+                )
+
+                const blobUrl = URL.createObjectURL(response.data)
+
+                window.open(blobUrl, '_blank')
+
+            } 
+            catch (e){}
+        }
+
         return {
-            activeMoreToken, FileIcon, MoreVerticalIcon, openTargetFileMoreList
+            activeMoreToken, FileIcon, MoreVerticalIcon, openTargetFileMoreList, preview
         }
     }
 }
