@@ -4,7 +4,10 @@
             <div class="file-item-icon"><VIcon :icon="FileIcon" :size="16"></VIcon></div>
             <div class="file-item-title">{{ file.name }}</div>
             <div class="file-item-size">{{ ((file?.file?.size) / 1024).toFixed(1) }} KB</div>
-            <div class="file-item-more"><VIcon :icon="MoreVerticalIcon" :size="16"></VIcon></div>
+            <div class="file-item-more" @click.stop="openTargetFileMoreList(file.token)">
+                <VIcon :icon="MoreVerticalIcon" :size="16"></VIcon>
+                <MoreList v-if="activeMoreToken == file.token" :token="file.token" cu @close="activeMoreToken = null"></MoreList>
+            </div>
         </div>
     </div>
 </template>
@@ -13,9 +16,12 @@
 import { VIcon } from 'vorium-ui'
 import { FileIcon, MoreVerticalIcon } from 'vorium-ui/icons'
 import 'vorium-ui/icons/icons.css'
+import MoreList from './components/MoreList.vue';
+
+import { ref } from 'vue'
 
 export default {
-    name: 'FolderList',
+    name: 'FileList',
     props:{
         fileList:{
             type: Array,
@@ -23,11 +29,21 @@ export default {
         }
     },
     components:{
-        VIcon
+        VIcon, MoreList
     },
     setup(){
+
+        const activeMoreToken = ref(null);
+
+        function openTargetFileMoreList(token){
+
+            if(activeMoreToken.value === token) activeMoreToken.value = null;
+            else activeMoreToken.value = token;
+
+        }
+
         return {
-            FileIcon, MoreVerticalIcon
+            activeMoreToken, FileIcon, MoreVerticalIcon, openTargetFileMoreList
         }
     }
 }
@@ -92,6 +108,7 @@ export default {
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        position: relative;
     }
     .file-item-more:hover{
         cursor: pointer;

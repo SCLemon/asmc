@@ -82,6 +82,8 @@ export default {
 
         onMounted(async()=>{
             document.addEventListener('click', handleClickOutside);
+            eventBus.on('refreshCloudData', getData);
+            
             scrollToRight()
             await getData()
         })
@@ -90,6 +92,7 @@ export default {
         });
 
         function goTo(token){
+            console.log(token)
             router.replace(`/cloud/${token}`).catch(e=>{});
         }
 
@@ -252,6 +255,7 @@ export default {
         box-shadow: 0 0 5px rgba(0,0,0,0.2);
         background: white;
         transition: box-shadow 0.3s ease;
+        z-index: 1;
     }
     .cloud-add-button-text{
         display: flex;

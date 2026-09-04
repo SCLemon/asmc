@@ -1,41 +1,73 @@
+```vue
 <template>
     <div class="folder-list-wrapper">
-        <div class="folder-item" v-for="(folder, id) in folderList" :key="id" @click="goTo(folder.token)">
+
+        <div class="folder-item" v-for="(folder, id) in folderList"  :key="id" @click="goTo(folder.token)">
             <div class="folder-item-icon"><VIcon :icon="FolderIcon" :size="16"></VIcon></div>
             <div class="folder-item-title">{{ folder.name }}</div>
-            <div class="folder-item-more"><VIcon :icon="MoreVerticalIcon" :size="16"></VIcon></div>
+            <div class="folder-item-more" @click.stop="openTargetFolderMoreList(folder.token)">
+                <VIcon :icon="MoreVerticalIcon" :size="16"></VIcon>
+                <MoreList v-if="activeMoreToken === folder.token" :token="folder.token" @close="activeMoreToken = null"></MoreList>
+            </div>
+
         </div>
+
     </div>
 </template>
 
 <script>
+import { ref } from 'vue';
+
 import { VIcon } from 'vorium-ui'
 import { FolderIcon, MoreVerticalIcon } from 'vorium-ui/icons'
 import 'vorium-ui/icons/icons.css'
+
 import { useRouter } from 'vue-router';
+
+import MoreList from './components/MoreList.vue';
+
 
 export default {
     name: 'FolderList',
+
     props:{
+
         folderList:{
             type: Array,
-            default: []
-        }
+            default: () => []
+        },
+
     },
     components:{
-        VIcon
+        VIcon, MoreList
     },
+
     setup(){
 
         const router = useRouter();
+
+        const activeMoreToken = ref(null);
 
         function goTo(token){
             router.replace(`/cloud/${token}`).catch(e=>{});
         }
 
-        return {
-            FolderIcon, MoreVerticalIcon, goTo
+        function openTargetFolderMoreList(token){
+
+            if(activeMoreToken.value === token) activeMoreToken.value = null;
+            else activeMoreToken.value = token;
+
         }
+
+
+        return {
+            FolderIcon,
+            MoreVerticalIcon,
+            activeMoreToken,
+            goTo,
+            openTargetFolderMoreList
+        }
+
     }
 }
 </script>
@@ -91,9 +123,11 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
+        position: relative;
     }
     .folder-item-more:hover{
         cursor: pointer;
         background: rgba(0,0,0,0.05);
     }
 </style>
+```
