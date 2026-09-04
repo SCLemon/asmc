@@ -1,7 +1,7 @@
 import { ref, reactive } from 'vue'
 import axios from 'axios'
 import jsCookie from 'js-cookie'
-import { eventBus } from '../../../utils/eventBus';
+import { ElNotification } from 'element-plus'
 
 export function useCloudUploadFolders(currentParent, getData) {
 
@@ -331,6 +331,7 @@ export function useCloudUploadFolders(currentParent, getData) {
 
         if(!files?.length) return
 
+        const notification = ElNotification({ title: '資源上傳進度', message: '資源正在上傳中...', type: 'warning', showClose:false, duration: 0, position: 'bottom-right' })
 
         try{
 
@@ -347,35 +348,24 @@ export function useCloudUploadFolders(currentParent, getData) {
                 }).join('\n\n')
 
 
-                eventBus.emit('handleAlert',{
-                    title:'資料夾上傳結果',
-                    message:`${failedFiles.length} 個檔案上傳失敗。\n\n${failedMessage}`,
-                    type:'error'
-                })
+                ElNotification({ title: '資料夾上傳結果', message: `${failedFiles.length} 個檔案上傳失敗。\n\n${failedMessage}`, type: 'error', position: 'bottom-right' })
+            }
+            else{
 
-            }else{
-
-                eventBus.emit('handleAlert',{
-                    title:'資料夾上傳結果',
-                    message:'資料夾上傳成功。',
-                    type:'success'
-                })
+                ElNotification({ title: '資料夾上傳結果', message: '資料夾上傳成功。', type:'success', position: 'bottom-right' })
 
             }
 
 
-        }catch(e){
-
-            console.log(e)
+        }
+        catch(e){
 
             event.target.value = ''
+            ElNotification({ title: '資料夾上傳結果', message: '資料夾結構建立失敗。', type: 'error', position: 'bottom-right' })
 
-            eventBus.emit('handleAlert',{
-                title:'資料夾上傳結果',
-                message:e.message || '資料夾結構建立失敗。',
-                type:'error'
-            })
-
+        }
+        finally{
+            notification.close();
         }
 
     }

@@ -12,6 +12,11 @@
             <div class="cloud-more-button-list-item-icon"><VIcon :icon="TrashIcon"></VIcon></div>
             <div class="cloud-more-button-list-item-title">刪除</div>
         </div>
+        
+        <el-dialog v-model="dialogTableVisible" title="Shipping address" width="800">
+
+        </el-dialog>
+
     </div>
 </template>
 
@@ -20,12 +25,14 @@ import { VIcon } from 'vorium-ui'
 import { DownloadIcon, TrashIcon, EditIcon  } from 'vorium-ui/icons'
 import 'vorium-ui/icons/icons.css'
 
-import { ElMessageBox } from 'element-plus'
+import { ElMessageBox, ElNotification } from 'element-plus'
 import { eventBus } from '@/utils/eventBus.js';
 
 import jsCookie from 'js-cookie'
 import axios from 'axios'
 import { useRoute } from 'vue-router';
+
+import { ref } from 'vue'
 
 export default {
     name: 'MoreList',
@@ -102,15 +109,17 @@ export default {
 
         async function download() {
 
-            try {
+            const notification = ElNotification({ title: '資源下載進度', message: '資源正在下載中...', type: 'warning', showClose:false, duration: 0, position: 'bottom-right' })
 
+            try {
+                
                 const res = await axios.get(`/api/cloud/user/download/${props.token}`,
                     {
                         headers: {
                             'x-user-token': jsCookie.get('authToken')
                         },
 
-                        responseType: 'blob'
+                        responseType: 'blob',
                     }
                 );
 
@@ -160,11 +169,15 @@ export default {
                 link.click();
                 link.remove();
                 URL.revokeObjectURL(blobUrl);
-
+                ElNotification({ title: '資源下載結果', message: '資源下載成功', type: 'success', position: 'bottom-right' })
 
             } 
             catch (e) {
+                ElNotification({ title: '資源下載結果', message: '資源下載失敗', type: 'error', position: 'bottom-right' })
                 console.error(e);
+            }
+            finally{
+                notification.close();
             }
 
         }

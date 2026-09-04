@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { ref } from 'vue'
 import jsCookie from 'js-cookie'
-import { eventBus } from '../../../utils/eventBus';
+import { ElNotification } from 'element-plus'
 
 export function useCloudUploadFiles(currentParent, getData) {
 
@@ -208,7 +208,7 @@ export function useCloudUploadFiles(currentParent, getData) {
 
         if(!files?.length) return
 
-
+        const notification = ElNotification({ title: '資源上傳進度', message: '資源正在上傳中...', type: 'warning', showClose:false, duration: 0, position: 'bottom-right' })
         try{
 
             const { results, failedFiles } = await uploadFiles(
@@ -227,34 +227,27 @@ export function useCloudUploadFiles(currentParent, getData) {
                 }).join('\n\n')
 
 
-                eventBus.emit('handleAlert',{
-                    title:'檔案上傳結果',
-                    message:`${failedFiles.length} 個檔案上傳失敗。\n\n${failedMessage}`,
-                    type:'error'
-                })
+                ElNotification({ title: '檔案上傳結果', message: `${failedFiles.length} 個檔案上傳失敗。\n\n${failedMessage}`, type: 'error', position: 'bottom-right' })
 
-            }else{
+            }
+            else{
 
-                eventBus.emit('handleAlert',{
-                    title:'檔案上傳結果',
-                    message:'檔案上傳成功。',
-                    type:'success'
-                })
+                ElNotification({ title: '檔案上傳結果', message: '檔案上傳成功。', type:'success', position: 'bottom-right' })
 
             }
 
-        }catch(e){
+        }
+        catch(e){
 
             console.log(e)
 
             event.target.value = ''
 
-            eventBus.emit('handleAlert',{
-                title:'檔案上傳結果',
-                message:e.message || '檔案上傳失敗。',
-                type:'error'
-            })
+            ElNotification({ title: '檔案上傳結果', message: '檔案上傳失敗。', type:'error', position: 'bottom-right' })
 
+        }
+        finally{
+            notification.close();
         }
 
     }

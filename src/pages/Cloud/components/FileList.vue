@@ -6,7 +6,7 @@
             <div class="file-item-size">{{ ((file?.file?.size) / 1024).toFixed(1) }} KB</div>
             <div class="file-item-more" @click.stop="openTargetFileMoreList(file.token)">
                 <VIcon :icon="MoreVerticalIcon" :size="16"></VIcon>
-                <MoreList v-if="activeMoreToken == file.token" :token="file.token" cu @close="activeMoreToken = null"></MoreList>
+                <MoreList v-if="activeMoreToken == file.token" :token="file.token" @close="activeMoreToken = null"></MoreList>
             </div>
         </div>
     </div>
