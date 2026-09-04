@@ -12,6 +12,7 @@ export function useCloudUploadFolders(currentParent, getData) {
 
     const uploadList = reactive([])
 
+
     function openUploadFolders(){
 
         if(inputFolderEl.value){
@@ -19,6 +20,7 @@ export function useCloudUploadFolders(currentParent, getData) {
         }
 
     }
+
 
     async function createFolder(name, parent = null){
 
@@ -40,7 +42,7 @@ export function useCloudUploadFolders(currentParent, getData) {
                 },
                 {
                     headers:{
-                        'x-user-token': jsCookie.get('authToken')
+                        'x-user-token':jsCookie.get('authToken')
                     }
                 }
             )
@@ -53,7 +55,7 @@ export function useCloudUploadFolders(currentParent, getData) {
 
             return {
                 type:'error',
-                message:'資料夾新增失敗。'
+                message:e.response?.data?.message || '資料夾新增失敗。'
             }
 
         }
@@ -75,15 +77,13 @@ export function useCloudUploadFolders(currentParent, getData) {
             formData,
             {
                 headers:{
-                    'x-user-token': jsCookie.get('authToken')
+                    'x-user-token':jsCookie.get('authToken')
                 },
                 onUploadProgress:(event) => {
 
                     if(!event.total) return
 
-                    item.progress = Math.round(
-                        (event.loaded / event.total) * 100
-                    )
+                    item.progress = Math.round((event.loaded / event.total) * 100)
 
                 }
             }
@@ -126,11 +126,9 @@ export function useCloudUploadFolders(currentParent, getData) {
         })
 
 
-        // 依深度排序
+        // 依深度排序，確保父資料夾先建立
         const sortedFolders = Array.from(folderPaths).sort((a, b) => {
-
             return a.split('/').length - b.split('/').length
-
         })
 
 
@@ -141,29 +139,17 @@ export function useCloudUploadFolders(currentParent, getData) {
 
             const folderName = parts[parts.length - 1]
 
-            const parentPath = parts
-                .slice(0, -1)
-                .join('/')
+            const parentPath = parts.slice(0, -1).join('/')
 
             const folderParent = folderMap.get(parentPath)
 
-            const result = await createFolder(
-                folderName,
-                folderParent
-            )
+            const result = await createFolder(folderName, folderParent)
 
             if(result.type !== 'success'){
-
-                throw new Error(
-                    `資料夾建立失敗：${folderPath}`
-                )
-
+                throw new Error(`資料夾建立失敗：${folderPath}`)
             }
 
-            folderMap.set(
-                folderPath,
-                result.data.token
-            )
+            folderMap.set(folderPath, result.data.token)
 
         }
 
@@ -176,13 +162,20 @@ export function useCloudUploadFolders(currentParent, getData) {
 
         const fileList = Array.from(files)
 
-        if(!fileList.length) return []
+        if(!fileList.length){
+            return {
+                results:[],
+                failedFiles:[]
+            }
+        }
 
         uploading.value = true
         progress.value = 0
 
         uploadList.splice(0)
 
+
+        // 建立上傳清單
         fileList.forEach(file => {
 
             uploadList.push({
@@ -190,7 +183,8 @@ export function useCloudUploadFolders(currentParent, getData) {
                 name:file.name,
                 path:file.webkitRelativePath,
                 progress:0,
-                status:'waiting'
+                status:'waiting',
+                message:''
             })
 
         })
@@ -202,10 +196,7 @@ export function useCloudUploadFolders(currentParent, getData) {
             // 1. 建立資料夾結構
             // =========================
 
-            const folderMap = await createFolderStructure(
-                fileList,
-                parent
-            )
+            const folderMap = await createFolderStructure(fileList, parent)
 
 
             // =========================
@@ -231,35 +222,37 @@ export function useCloudUploadFolders(currentParent, getData) {
                     const item = uploadList[index]
 
                     item.status = 'uploading'
+                    item.message = ''
 
 
                     try{
 
-                        const pathParts = file.webkitRelativePath
-                            .split('/')
+                        const pathParts = file.webkitRelativePath.split('/')
 
                         // 移除檔案名稱
                         pathParts.pop()
 
                         const folderPath = pathParts.join('/')
 
-                        // 找到這個檔案應該放哪個資料夾
+                        // 找到檔案應該放的資料夾
                         const fileParent = folderMap.get(folderPath)
 
-
-                        const result = await uploadSingleFile(
-                            file,
-                            fileParent,
-                            item
-                        )
-
-
-                        item.status = result.type === 'success'
-                            ? 'success'
-                            : 'error'
-
+                        const result = await uploadSingleFile(file, fileParent, item)
 
                         results[index] = result
+
+
+                        if(result.type === 'success'){
+
+                            item.status = 'success'
+                            item.progress = 100
+
+                        }else{
+
+                            item.status = 'error'
+                            item.message = result.message || '檔案上傳失敗。'
+
+                        }
 
                     }catch(e){
 
@@ -267,9 +260,13 @@ export function useCloudUploadFolders(currentParent, getData) {
 
                         item.status = 'error'
 
+                        item.message = e.response?.data?.message || e.message || '檔案上傳失敗。'
+
                         results[index] = {
                             type:'error',
-                            message:'檔案上傳失敗。'
+                            name:file.name,
+                            path:file.webkitRelativePath,
+                            message:item.message
                         }
 
                     }
@@ -277,9 +274,7 @@ export function useCloudUploadFolders(currentParent, getData) {
 
                     completed++
 
-                    progress.value = Math.round(
-                        (completed / fileList.length) * 100
-                    )
+                    progress.value = Math.round((completed / fileList.length) * 100)
 
                 }
 
@@ -288,24 +283,37 @@ export function useCloudUploadFolders(currentParent, getData) {
 
             const workers = []
 
-            const workerCount = Math.min(
-                concurrency,
-                fileList.length
-            )
+            const workerCount = Math.min(concurrency, fileList.length)
 
 
             for(let i = 0; i < workerCount; i++){
-
                 workers.push(worker())
-
             }
 
 
             await Promise.all(workers)
 
+
+            // =========================
+            // 找出失敗檔案
+            // =========================
+
+            const failedFiles = uploadList.filter(item => {
+                return item.status === 'error'
+            })
+
+
+            // =========================
+            // 最後更新 Cloud 資料
+            // =========================
+
             await getData()
 
-            return results
+
+            return {
+                results,
+                failedFiles
+            }
 
 
         }finally{
@@ -323,25 +331,25 @@ export function useCloudUploadFolders(currentParent, getData) {
 
         if(!files?.length) return
 
+
         try{
 
-            const results = await uploadFolder(
-                files,
-                currentParent.value,
-                4
-            )
+            const { results, failedFiles } = await uploadFolder(files, currentParent.value, 4)
 
             event.target.value = ''
 
-            const failedCount = results.filter(item => {
-                return item.type !== 'success'
-            }).length
 
-            if(failedCount){
+            // 有檔案上傳失敗
+            if(failedFiles.length){
+
+                const failedMessage = failedFiles.map(item => {
+                    return `${item.path}\n原因：${item.message}`
+                }).join('\n\n')
+
 
                 eventBus.emit('handleAlert',{
                     title:'資料夾上傳結果',
-                    message:`${failedCount} 個檔案上傳失敗。`,
+                    message:`${failedFiles.length} 個檔案上傳失敗。\n\n${failedMessage}`,
                     type:'error'
                 })
 
@@ -355,6 +363,7 @@ export function useCloudUploadFolders(currentParent, getData) {
 
             }
 
+
         }catch(e){
 
             console.log(e)
@@ -363,7 +372,7 @@ export function useCloudUploadFolders(currentParent, getData) {
 
             eventBus.emit('handleAlert',{
                 title:'資料夾上傳結果',
-                message:'資料夾結構建立失敗。',
+                message:e.message || '資料夾結構建立失敗。',
                 type:'error'
             })
 

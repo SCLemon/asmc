@@ -10,6 +10,9 @@ export function useCloudUploadFiles(currentParent, getData) {
     const uploading = ref(false)
     const progress = ref(0)
 
+    const uploadList = ref([])
+
+
     function openUploadFiles(){
 
         if(inputFileEl.value){
@@ -18,7 +21,8 @@ export function useCloudUploadFiles(currentParent, getData) {
 
     }
 
-    async function uploadSingleFile(file, parent){
+
+    async function uploadSingleFile(file, parent, item){
 
         const formData = new FormData()
 
@@ -33,7 +37,16 @@ export function useCloudUploadFiles(currentParent, getData) {
             formData,
             {
                 headers:{
-                    'x-user-token': jsCookie.get('authToken')
+                    'x-user-token':jsCookie.get('authToken')
+                },
+                onUploadProgress:(event) => {
+
+                    if(!event.total) return
+
+                    item.progress = Math.round(
+                        (event.loaded / event.total) * 100
+                    )
+
                 }
             }
         )
@@ -42,19 +55,43 @@ export function useCloudUploadFiles(currentParent, getData) {
 
     }
 
+
     async function uploadFiles(files, parent, concurrency = 4){
 
         const fileList = Array.from(files)
 
-        if(!fileList.length) return []
+        if(!fileList.length){
+            return {
+                results:[],
+                failedFiles:[]
+            }
+        }
 
         uploading.value = true
         progress.value = 0
+
+        uploadList.value = []
+
+
+        // 建立上傳清單
+        fileList.forEach(file => {
+
+            uploadList.value.push({
+                file,
+                name:file.name,
+                progress:0,
+                status:'waiting',
+                message:''
+            })
+
+        })
+
 
         const results = []
 
         let currentIndex = 0
         let completed = 0
+
 
         const worker = async () => {
 
@@ -66,29 +103,51 @@ export function useCloudUploadFiles(currentParent, getData) {
 
                 const file = fileList[index]
 
+                const item = uploadList.value[index]
+
+                item.status = 'uploading'
+                item.message = ''
+
+
                 try{
 
-                    const result = await uploadSingleFile(
-                        file,
-                        parent
-                    )
+                    const result = await uploadSingleFile(file, parent, item)
 
                     results[index] = {
                         file,
                         ...result
                     }
 
+
+                    if(result.type === 'success'){
+
+                        item.status = 'success'
+                        item.progress = 100
+
+                    }else{
+
+                        item.status = 'error'
+                        item.message = result.message || '檔案上傳失敗。'
+
+                    }
+
                 }catch(e){
 
                     console.log(e)
 
+                    item.status = 'error'
+
+                    item.message = e.response?.data?.message || e.message || '檔案上傳失敗。'
+
+
                     results[index] = {
                         file,
-                        type: 'error',
-                        message: '檔案上傳失敗。'
+                        type:'error',
+                        message:item.message
                     }
 
                 }
+
 
                 completed++
 
@@ -100,6 +159,7 @@ export function useCloudUploadFiles(currentParent, getData) {
 
         }
 
+
         try{
 
             const workers = []
@@ -109,15 +169,29 @@ export function useCloudUploadFiles(currentParent, getData) {
                 fileList.length
             )
 
+
             for(let i = 0; i < workerCount; i++){
                 workers.push(worker())
             }
 
+
             await Promise.all(workers)
 
+
+            // 找出失敗檔案
+            const failedFiles = uploadList.value.filter(item => {
+                return item.status === 'error'
+            })
+
+
+            // 最後更新 Cloud 資料
             await getData()
 
-            return results
+
+            return {
+                results,
+                failedFiles
+            }
 
         }finally{
 
@@ -127,50 +201,73 @@ export function useCloudUploadFiles(currentParent, getData) {
 
     }
 
+
     async function handleUploadFiles(event){
 
         const files = event.target.files
 
         if(!files?.length) return
 
-        const results = await uploadFiles(
-            files,
-            currentParent.value,
-            4
-        )
 
-        event.target.value = ''
+        try{
 
-        const failedCount = results.filter(item => {
-            return item.type !== 'success'
-        }).length
+            const { results, failedFiles } = await uploadFiles(
+                files,
+                currentParent.value,
+                4
+            )
 
-        if(failedCount){
+            event.target.value = ''
+
+
+            if(failedFiles.length){
+
+                const failedMessage = failedFiles.map(item => {
+                    return `${item.name}\n原因：${item.message}`
+                }).join('\n\n')
+
+
+                eventBus.emit('handleAlert',{
+                    title:'檔案上傳結果',
+                    message:`${failedFiles.length} 個檔案上傳失敗。\n\n${failedMessage}`,
+                    type:'error'
+                })
+
+            }else{
+
+                eventBus.emit('handleAlert',{
+                    title:'檔案上傳結果',
+                    message:'檔案上傳成功。',
+                    type:'success'
+                })
+
+            }
+
+        }catch(e){
+
+            console.log(e)
+
+            event.target.value = ''
 
             eventBus.emit('handleAlert',{
                 title:'檔案上傳結果',
-                message:`${failedCount} 個檔案上傳失敗。`,
+                message:e.message || '檔案上傳失敗。',
                 type:'error'
-            })
-
-        }else{
-
-            eventBus.emit('handleAlert',{
-                title:'檔案上傳結果',
-                message:'檔案上傳成功。',
-                type:'success'
             })
 
         }
 
     }
 
+
     return {
         inputFileEl,
         uploading,
         progress,
+        uploadList,
         openUploadFiles,
         handleUploadFiles
     }
 
 }
+
