@@ -4,6 +4,7 @@
             <div class="file-item-icon"><VIcon :icon="FileIcon" :size="16"></VIcon></div>
             <div class="file-item-title">{{ file.name }}</div>
             <div class="file-item-size">{{ ((file?.file?.size) / 1024).toFixed(1) }} KB</div>
+            <div class="file-item-createTime">{{ file.createTime }}</div>
             <div class="file-item-more" @click.stop="openTargetFileMoreList(file.token)">
                 <VIcon :icon="MoreVerticalIcon" :size="16"></VIcon>
                 <MoreList v-if="activeMoreToken == file.token" :token="file.token" @close="activeMoreToken = null"></MoreList>
@@ -118,9 +119,19 @@ export default {
         flex-shrink: 0;
         font-size: 14px;
         color: rgba(0,0,0,0.2);
-        margin-right: 15px;
+        margin-right: 30px;
     }
-    
+    .file-item-createTime{
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: right;
+        flex-shrink: 0;
+        margin-right: 15px;
+        font-size: 14px;
+        color: rgba(0,0,0,0.2);
+    }
+
     .file-item-more{
         width: 30px;
         height: 30px;

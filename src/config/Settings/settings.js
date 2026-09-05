@@ -1,4 +1,4 @@
-import { UserIcon } from 'vorium-ui/icons'
+import { UserIcon, FlaskIcon, SettingsIcon, HomeUnlockIcon, CalendarIcon } from 'vorium-ui/icons'
 export default [
     {
         title: '平台管理員列表',
@@ -11,17 +11,17 @@ export default [
             },
             {
                 title: '實驗室管理',
-                icon: UserIcon,
+                icon: FlaskIcon,
                 path: '/settings/admin/lab-setting'
             },
             {
                 title: '儀器管理',
-                icon: UserIcon,
+                icon: SettingsIcon,
                 path: '/settings/admin/equipment-setting'
             },
             {
                 title: '門禁管理',
-                icon: UserIcon,
+                icon: HomeUnlockIcon,
                 path: '/settings/admin/door-access-control'
             },
         ]
@@ -32,7 +32,7 @@ export default [
         block: [
             {
                 title: '儀器管理',
-                icon: UserIcon,
+                icon: SettingsIcon,
                 path: '/settings/superUser/equipment-setting'
             },
         ]
@@ -48,12 +48,12 @@ export default [
             },
             {
                 title: '實驗室資訊',
-                icon: UserIcon,
+                icon: FlaskIcon,
                 path: '/settings/user/lab-setting/edit'
             },
             {
                 title: '預約記錄',
-                icon: UserIcon,
+                icon: CalendarIcon,
                 path: '/settings/user/reservation-record'
             },
         ]

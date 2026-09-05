@@ -84,31 +84,26 @@ export default {
   .page-enter-active,
   .page-leave-active{
       transition:
-          opacity .4s ease,
-          transform .4s ease;
+          opacity .2s linear,
   }
 
   /* 新頁面：由下往上進場 */
 
   .page-enter-from{
       opacity: 0;
-      transform: translateY(50px);
   }
 
   .page-enter-to{
       opacity: 1;
-      transform: translateY(0);
   }
 
   /* 舊頁面：往下退場 */
 
   .page-leave-from{
       opacity: 1;
-      transform: translateY(0);
   }
 
   .page-leave-to{
       opacity: 0;
-      transform: translateY(50px);
   }
 </style>
