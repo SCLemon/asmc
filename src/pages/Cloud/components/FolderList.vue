@@ -101,14 +101,15 @@ export default {
          box-shadow: 0px 0px 6px rgba(0,0,0,0.2);
     }
     .folder-item-icon{
-        width: 15%;
+        width: 30px;
         height: 30px;
         display: flex;
         justify-content: center;
         align-items: center;
+        flex-shrink: 0;
     }
     .folder-item-title{
-        width: 70%;
+        width: 100%;
         height: 30px;
         line-height: 30px;
         white-space: nowrap;
@@ -116,13 +117,14 @@ export default {
         text-overflow: ellipsis;
     }
     .folder-item-more{
-        width: 15%;
+        width: 30px;
         height: 30px;
         border-radius: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
+        flex-shrink: 0;
     }
     .folder-item-more:hover{
         cursor: pointer;
