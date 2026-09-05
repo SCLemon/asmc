@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-date-picker v-model="date" type="daterange" single-panel style="width: 100%; box-sizing: border-box;" readonly/>
+        <el-date-picker v-model="date" type="daterange" single-panel style="width: 100%; box-sizing: border-box;" @calendar-change="handleCalendarChange" :disabled-date="disabledDate"/>
 
         <div class="calendar-wrapper">
             <div class="calendar-item-wrapper-all" v-for="item in reservationData" :key="item.date">
@@ -38,6 +38,7 @@ export default {
 
         const reservationData = ref([]);
 
+        // 一般請求
         async function getData(){
             try{
                 const res = await axios.post('/api/equipmentSetting/admin/getSpecificReservationData',{ targetEquipment: props.targetEquipment, date: date.value },{
@@ -101,6 +102,29 @@ export default {
             }
         }
 
+        // 一次最多選七天
+        const selectedStartDate = ref(null)
+
+        const handleCalendarChange = (val) => {
+            selectedStartDate.value = val?.[0] || null
+        }
+
+        const disabledDate = (time) => {
+            if (!selectedStartDate.value) {
+                return false
+            }
+
+            const start = new Date(selectedStartDate.value)
+            const current = new Date(time)
+
+            const diffTime = Math.abs(current - start)
+            const diffDays = diffTime / (1000 * 60 * 60 * 24)
+
+            // 最多選 7 天（包含第一天）
+            return diffDays > 6
+        }
+
+        // 自動輪詢
         let timer = null;
 
         onMounted(()=>{
@@ -116,14 +140,20 @@ export default {
             }
         })
         
-        
+
+        // 監視參數
         watch(()=> props.targetEquipment, async ()=>{
             if(props.targetEquipment) await getData();
         },
         { immediate: true, deep: true })
 
+        watch(()=> date.value, async ()=>{
+            await getData();
+        },
+        { immediate: true, deep: true })
+
         return {
-            date, getData, reservationData, handle, periodList, getPeriod
+            date, getData, reservationData, handle, periodList, getPeriod, handleCalendarChange, disabledDate
         }
     }
 }
@@ -148,6 +178,7 @@ export default {
         height: 30px;
         line-height: 30px;
         text-align: center;
+        font-size: 14px;
     }
     .calendar-item-wrapper{
         width: 100%;
