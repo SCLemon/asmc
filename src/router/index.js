@@ -33,6 +33,9 @@ import EditLabByUser from '../pages/Settings/pages/byUser/LabSetting/EditLab/Edi
 import ReservationRecordByUser from '../pages/Settings/pages/byUser/ReservationRecord/ReservationRecord.vue'
 
 
+// underConstruction
+import UnderConstruction from '../pages/UnderConstruction/UnderConstruction.vue'
+
 const routes = [
     {
       path: '/introduction',
@@ -55,6 +58,10 @@ const routes = [
     {
       path: '/profile',
       component: Profile
+    },
+    {
+      path: '/experimental-records',
+      component: UnderConstruction
     },
     {
       path: '/reservation',

@@ -11,11 +11,6 @@ export default {
             }
         ]
     },
-    'Postdoc':{
-        title: 'Postdoc',
-        member: [
-        ]
-    },
     'PHD':{
         title: 'PH.D. Student',
         member: [
@@ -27,6 +22,13 @@ export default {
                 location: '資電館 R717',
             },
             {
+                name: '<> (黃郁雲)',
+                imgUrl: 'img/labMember/default.webp',
+                topic: '',
+                badge: '',
+                location: '資電館 R105',
+            },
+            {
                 name: 'Wen-Tien Tseng (曾文典)',
                 imgUrl: 'img/labMember/default.webp',
                 topic: '二維材料、二維元件、SOT-MRAM 記憶體',
@@ -35,13 +37,67 @@ export default {
             }
         ]
     },
-    'Master':{
-        title: 'Master Students',
+    '113 Master':{
+        title: '113 Master Students',
+        member: [
+            {
+                name: '<> (王品淵)',
+                imgUrl: 'img/labMember/default.webp',
+                topic: '',
+                badge: '',
+                location: '工程三館 R209',
+            },
+            {
+                name: '<> (李笠玄)',
+                imgUrl: 'img/labMember/default.webp',
+                topic: '',
+                badge: '',
+                location: '工程三館 R209',
+            },
+            {
+                name: '<> (謝宗哲)',
+                imgUrl: 'img/labMember/default.webp',
+                topic: '',
+                badge: '',
+                location: '工程三館 R209',
+            },
+            {
+                name: '<> (楊弘卉)',
+                imgUrl: 'img/labMember/default.webp',
+                topic: '',
+                badge: '',
+                location: '工程三館 R209',
+            },
+            {
+                name: '<> (林靖凱)',
+                imgUrl: 'img/labMember/default.webp',
+                topic: '',
+                badge: '',
+                location: '工程三館 R209',
+            },
+            {
+                name: '<> (林志家)',
+                imgUrl: 'img/labMember/default.webp',
+                topic: '',
+                badge: '',
+                location: '工程三館 R209',
+            },
+            {
+                name: '<> (韓立恒)',
+                imgUrl: 'img/labMember/default.webp',
+                topic: '',
+                badge: '',
+                location: '工程三館 R209',
+            },
+        ]
+    },
+    '114 Master':{
+        title: '114 Master Students',
         member: [
             {
                 name: 'Ying-Hao Lin (林英豪)',
                 imgUrl: 'img/labMember/Ying-Hao_Lin.jpg',
-                topic: '二硫化鉬（MoS₂）N 型電晶體與 FinFET Dual 架構於低功耗嵌入式元件之應用。',
+                topic: '',
                 badge: '網站作者',
                 location: '工程三館 R105',
             },
@@ -74,16 +130,16 @@ export default {
                 location: '工程三館 R105',
             },
             {
-                name: '<> (孫瑀妘)',
+                name: 'Pin-Yi Li (李品逸)',
                 imgUrl: 'img/labMember/default.webp',
-                topic: '',
+                topic: 'WSe₂ FET depinning',
                 badge: '',
                 location: '工程三館 R105',
             },
             {
-                name: 'Pin-Yi Li (李品逸)',
+                name: '<> (孫瑀妘)',
                 imgUrl: 'img/labMember/default.webp',
-                topic: 'WSe₂ FET depinning',
+                topic: '',
                 badge: '',
                 location: '工程三館 R105',
             },
@@ -117,9 +173,9 @@ export default {
             }
         ]
     },
-    'Alumni':{
-        title: 'Alumni',
-        member: [
-        ]
-    }
+    // 'Alumni':{
+    //     title: 'Alumni',
+    //     member: [
+    //     ]
+    // }
 }
