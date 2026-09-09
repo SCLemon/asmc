@@ -19,6 +19,7 @@ import { FileIcon, MoreVerticalIcon } from 'vorium-ui/icons'
 import 'vorium-ui/icons/icons.css'
 import MoreList from './components/MoreList.vue';
 import axios from 'axios'
+import { ElNotification } from 'element-plus'
 
 import { ref } from 'vue'
 import jsCookie from 'js-cookie';
@@ -46,6 +47,9 @@ export default {
         }
 
         async function preview(token) {
+
+            const notification = ElNotification({ title: '資源預覽進度', message: '資源預覽開啟中...', type: 'warning', showClose:false, duration: 0, position: 'bottom-right' })
+            
             try {
                 const response = await axios.get(`/api/cloud/user/download/${token}`,
                     {
@@ -59,9 +63,14 @@ export default {
                 const blobUrl = URL.createObjectURL(response.data)
 
                 window.open(blobUrl, '_blank')
-
+                ElNotification({ title: '資源預覽結果', message: '資源預覽成功', type: 'success', position: 'bottom-right' })
             } 
-            catch (e){}
+            catch (e){
+                ElNotification({ title: '資源預覽結果', message: '資源預覽失敗', type: 'error', position: 'bottom-right' })
+            }
+            finally{
+                notification.close();
+            }
         }
 
         return {
