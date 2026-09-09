@@ -12,7 +12,7 @@ export default {
         ]
     },
     'PHD':{
-        title: 'PH.D. Student',
+        title: 'PH.D. Students',
         member: [
             {
                 name: 'An-Chiao Lee (李安蕎)',
@@ -109,7 +109,7 @@ export default {
                 location: '工程三館 R105',
             },
             {
-                name: 'Po-Wei Yang (楊博崴)',
+                name: 'Bo-Wei Yang (楊博崴)',
                 imgUrl: 'img/labMember/default.webp',
                 topic: '',
                 badge: 'ＭLA150 曝光機管理員',
@@ -118,8 +118,8 @@ export default {
             {
                 name: 'Tzu-Hsien Chuang (莊子賢)',
                 imgUrl: 'img/labMember/default.webp',
-                topic: '長材料長材料長材料',
-                badge: 'WSe₂ CVD 管理員',
+                topic: '',
+                badge: '',
                 location: '工程三館 R105',
             },
             {
