@@ -13,8 +13,6 @@ import Profile from '../pages/Profile/Profile.vue'
 import Reservation from '../pages/Reservation/Reservation.vue'
 import Cloud from '../pages/Cloud/Cloud.vue'
 
-import Id_Vg_Analysis from '../pages/AnalysisTools/pages/Id_Vg_Analysis/Id_Vg_Analysis.vue'
-import Id_Vd_Analysis from '../pages/AnalysisTools/pages/Id_Vd_Analysis/Id_Vd_Analysis.vue'
 import Settings from '../pages/Settings/Settings.vue'
 
 // setting by admin
@@ -77,15 +75,11 @@ const routes = [
     },
     {
       path: '/analysis-tools/id-vg-analysis-tool',
-      component: Id_Vg_Analysis,
+      component: () => import('../pages/AnalysisTools/pages/Id_Vg_Analysis/Id_Vg_Analysis.vue')
     },
     {
       path: '/analysis-tools/id-vd-analysis-tool',
-      component: Id_Vd_Analysis,
-    },
-    {
-      path: '/analysis-tools/id-vd-analysis-tool',
-      component: Id_Vd_Analysis,
+      component: () => import('../pages/AnalysisTools/pages/Id_Vd_Analysis/Id_Vd_Analysis.vue')
     },
     {
       path: '/login',
