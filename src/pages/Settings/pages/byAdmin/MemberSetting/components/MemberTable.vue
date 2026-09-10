@@ -6,7 +6,7 @@
                     <th>CreateTime</th>
                     <th>Level</th>
                     <th>Name</th>
-                    <th>ID Card</th>
+                    <th>RFID</th>
                     <th>Lab</th>
                     <th>Status</th>
                     <th>Options</th>
