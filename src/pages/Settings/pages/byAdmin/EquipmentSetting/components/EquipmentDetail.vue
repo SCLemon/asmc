@@ -15,6 +15,12 @@
                         <el-option v-for="item in userList" :key="item.value" :label="item.label" :value="item.value"/>
                     </el-select>
                 </div>
+                <div class="equipment-detail-editor-input">
+                    <div class="equipment-detail-editor-input-title">隸屬：</div>
+                    <el-select v-model="info.asset" placeholder="Select" style="width: 100%;">
+                        <el-option v-for="item in labList" :key="item.value" :label="item.label" :value="item.value"/>
+                    </el-select>
+                </div>
                 <div class="equipment-detail-editor-button">
                     <el-button type="primary" @click="revise()">儲存資訊</el-button>
                     <el-button type="warning" @click="info?.status ? freeze(): restart()">{{ info?.status ? '停用' : '重啟' }}儀器</el-button>
@@ -59,12 +65,14 @@ export default {
 
         const router = useRouter();
 
-        const info = ref({ name: '', rate: 0 , status: true, superUser: '', users:[], reservation: [] })
+        const info = ref({ name: '', rate: 0, asset:'' , status: true, superUser: '', users:[], reservation: [] })
 
         const userList = ref([]);
+        const labList = ref([]);
 
         onMounted(async ()=>{
             await getUserList();
+            await getLabList();
         })
 
         async function getData(){
@@ -88,6 +96,19 @@ export default {
                 });
                 if(res.data.type == 'success') {
                     userList.value = res.data.data;
+                }
+            }
+            catch(e){}
+        }
+        async function getLabList(){
+            try{
+                const res = await axios.get('/api/equipmentSetting/admin/getLabList',{
+                    headers: {
+                        'x-user-token': jsCookie.get('authToken')
+                    }
+                });
+                if(res.data.type == 'success') {
+                    labList.value = res.data.data;
                 }
             }
             catch(e){}
@@ -184,7 +205,7 @@ export default {
 
 
         return {
-            info, userList, revise, freeze, restart, remove
+            info, userList, labList, revise, freeze, restart, remove
         }
     }
 }

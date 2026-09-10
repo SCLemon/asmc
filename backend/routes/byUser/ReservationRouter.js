@@ -140,7 +140,7 @@ router.post('/api/reservation/user/getSpecificReservationData', authMiddleware(0
         startDate.setHours(0, 0, 0, 0);
         endDate.setHours(0, 0, 0, 0);
 
-        if (req.user.level >= 7) {
+        if (req.user.lab == equipment.asset) {
             // 提前開放一天
             endDate.setDate(endDate.getDate() + 1);
         }

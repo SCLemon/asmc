@@ -6,7 +6,8 @@
                     <th>CreateTime</th>
                     <th>Name</th>
                     <th>Member Counts</th>
-                    <th>Pending payment (TWD)</th>
+                    <th>Asset Counts</th>
+                    <th>Pending payment</th>
                     <th>Status</th>
                     <th>Options</th>
                 </tr>
@@ -16,6 +17,7 @@
                     <td>{{ lab.createTime }}</td>
                     <td>{{ lab.name }}</td>
                     <td>{{ lab.memberCounts || 0 }} 人</td>
+                    <td>{{ lab.equipmentCounts || 0 }} 台</td>
                     <td>$ {{ lab.unpaid || 0 }}</td>
                     <td>
                         <div v-if="lab.status" style="color: lightgreen;">有效</div>
@@ -170,7 +172,7 @@ export default {
 
     .parameter-table th:nth-child(1),
     .parameter-table td:nth-child(1) {
-        width: 17.5%;
+        width: 16.5%;
         padding-left: 5px;
         word-break: break-all;
     }
@@ -183,7 +185,7 @@ export default {
 
     .parameter-table th:nth-child(3),
     .parameter-table td:nth-child(3) {
-        width: 10%;
+        width: 15%;
         word-break: break-all;
     }
 
@@ -201,7 +203,12 @@ export default {
 
     .parameter-table th:nth-child(6),
     .parameter-table td:nth-child(6) {
-        width: 22.5%;
+        width: 15%;
+        word-break: break-all;
+    }
+    .parameter-table th:nth-child(7),
+    .parameter-table td:nth-child(7) {
+        width: 25%;
         word-break: break-all;
     }
 

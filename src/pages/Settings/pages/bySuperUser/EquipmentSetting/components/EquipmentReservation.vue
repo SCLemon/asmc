@@ -110,33 +110,17 @@ export default {
         }
 
         const disabledDate = (time) => {
-
-            const today = new Date()
-            today.setHours(0, 0, 0, 0)
-
-            // 最後一天不能超過今天 + 7 天
-            const maxDate = new Date(today)
-            maxDate.setDate(maxDate.getDate() + 6)
-
-            const current = new Date(time)
-            current.setHours(0, 0, 0, 0)
-
-            // 超過今天 + 6 天
-            if (current.getTime() > maxDate.getTime()) {
-                return true
-            }
-
-            // 尚未選擇開始日期
             if (!selectedStartDate.value) {
                 return false
             }
 
             const start = new Date(selectedStartDate.value)
-            start.setHours(0, 0, 0, 0)
+            const current = new Date(time)
 
-            const diffDays = Math.abs(current.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+            const diffTime = Math.abs(current - start)
+            const diffDays = diffTime / (1000 * 60 * 60 * 24)
 
-            // 日期範圍最多 7 天（包含開始日）
+            // 最多選 7 天（包含第一天）
             return diffDays > 6
         }
 
