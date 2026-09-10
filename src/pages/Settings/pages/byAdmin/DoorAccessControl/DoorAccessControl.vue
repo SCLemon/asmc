@@ -48,6 +48,7 @@ export default {
         const lists = ref([])
 
         onMounted(async ()=>{
+            await wakeupAll();
             await getData();
         })
 
@@ -62,6 +63,22 @@ export default {
                     }
                 })
                 if(res.data.type == 'success') lists.value = res.data.data
+            }
+            catch(e){}
+
+        }
+        
+        async function wakeupAll(){
+
+            try{
+
+                const res = await axios.get('/api/door-access-control/admin/wakeupAll',
+                {
+                    headers: {
+                        'x-user-token': jsCookie.get('authToken')
+                    }
+                })
+
             }
             catch(e){}
 
