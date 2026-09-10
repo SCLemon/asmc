@@ -13,7 +13,7 @@
                             'calendar-item-status-is-Mine': getPeriod(item, period)?.status!= -1 && !isPast(item.date, period) && getPeriod(item, period).isMine,
                             'calendar-item-status--1': isPast(item.date, period) || (getPeriod(item, period)?.status == -1)
                         }"
-                        v-for="period in periodList" :key="period"
+                        v-for="period in periodList" :key="period" :title="getPeriodLabel(item, period)"
                         @click="getPeriod(item, period)?.status != -1 && !isPast(item.date, period)? handle(getPeriod(item, period), item.date, period) : ''">
                         {{ getPeriod(item, period).userName || getPeriodLabel(item, period) }}
                         <div class="calendar-item-is-Mine"><VIcon :icon="UserIcon" v-if="!isPast(item.date, period) && getPeriod(item, period)?.status!= -1 && getPeriod(item, period).isMine"></vIcon></div>
