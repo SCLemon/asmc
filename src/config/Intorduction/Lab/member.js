@@ -102,7 +102,7 @@ export default {
                 location: '工程三館 R105',
             },
             {
-                name: 'Yu-Ling Lee (李玉麟)',
+                name: 'Yu-Ling Li (李玉麟)',
                 imgUrl: 'img/labMember/default.webp',
                 topic: '',
                 badge: 'MoS₂ CVD 與電性量測管理員',
