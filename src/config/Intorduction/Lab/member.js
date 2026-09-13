@@ -26,14 +26,14 @@ export default {
                 imgUrl: 'img/labMember/default.webp',
                 topic: '',
                 badge: '',
-                location: '資電館 R105',
+                location: '工程三館 R105',
             },
             {
                 name: 'Wen-Tien Tseng (曾文典)',
                 imgUrl: 'img/labMember/default.webp',
                 topic: '二維材料、二維元件、SOT-MRAM 記憶體',
                 badge: '',
-                location: '劉炯朗館 R717',
+                location: '資電館 R717',
             }
         ]
     },
@@ -98,7 +98,7 @@ export default {
                 name: 'Ying-Hao Lin (林英豪)',
                 imgUrl: 'img/labMember/Ying-Hao_Lin.jpg',
                 topic: '',
-                badge: '網站作者',
+                badge: '網站作者暨平台管理員',
                 location: '工程三館 R105',
             },
             {

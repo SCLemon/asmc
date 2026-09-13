@@ -1,12 +1,10 @@
 <template>
     <div class="introduction-wrapper">
         <div class="introduction-banner">
-            <VCarousel :aspectRatio="3/1" :autoPlay="true" :interval="5000">
-                <v-carousel-item><div class="introduction-banner-item">Build. Measure. Iterate.</div></v-carousel-item>
-                <v-carousel-item><div class="introduction-banner-item">Build. Measure. Iterate.</div></v-carousel-item>
-                <v-carousel-item><div class="introduction-banner-item">Build. Measure. Iterate.</div></v-carousel-item>
-                <v-carousel-item><div class="introduction-banner-item">Build. Measure. Iterate.</div></v-carousel-item>
-                <v-carousel-item><div class="introduction-banner-item">Build. Measure. Iterate.</div></v-carousel-item>
+            <VCarousel :aspectRatio="2.4/1" :autoPlay="true" :interval="5000">
+                <v-carousel-item><div class="introduction-banner-item"><img src="img/labIntro/banner_1.jpg" alt=""></div></v-carousel-item>
+                <v-carousel-item><div class="introduction-banner-item"><img src="img/labIntro/banner_2.jpg" alt=""></div></v-carousel-item>
+                <v-carousel-item><div class="introduction-banner-item"><img src="img/labIntro/banner_3.jpg" alt=""></div></v-carousel-item>
             </VCarousel>
         </div>
         <div class="introduction-view-wrapper">
@@ -62,9 +60,9 @@ export default {
     .introduction-banner-item{
         color: white;
         height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    }
+    .introduction-banner-item>img{
+        width: 100%;
     }
     .introduction-view-wrapper{
         position: relative;
