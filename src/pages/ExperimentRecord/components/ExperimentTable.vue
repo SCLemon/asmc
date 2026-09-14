@@ -17,7 +17,7 @@
                     <td>{{ exp.name }}</td>
                     <td><el-rate v-model="exp.rate" allow-half :disabled="!(exp.isMine)" @change="rate(exp)"/></td>
                     <td class="options">
-                        <el-button @click="goToExperimentRecordDetail(exp.token)">參數</el-button>
+                        <el-button @click="goToExperimentRecordDetail(exp.token)">查看</el-button>
                         <el-button @click="goToExperimentRecordCloud(exp.token)">檔案</el-button>
                         <el-button type="danger" @click="deleteExperimentRecord(exp)">刪除</el-button>
                     </td>
@@ -175,13 +175,13 @@ export default {
 
     .parameter-table th:nth-child(3),
     .parameter-table td:nth-child(3) {
-        width: 20%;
+        width: 22.5%;
         word-break: break-all;
     }
 
     .parameter-table th:nth-child(4),
     .parameter-table td:nth-child(4) {
-        width: 20%;
+        width: 17.5%;
         word-break: break-all;
     }
     .parameter-table th:nth-child(5),
