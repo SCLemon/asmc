@@ -23,7 +23,6 @@
 import axios from 'axios';
 
 import { ref, onMounted } from 'vue';
-import { eventBus } from '@/utils/eventBus.js';
 import jsCookie from 'js-cookie';
 
 import { VIcon } from 'vorium-ui'

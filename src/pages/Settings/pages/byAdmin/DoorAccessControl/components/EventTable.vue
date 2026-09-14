@@ -25,7 +25,7 @@
 import { eventBus } from '@/utils/eventBus';
 import axios from 'axios';
 import jsCookie from 'js-cookie';
-import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
+import { ref, onMounted, computed, watch, onUnmounted, nextTick } from 'vue';
 
 export default {
     name: 'EventTable',
@@ -41,12 +41,28 @@ export default {
     },
     setup(props){
 
+        const PAGE_SIZE = 15;
+        const MAX_AUTO_FILL_ATTEMPTS = 3;
+        let autoFillCount = 0;
+
         const page = ref(1);
         const tableData = ref([]);
         const hasMore = ref(true);
         const loading = ref(false);
         const tableWrapper = ref(null);
 
+        async function checkScrollable() {
+            await nextTick();
+            if (!tableWrapper.value) return;
+
+            const element = tableWrapper.value;
+            const isScrollable = element.scrollHeight > element.clientHeight;
+
+            if (!isScrollable && hasMore.value && !loading.value && autoFillCount < MAX_AUTO_FILL_ATTEMPTS) {
+                autoFillCount++;
+                page.value++;
+            }
+        }
 
         async function getData(reset = false){
 
@@ -65,27 +81,27 @@ export default {
                 })
                 const newData = res.data.data || [];
 
-                // 換設備 / 第一頁
                 if (reset) {
                     tableData.value = newData;
-                }
-
+                    autoFillCount = 0;
+                } 
                 else tableData.value.push(...newData);
 
-                if (newData.find(i=>i.index == '00000'))  hasMore.value = false;
+                if (newData.length === 0 || newData.length < PAGE_SIZE || newData.some(i => i.index === '00000')) hasMore.value = false;
 
                 if(res.data.type =='error') eventBus.emit('handleAlert', { title:'門禁紀錄獲取結果', message: res.data.message, type: res.data.type })
 
             }
             catch(e){
-                console.log(e)
+                console.log(e);
+                hasMore.value = false;
             }
             finally{
                 loading.value = false;
+                if (hasMore.value) checkScrollable();
             }
 
         }
-
 
         let timer = null;
 
@@ -105,42 +121,29 @@ export default {
             timer = null;
         })
 
-       // page 改變 → 取得下一頁
+        // page 改變 → 取得下一頁
         watch(page, async () => {
-
             if (page.value === 1) return;
             await getData(false);
-
         });
-
 
         // 切換設備
         watch(() => props.targetDevice, async (newDevice) => {
-
-            if (!newDevice){
-                console.log('here')
-                return
-            }
+            if (!newDevice) return;
 
             page.value = 1;
-
+            autoFillCount = 0;
             tableData.value = [];
-
             hasMore.value = true;
 
             await getData(true);
-
         },{ immediate: true });
 
+
         function handleScroll(event) {
-
             const element = event.target;
-
             const scrollBottom = element.scrollTop + element.clientHeight;
-
-            // 距離底部 50px 就開始載入
             if (scrollBottom >= element.scrollHeight - 50 && !loading.value && hasMore.value) page.value++;
-
         }
 
         return {
