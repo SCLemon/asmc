@@ -7,20 +7,26 @@
                     <div class="cloud-navigatior-history-item" @click="goTo(item.token)" :class="{ 'cloud-navigatior-history-item-selected': id == (historyList.length - 1)}">{{ item.label }}</div>
                 </div>
             </div>
-            <div class="cloud-add-button" @click="showAddList = true" ref="addButtonWrapper">
-                <div class="cloud-add-button-text"><VIcon :icon="PlusIcon"></VIcon>新增</div>
-                <div class="cloud-add-button-list-wrapper" v-if="showAddList" >
-                    <div class="cloud-add-button-list-item" @click="openCreateNewFolder">
-                        <div class="cloud-add-button-list-item-icon"><VIcon :icon="PlusIcon"></VIcon></div>
-                        <div class="cloud-add-button-list-item-title">新資料夾</div>
-                    </div>
-                    <div class="cloud-add-button-list-item" @click="openUploadFiles">
-                        <div class="cloud-add-button-list-item-icon"><VIcon :icon="FileIcon"></VIcon></div>
-                        <div class="cloud-add-button-list-item-title">檔案上傳</div>
-                    </div>
-                    <div class="cloud-add-button-list-item" @click="openUploadFolders">
-                        <div class="cloud-add-button-list-item-icon"><VIcon :icon="FolderIcon"></VIcon></div>
-                        <div class="cloud-add-button-list-item-title">資料夾上傳</div>
+            <div class="cloud-navigatior-right">
+                <div class="cloud-navigatior-search">
+                    <input class="cloud-navigatior-search-input" type="text" name="" id="" placeholder="Search files by name" v-model="keyword">
+                    <div class="cloud-navigatior-search-input-icon"><VIcon :icon="SearchIcon"></VIcon></div>
+                </div>
+                <div class="cloud-add-button" @click="showAddList = true" ref="addButtonWrapper">
+                    <div class="cloud-add-button-text"><VIcon :icon="PlusIcon"></VIcon>新增</div>
+                    <div class="cloud-add-button-list-wrapper" v-if="showAddList" >
+                        <div class="cloud-add-button-list-item" @click="openCreateNewFolder">
+                            <div class="cloud-add-button-list-item-icon"><VIcon :icon="PlusIcon"></VIcon></div>
+                            <div class="cloud-add-button-list-item-title">新資料夾</div>
+                        </div>
+                        <div class="cloud-add-button-list-item" @click="openUploadFiles">
+                            <div class="cloud-add-button-list-item-icon"><VIcon :icon="FileIcon"></VIcon></div>
+                            <div class="cloud-add-button-list-item-title">檔案上傳</div>
+                        </div>
+                        <div class="cloud-add-button-list-item" @click="openUploadFolders">
+                            <div class="cloud-add-button-list-item-icon"><VIcon :icon="FolderIcon"></VIcon></div>
+                            <div class="cloud-add-button-list-item-title">資料夾上傳</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -43,7 +49,7 @@ import FileList from './components/FileList.vue';
 import { computed, ref, nextTick, watch, onMounted, onUnmounted } from 'vue';
 
 import { VIcon } from 'vorium-ui'
-import { ChevronRightIcon, PlusIcon, FolderIcon, FileIcon, UploadIcon } from 'vorium-ui/icons'
+import { ChevronRightIcon, PlusIcon, FolderIcon, FileIcon, UploadIcon, SearchIcon } from 'vorium-ui/icons'
 import 'vorium-ui/icons/icons.css'
 
 import axios from 'axios'
@@ -78,6 +84,8 @@ export default {
             return route.params.token ?? '';
         })
 
+        const keyword = ref('');
+        let searchTimer = null;
 
         onMounted(async()=>{
             document.addEventListener('click', handleClickOutside);
@@ -88,6 +96,7 @@ export default {
         })
         onUnmounted(()=>{
             document.removeEventListener('click', handleClickOutside);
+            if (searchTimer) clearTimeout(searchTimer);
         });
 
         function goTo(token){
@@ -98,7 +107,7 @@ export default {
         async function getData(){
 
             const res = await axios.post('/api/cloud/user/getData',{
-                parent:currentParent.value
+                parent:currentParent.value, keyword: keyword.value
             },
             {
                 headers:{
@@ -116,10 +125,8 @@ export default {
 
         }
 
-
         // 上傳檔案
         const { inputFileEl, openUploadFiles, handleUploadFiles } = useCloudUploadFiles(currentParent, getData)
-
 
         // 上傳資料夾
         const { inputFolderEl, uploadList, createFolder, openUploadFolders, handleUploadFolder } = useCloudUploadFolders(currentParent, getData)
@@ -146,42 +153,43 @@ export default {
             }
         }
 
-
         // blur 時，自動關閉 AddList
         function handleClickOutside(event){
-
             if(addButtonWrapper.value && !addButtonWrapper.value.contains(event.target)){
                 showAddList.value = false;
             }
         }
 
-
         // 路徑條滾動
         const scrollToRight = async () => {
-
             await nextTick()
-
             const el = historyWrapper.value
-
             if(!el) return
-
             el.scrollTo({ left:el.scrollWidth, behavior:'smooth' })
-
         }
-
 
         watch(historyList,()=>{
             scrollToRight()
         },{ deep:true, immediate:true })
 
 
+
         watch(currentParent, async()=>{
+            if (searchTimer) clearTimeout(searchTimer);
             await getData();
         }, { deep: true })
+
+        watch(keyword, () => {
+            if (searchTimer) clearTimeout(searchTimer);
+            searchTimer = setTimeout(async () => {
+                await getData();
+            }, 500);
+        })
 
         return {
             inputFileEl,
             inputFolderEl,
+            keyword,
             historyWrapper,
             historyList,
             uploadList,
@@ -195,7 +203,7 @@ export default {
             folderList,
             fileList, addButtonWrapper,
             goTo, showAddList, openCreateNewFolder,
-            FolderIcon, FileIcon, UploadIcon
+            FolderIcon, FileIcon, UploadIcon, SearchIcon
         }
 
     }
@@ -241,11 +249,45 @@ export default {
         color: black;
         font-weight: bolder;
     }
+
+    .cloud-navigatior-right{
+        position: fixed;
+        right: 30px;
+        display: flex;
+        align-items: center;
+        width: fit-content;
+    }
+    .cloud-navigatior-search{
+        width: 250px;
+        margin-right: 30px;
+        height: 40px;
+        box-sizing: border-box;
+        border: 0;
+        border-bottom: 1px solid rgba(0,0,0,0.12);
+        display: flex;
+        align-items: center;
+    }
+    .cloud-navigatior-search-input{
+        width: calc(100% - 40px);
+        height: 38px;
+        box-sizing: border-box;
+        padding-left: 5px;
+        border: 0;
+    }
+    .cloud-navigatior-search-input:focus{
+        outline: 0;
+    }
+    .cloud-navigatior-search-input-icon{
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     .cloud-add-button{
         width: 95px;
         height: 50px;
-        position: fixed;
-        right: 30px;
         border-radius: 15px;
         display: flex;
         align-items: center;

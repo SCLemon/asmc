@@ -18,14 +18,16 @@ const { format } = require('date-fns');
 const cloudModel = require('../../models/cloudModel')
 const { ZipArchive } = require('archiver');
 
-// 獲取 Cloud 資料 -- ok
+// 獲取 Cloud 資料
 router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
 
-    const { parent } = req.body;
+    const { parent, keyword } = req.body;
 
     try {
 
-        const cloud = await cloudModel.find({ parent: parent || null }).select('token createTime name type file.size file.mimeType -_id').lean();
+        const condition = keyword ? { name: { $regex: keyword, $options: 'i' }, type: 'file' } : { parent: parent || null };
+
+        const cloud = await cloudModel.find(condition).select('token createTime name type file.size file.mimeType -_id').lean();
 
         const folders = [];
         const files = [];
