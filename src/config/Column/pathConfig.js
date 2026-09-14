@@ -7,8 +7,8 @@ export default {
             icon: HomeIcon,
         },
         {
-            name: 'Experimental Records',
-            path: '/experimental-records',
+            name: 'Experiment Records',
+            path: '/experiment-records',
             icon: EditIcon,
         },
         {

@@ -12,6 +12,7 @@ import UserLogin from '../pages/UserLogin/UserLogin.vue'
 import Profile from '../pages/Profile/Profile.vue'
 import Reservation from '../pages/Reservation/Reservation.vue'
 import Cloud from '../pages/Cloud/Cloud.vue'
+import ExperimentRecord from '../pages/ExperimentRecord/ExperimentRecord.vue'
 
 import Settings from '../pages/Settings/Settings.vue'
 
@@ -58,8 +59,8 @@ const routes = [
       component: Profile
     },
     {
-      path: '/experimental-records',
-      component: UnderConstruction
+      path: '/experiment-records',
+      component: ExperimentRecord
     },
     {
       path: '/reservation',
