@@ -176,6 +176,7 @@ export default {
 
         watch(currentParent, async()=>{
             if (searchTimer) clearTimeout(searchTimer);
+            keyword.value = '';
             await getData();
         }, { deep: true })
 

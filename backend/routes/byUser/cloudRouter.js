@@ -20,38 +20,75 @@ const { ZipArchive } = require('archiver');
 
 // 獲取 Cloud 資料
 router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
-
     const { parent, keyword } = req.body;
 
     try {
+        let condition = {};
 
-        const condition = keyword ? { name: { $regex: keyword, $options: 'i' }, type: 'file' } : { parent: parent || null };
+        if (keyword) {
+            const nameQuery = { name: { $regex: keyword, $options: 'i' }, type: 'file' };
 
-        const cloud = await cloudModel.find(condition).select('token createTime name type file.size file.mimeType -_id').lean();
+            if (parent) {
+
+                const hierarchy = await cloudModel.aggregate([
+                    { $match: { token: parent, type: 'folder' } },
+                    {
+                        $graphLookup: {
+                            from: 'clouds',
+                            startWith: '$token',
+                            connectFromField: 'token',
+                            connectToField: 'parent',
+                            as: 'descendants'
+                        }
+                    },
+                    {
+                        $project: {
+                            allTokens: {
+                                $concatArrays: [
+                                    ['$token'],
+                                    '$descendants.token'
+                                ]
+                            }
+                        }
+                    }
+                ]);
+
+                const targetTokens = hierarchy.length ? hierarchy[0].allTokens : [parent];
+
+                condition = {
+                    parent: { $in: targetTokens },
+                    ...nameQuery
+                };
+            } 
+            else condition = nameQuery;
+        } 
+        else condition = { parent: parent || null };
+
+        const cloud = await cloudModel.find(condition)
+            .select('token createTime name type file.size file.mimeType parent -_id')
+            .lean();
 
         const folders = [];
         const files = [];
 
         cloud.forEach(item => {
-
             if (item.type === 'folder') folders.push(item);
             else if (item.type === 'file') files.push(item);
-
         });
 
+        // 麵包屑路徑生成
         const historyList = [
             { label: 'ASMC 雲端硬碟', token: '' }
         ];
 
         if (parent) {
-
             const parents = [];
-
             let currentToken = parent;
 
             while (currentToken) {
-
-                const folder = await cloudModel.findOne({ token: currentToken, type: 'folder' }).select('token name parent -_id').lean();
+                const folder = await cloudModel.findOne({ token: currentToken, type: 'folder' })
+                    .select('token name parent -_id')
+                    .lean();
 
                 if (!folder) break;
 
@@ -61,11 +98,9 @@ router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
                 });
 
                 currentToken = folder.parent;
-
             }
 
             historyList.push(...parents);
-
         }
 
         return res.send({
@@ -75,19 +110,16 @@ router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
             message: 'Cloud 資料獲取成功！'
         });
 
-    } catch (e) {
-
-        console.log(e);
-
+    } 
+    catch (e) {
+        console.error(e);
         return res.send({
             type: 'error',
             data: { folders: [], files: [] },
             historyList: [],
             message: '伺服器錯誤，請洽客服人員協助。'
         });
-
     }
-
 });
 
 // 上傳檔案
