@@ -4,18 +4,21 @@
             <thead>
                 <tr>
                     <th>CreateTime</th>
-                    <th>Recipe Name</th>
                     <th>Owner</th>
+                    <th>Recipe Name</th>
+                    <th>Rate</th>
                     <th>Options</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(exp, id) in filteredData" :key="id">
                     <td>{{ exp.createTime }}</td>
-                    <td>{{ exp.name }}</td>
                     <td>{{ exp.owner }}</td>
+                    <td>{{ exp.name }}</td>
+                    <td><el-rate v-model="exp.rate" allow-half :disabled="!(exp.isMine)" @change="rate(exp)"/></td>
                     <td class="options">
-                        <el-button @click="goToExperimentRecordDetail(exp.token)">查看</el-button>
+                        <el-button @click="goToExperimentRecordDetail(exp.token)">參數</el-button>
+                        <el-button @click="goToExperimentRecordCloud(exp.token)">檔案</el-button>
                         <el-button type="danger" @click="deleteExperimentRecord(exp)">刪除</el-button>
                     </td>
                 </tr>
@@ -73,6 +76,10 @@ export default {
             // }).catch((e)=>{})
             eventBus.emit('handleAlert', { title:'實驗計畫功能', message: '實驗計畫功能正在開發中...', type: 'warning' })
         }
+        function goToExperimentRecordCloud(token){
+            router.replace(`/cloud/${token}`).catch((e)=>{})
+        }
+
 
         async function deleteExperimentRecord(exp){
             try{
@@ -93,8 +100,28 @@ export default {
             }
             catch(e){}
         }
+
+        async function rate(exp){
+            try{
+                await ElMessageBox.confirm('確認實驗計畫評分操作？', '計畫評分',
+                    {
+                        confirmButtonText: '確認',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                    }
+                )
+                const res = await axios.post('/api/experimentRecords/user/rate',{ targetExperimentRecord: exp.token, rate: exp.rate },{
+                    headers: {
+                        'x-user-token': jsCookie.get('authToken')
+                    }
+                })
+                eventBus.emit('handleAlert', { title:'實驗計畫評分結果', message: res.data.message, type: res.data.type })
+                await getData();
+            }
+            catch(e){}
+        }
         return {
-            tableData, getData, goToExperimentRecordDetail, deleteExperimentRecord, filteredData
+            tableData, getData, goToExperimentRecordDetail, goToExperimentRecordCloud, deleteExperimentRecord, filteredData, rate
         }
     }
 }
@@ -142,19 +169,24 @@ export default {
 
     .parameter-table th:nth-child(2),
     .parameter-table td:nth-child(2) {
-        width: 35%;
+        width: 15%;
         word-break: break-all;
     }
 
     .parameter-table th:nth-child(3),
     .parameter-table td:nth-child(3) {
-        width: 25%;
+        width: 20%;
         word-break: break-all;
     }
 
     .parameter-table th:nth-child(4),
     .parameter-table td:nth-child(4) {
         width: 20%;
+        word-break: break-all;
+    }
+    .parameter-table th:nth-child(5),
+    .parameter-table td:nth-child(5) {
+        width: 25%;
         word-break: break-all;
     }
 
