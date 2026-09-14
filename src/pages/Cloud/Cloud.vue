@@ -13,7 +13,7 @@
                     <div class="cloud-navigatior-search-input-icon"><VIcon :icon="SearchIcon"></VIcon></div>
                 </div>
                 <div class="cloud-add-button" @click="showAddList = true" ref="addButtonWrapper">
-                    <div class="cloud-add-button-text"><VIcon :icon="PlusIcon"></VIcon>新增</div>
+                    <div class="cloud-add-button-text"><VIcon :icon="PlusIcon"></VIcon>上傳</div>
                     <div class="cloud-add-button-list-wrapper" v-if="showAddList" >
                         <div class="cloud-add-button-list-item" @click="openCreateNewFolder">
                             <div class="cloud-add-button-list-item-icon"><VIcon :icon="PlusIcon"></VIcon></div>
@@ -287,13 +287,14 @@ export default {
     }
 
     .cloud-add-button{
-        width: 95px;
-        height: 50px;
-        border-radius: 15px;
+        width: 85px;
+        height: 42.5px;
+        border-radius: 5px;
+        font-size: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        border: 1px solid #dcdfe6;
         background: white;
         transition: box-shadow 0.3s ease;
         z-index: 1;
@@ -305,7 +306,7 @@ export default {
     }
     .cloud-add-button:hover{
         cursor: pointer;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
     }
     .cloud-add-button-list-wrapper{
         width: 200px;

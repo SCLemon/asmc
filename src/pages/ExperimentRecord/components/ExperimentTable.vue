@@ -67,10 +67,11 @@ export default {
         }
         
         function goToExperimentRecordDetail(token){
-            router.replace({
-                path: '/settings/admin/lab-setting/edit',
-                query: { 'targetLab': token }
-            }).catch((e)=>{})
+            // router.replace({
+            //     path: '/settings/admin/lab-setting/edit',
+            //     query: { 'targetLab': token }
+            // }).catch((e)=>{})
+            eventBus.emit('handleAlert', { title:'實驗計畫功能', message: '實驗計畫功能正在開發中...', type: 'warning' })
         }
 
         async function deleteExperimentRecord(exp){
