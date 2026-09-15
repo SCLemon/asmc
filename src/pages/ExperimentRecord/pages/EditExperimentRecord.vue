@@ -311,4 +311,7 @@ export default {
     .exp-params-item-wrapper:hover .exp-params-item-function-block{
         opacity: 1;
     }
+    :deep(.el-input__inner){
+        text-align: center;
+    }
 </style>
