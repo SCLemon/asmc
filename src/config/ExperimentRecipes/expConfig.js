@@ -178,6 +178,11 @@ export default [
                 type: 'string'
             },
             {
+                name: '顯影時間 (sec)',
+                params: 'developing_time',
+                type: 'number'
+            },
+            {
                 name: '顯影後烘烤 (Temp,min)',
                 params: 'heat_after_development',
                 type: 'string'
