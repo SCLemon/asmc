@@ -62,7 +62,7 @@ export default [
     },
     {
         key: 2,
-        title: 'PL/Raman',
+        title: 'PL/Raman 光學檢測',
         params: [
 
         ]
@@ -270,5 +270,19 @@ export default [
                 type: 'textarea'
             },
         ]
-    }
+    },
+    {
+        key: 7,
+        title: 'ALD 原子層沉積',
+        params: [
+
+        ]
+    },
+    {
+        key: 8,
+        title: 'ICP 感應耦合電漿蝕刻',
+        params: [
+
+        ]
+    },
 ]
