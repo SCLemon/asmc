@@ -24,7 +24,8 @@
                         <el-row :gutter="16">
                             <el-col :span="12" v-for="param in exp.params" :key="param.params">
                                 <el-form-item :label="param.name">
-                                    <el-input-number v-if="param.type === Number" v-model="exp.formData[param.params]" :placeholder="`請輸入 ${param.name}`" style="width: 100%;" controls-position="right"/>
+                                    <el-input-number v-if="param.type === 'number'" v-model="exp.formData[param.params]" :placeholder="`請輸入 ${param.name}`" style="width: 100%;" controls-position="right"/>
+                                    <el-input v-else-if="param.type === 'textarea'" type="textarea" v-model="exp.formData[param.params]" :placeholder="`請輸入 ${param.name}`" :rows="3" :autosize="{ minRows: 3, maxRows: 6 }" clearable/>
                                     <el-input v-else v-model="exp.formData[param.params]" :placeholder="`請輸入 ${param.name}`" clearable/>
                                 </el-form-item>
                             </el-col>

@@ -72,11 +72,11 @@ router.post('/api/experimentRecords/user/register', authMiddleware(7), async (re
 
     try {
 
-        const existingExperimentRecord = await experimentRecordModel.findOne({ name, owner: req.user.token });
+        const existingExperimentRecord = await experimentRecordModel.findOne({ name });
         if (existingExperimentRecord) {
             return res.send({
                 type: 'error',
-                message: '實驗計畫已存在，請選擇其他計畫名稱。'
+                message: '實驗計畫已存在，請選擇其他名稱。'
             });
         }
 
@@ -246,6 +246,7 @@ router.post('/api/experimentRecords/user/getSpecificData', authMiddleware(7), as
     }
 });
 
+// 重新命名
 router.put('/api/experimentRecords/user/rename', authMiddleware(7), async (req, res) => {
 
     const { targetRecord, name } = req.body;
@@ -255,6 +256,12 @@ router.put('/api/experimentRecords/user/rename', authMiddleware(7), async (req, 
             type:'error',
             message:'修改資料不可為空。'
         });
+    }
+
+    
+    const existingExperimentRecord = await experimentRecordModel.findOne({ name });
+    if (existingExperimentRecord) {
+        return res.send({ type: 'error', message: '實驗計畫已存在，請選擇其他名稱。'});
     }
 
     const record = await experimentRecordModel.findOne({ token: targetRecord, owner: req.user.token });

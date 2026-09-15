@@ -6,52 +6,57 @@ export default [
             {
                 name: '基板尺寸 (cm x cm)',
                 params: 'size',
-                type: String
+                type: 'string'
             },
             {
                 name: 'MoO3 (g)',
                 params: 'Mo_content',
-                type: Number
+                type: 'number'
             },
             {
                 name: 'S (g)',
                 params: 'S_content',
-                type: Number
+                type: 'number'
             },
             {
                 name: '擺片（犧牲 : 一般）',
                 params: 'position_ratio',
-                type: String
+                type: 'string'
             },
             {
                 name: '加熱包/爐管距離 (cm)',
                 params: 'heater_tube_distance',
-                type: Number
+                type: 'number'
             },
             {
                 name: 'Ar Purge (sccm, min)',
                 params: 'Ar_purge_params',
-                type: String
+                type: 'string'
             },
             {
                 name: 'Experiment Parameters (sccm, torr)',
                 params: 'exp_env_params',
-                type: String
+                type: 'string'
             },
             {
                 name: '升溫目標 (TSP1)',
                 params: 'TSP1',
-                type: Number
+                type: 'number'
             },
             {
                 name: '升溫速率 (RMP1)',
                 params: 'RMP1',
-                type: Number
+                type: 'number'
             },
             {
                 name: '材料成長 (Temp, min)',
                 params: 'exp_growth_params',
-                type: String
+                type: 'string'
+            },
+            {
+                name: '備註',
+                params: 'comment',
+                type: 'textarea'
             }
         ]
     },
