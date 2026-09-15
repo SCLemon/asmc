@@ -38,7 +38,7 @@
             <VIcon :size="24" :icon="PlusIcon"></VIcon>
         </div>
     </div>
-    <el-dialog v-model="dialogVisible" title="新增站點" width="500">
+    <el-dialog v-model="dialogVisible" title="新增站點">
         <el-select v-model="selected_option" placeholder="Select" style="width: 100%;">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>
         </el-select>

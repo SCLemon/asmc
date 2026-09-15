@@ -188,5 +188,87 @@ export default [
                 type: 'textarea'
             },
         ]
+    },
+    {
+        key: 5,
+        title: 'PVD 物理氣相沉積 (蒸鍍）',
+        params: [
+            {
+                name: '蒸鍍環境壓力 (torr)',
+                params: 'pressure',
+                type: 'string'
+            },
+            {
+                name: '石英震盪片頻率',
+                params: 'frequency',
+                type: 'number'
+            },
+            {
+                name: '第一次蒸鍍金屬 (電極/厚度/鍍率/融化電流/操作電流）',
+                params: 'metal_1',
+                type: 'string'
+            },
+            {
+                name: '第二次蒸鍍金屬 (電極/厚度/鍍率/融化電流/操作電流）',
+                params: 'metal_2',
+                type: 'string'
+            },
+            {
+                name: '第三次蒸鍍金屬 (電極/厚度/鍍率/融化電流/操作電流）',
+                params: 'metal_3',
+                type: 'string'
+            },
+            {
+                name: '第四次蒸鍍金屬 (電極/厚度/鍍率/融化電流/操作電流）',
+                params: 'metal_4',
+                type: 'string'
+            },
+            {
+                name: '備註',
+                params: 'comment',
+                type: 'textarea'
+            },
+        ]
+    },
+    {
+        key: 6,
+        title: 'RIE 反應式離子蝕刻',
+        params: [
+            {
+                name: '蝕刻環境壓力 (torr)',
+                params: 'pressure',
+                type: 'string'
+            },
+            {
+                name: 'Wf (入射功率)',
+                params: 'forward_power',
+                type: 'number'
+            },
+            {
+                name: 'Wr (反射功率)',
+                params: 'reverse_power',
+                type: 'number'
+            },
+            {
+                name: 'CT (匹配電容)',
+                params: 'tune_capacitor',
+                type: 'number'
+            },
+            {
+                name: 'CL (負載電容)',
+                params: 'load_capacitor',
+                type: 'number'
+            },
+            {
+                name: '蝕刻時間 (sec)',
+                params: 'main_etch_time',
+                type: 'number'
+            },
+            {
+                name: '備註',
+                params: 'comment',
+                type: 'textarea'
+            },
+        ]
     }
 ]
