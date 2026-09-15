@@ -17,7 +17,7 @@
                     <td>{{ exp.name }}</td>
                     <td><el-rate v-model="exp.rate" allow-half :disabled="!(exp.isMine)" @change="rate(exp)"/></td>
                     <td class="options">
-                        <el-button @click="goToExperimentRecordDetail(exp.token)">查看</el-button>
+                        <el-button @click="goToExperimentRecordDetail(exp)">查看</el-button>
                         <el-button @click="goToExperimentRecordCloud(exp.token)">檔案</el-button>
                         <el-button type="danger" @click="deleteExperimentRecord(exp)">刪除</el-button>
                     </td>
@@ -69,12 +69,11 @@ export default {
             tableData.value = res.data.data
         }
         
-        function goToExperimentRecordDetail(token){
-            // router.replace({
-            //     path: '/settings/admin/lab-setting/edit',
-            //     query: { 'targetLab': token }
-            // }).catch((e)=>{})
-            eventBus.emit('handleAlert', { title:'實驗計畫功能', message: '實驗計畫功能正在開發中...', type: 'warning' })
+        function goToExperimentRecordDetail(exp){
+            router.replace({
+                path: '/experiment-records/edit',
+                query: { 'targetRecord': exp.token, 'title': exp.name }
+            }).catch((e)=>{})
         }
         function goToExperimentRecordCloud(token){
             router.replace(`/cloud/${token}`).catch((e)=>{})
