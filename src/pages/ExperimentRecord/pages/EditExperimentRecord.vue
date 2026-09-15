@@ -11,7 +11,7 @@
         </div>
     </div>
     <div class="edit-experiment-record-table">
-         <el-collapse v-model="activeNames" v-if="dataSet.length">
+         <el-collapse v-model="activeNames" v-if="dataSet.length" accordion>
             <el-collapse-item v-for="(exp, id) in dataSet" :key="exp.token" :title="`Step ${id+1}. ${exp.title}`" :name="exp.token" class="exp-params-item-wrapper">
                 <div class="exp-params-item-function-block">
                     <VIcon class="exp-params-item-function-icon" :icon="PlusIcon" @click="openAdd(id+1)"></VIcon>
