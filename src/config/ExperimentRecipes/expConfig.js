@@ -62,6 +62,13 @@ export default [
     },
     {
         key: 2,
+        title: 'PL/Raman',
+        params: [
+
+        ]
+    },
+    {
+        key: 3,
         title: 'Transfer 材料轉移',
         params: [
             {
@@ -112,6 +119,67 @@ export default [
             {
                 name: '最終片號(1,3,5,...)',
                 params: 'success_id',
+                type: 'string'
+            },
+            {
+                name: '備註',
+                params: 'comment',
+                type: 'textarea'
+            },
+        ]
+    },
+    {
+        key: 4,
+        title: 'Exposure and Development 曝光顯影',
+        params: [
+            {
+                name: '曝光用途',
+                params: 'reason',
+                type: 'string'
+            },
+            {
+                name: '曝光方法 (ex. MLA150, 接觸式曝光,...)',
+                params: 'reason',
+                type: 'string'
+            },
+            {
+                name: '光阻類型 (ex. APOL/負)',
+                params: 'photoresist',
+                type: 'string'
+            },
+            {
+                name: '旋塗參數 (rpm,sec)',
+                params: 'spin_coating',
+                type: 'string'
+            },
+            {
+                name: '旋塗後烘烤 (Temp,min)',
+                params: 'heat_after_coating',
+                type: 'string'
+            },
+            {
+                name: '曝光參數 Dose',
+                params: 'dose',
+                type: 'number'
+            },
+            {
+                name: '曝光參數 Defocus',
+                params: 'defocus',
+                type: 'number'
+            },
+            {
+                name: '曝光後烘烤 (Temp,min)',
+                params: 'heat_after_exposure',
+                type: 'string'
+            },
+            {
+                name: '顯影液類型 (ex. AD-10)',
+                params: 'developing solution',
+                type: 'string'
+            },
+            {
+                name: '顯影後烘烤 (Temp,min)',
+                params: 'heat_after_development',
                 type: 'string'
             },
             {
