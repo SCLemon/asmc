@@ -26,7 +26,8 @@ export default [
         paths: [
             '/experimental-records',
             '/cloud',
-            '/analysis-tools'
+            '/analysis-tools',
+            '/experiment-records'
         ]
     },
     {
