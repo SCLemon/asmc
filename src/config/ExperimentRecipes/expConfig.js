@@ -139,7 +139,7 @@ export default [
             },
             {
                 name: '曝光方法 (ex. MLA150, 接觸式曝光,...)',
-                params: 'reason',
+                params: 'method',
                 type: 'string'
             },
             {
