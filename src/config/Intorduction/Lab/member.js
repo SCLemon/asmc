@@ -122,7 +122,7 @@ export default {
             },
             {
                 name: 'Tzu-Hsien Chuang (莊子賢)',
-                imgUrl: 'img/labMember/default.webp',
+                imgUrl: 'img/labMember/Tzu-Hsien_Chuang.jpg',
                 topic: '',
                 badge: '',
                 location: '工程三館 R105',

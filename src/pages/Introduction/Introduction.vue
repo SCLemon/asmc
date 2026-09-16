@@ -21,6 +21,10 @@
                     Publications
                     <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/publications')}"></div>
                 </div>
+                <div class="introduction-view-option"  @click="goTo('/introduction/equipments')">
+                    Equipments
+                    <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/equipments')}"></div>
+                </div>
             </div>
             <router-view v-slot="{ Component }">
                 <Transition name="page" mode="out-in">
@@ -45,6 +49,9 @@ export default {
         
         const router = useRouter();
         function goTo(path) {
+            if(path == '/introduction/home'){
+                document.querySelector('.view').scrollTo({ top: 0, behavior: 'smooth' })
+            }
             router.replace(path).catch((e)=>{})
         }
         return {
@@ -75,7 +82,7 @@ export default {
     }
     .introduction-view-options-wrapper{
         position: absolute;
-        top: 12.5px;
+        top: 18px;
         right:30px;
         display: flex;
         align-items: center;

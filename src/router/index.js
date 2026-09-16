@@ -7,6 +7,8 @@ import Introduction from '../pages/Introduction/Introduction.vue'
 import Home from '../pages/Introduction/pages/Home.vue'
 import Members from '../pages/Introduction/pages/Ｍembers.vue'
 import Publications from '../pages/Introduction/pages/Publications.vue'
+import Equipments from '../pages/Introduction/pages/Equipments.vue'
+
 import AnalysisTools from '../pages/AnalysisTools/AnalysisTools.vue'
 import UserLogin from '../pages/UserLogin/UserLogin.vue'
 
@@ -53,6 +55,10 @@ const routes = [
         {
           path: 'publications',
           component: Publications,
+        },
+        {
+          path: 'equipments',
+          component: Equipments,
         },
         {
           path: '',
