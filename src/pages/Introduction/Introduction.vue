@@ -34,6 +34,7 @@
 <script>
 import { VCarousel, VCarouselItem } from 'vorium-ui'
 import 'vorium-ui/dist/vorium-ui.css'
+import { nextTick } from 'vue';
 import { useRouter } from 'vue-router'
 export default {
     name: 'Introduction',

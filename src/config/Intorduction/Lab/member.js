@@ -11,6 +11,25 @@ export default {
             }
         ]
     },
+    'Authors':{
+        title: 'Platform Authors',
+        member: [
+            {
+                name: 'Ying-Hao Lin (林英豪)',
+                imgUrl: 'img/labMember/Ying-Hao_Lin.jpg',
+                topic: 'Electrical and Stability Optimization of MoS₂ Two-Dimensional FETs',
+                badge: '平台作者暨管理員',
+                location: '工程三館 R105',
+            },
+            {
+                name: 'Yu-Ling Li (李玉麟)',
+                imgUrl: 'img/labMember/Yu-Ling_Li.gif',
+                topic: 'Doping and Contact Resistance in Two-Dimensional Materials (MoS₂)',
+                badge: 'MoS₂ CVD 與電性量測管理員',
+                location: '工程三館 R105',
+            },
+        ]
+    },
     'PHD':{
         title: 'PH.D. Students',
         member: [
@@ -94,20 +113,6 @@ export default {
     '114 Master':{
         title: '114 Master Students',
         member: [
-            {
-                name: 'Ying-Hao Lin (林英豪)',
-                imgUrl: 'img/labMember/Ying-Hao_Lin.jpg',
-                topic: 'Electrical and Stability Optimization of MoS₂ Two-Dimensional FETs',
-                badge: '網站作者暨平台管理員',
-                location: '工程三館 R105',
-            },
-            {
-                name: 'Yu-Ling Li (李玉麟)',
-                imgUrl: 'img/labMember/Yu-Ling_Li.gif',
-                topic: 'Doping and Contact Resistance in Two-Dimensional Materials (MoS₂)',
-                badge: 'MoS₂ CVD 與電性量測管理員',
-                location: '工程三館 R105',
-            },
             {
                 name: 'Bo-Wei Yang (楊博崴)',
                 imgUrl: 'img/labMember/default.webp',
