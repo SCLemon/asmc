@@ -1,11 +1,11 @@
 <template>
     <div class="labMember-wrapper">
-        <!-- <div class="title">實驗室成員</div> -->
+        <div class="title">Members</div>
         <div class="member-group-wrapper" v-for="(group, id) in member" :key="id">
             <div class="member-group-title">{{ group.title }}</div>
             <div class="member-group">
                 <div class="member-wrapper" v-for="(member, id) in group.member" :key="id">
-                    <img class="member-img" :src="member.imgUrl" alt="">
+                    <img class="member-img" v-lazy src="" :data-src="member.imgUrl" alt="">
                     <div class="member-info-wrapper">
                         <div class="member-name">{{ member.name }}</div>
                         <div class="member-research-wrapper">
@@ -22,9 +22,9 @@
 </template>
 
 <script>
-import member from '../../../../config/Intorduction/Lab/member';
+import member from '../../../config/Intorduction/Lab/member';
 export default {
-    name: 'LabMember',
+    name: 'Members',
     setup(){
         return {
             member

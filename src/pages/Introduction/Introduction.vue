@@ -9,11 +9,15 @@
         </div>
         <div class="introduction-view-wrapper">
             <div class="introduction-view-options-wrapper">
-                <div class="introduction-view-option" @click="goTo('home')">
+                <div class="introduction-view-option" @click="goTo('/introduction/home')">
                     Introduction
                     <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/home')}"></div>
                 </div>
-                <div class="introduction-view-option"  @click="goTo('publications')">
+                <div class="introduction-view-option"  @click="goTo('/introduction/members')">
+                    Members
+                    <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/members')}"></div>
+                </div>
+                <div class="introduction-view-option"  @click="goTo('/introduction/publications')">
                     Publications
                     <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/publications')}"></div>
                 </div>
@@ -70,7 +74,7 @@ export default {
     }
     .introduction-view-options-wrapper{
         position: absolute;
-        top: 15px;
+        top: 12.5px;
         right:30px;
         display: flex;
         align-items: center;

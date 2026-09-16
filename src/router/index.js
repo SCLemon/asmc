@@ -5,6 +5,7 @@ import jsCookie from 'js-cookie'
 
 import Introduction from '../pages/Introduction/Introduction.vue'
 import Home from '../pages/Introduction/pages/Home.vue'
+import Members from '../pages/Introduction/pages/Ｍembers.vue'
 import Publications from '../pages/Introduction/pages/Publications.vue'
 import AnalysisTools from '../pages/AnalysisTools/AnalysisTools.vue'
 import UserLogin from '../pages/UserLogin/UserLogin.vue'
@@ -44,6 +45,10 @@ const routes = [
         {
           path: 'home',
           component: Home,
+        },
+        {
+          path: 'members',
+          component: Members,
         },
         {
           path: 'publications',

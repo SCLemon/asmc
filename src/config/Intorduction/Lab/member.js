@@ -17,7 +17,7 @@ export default {
             {
                 name: 'An-Chiao Lee (李安蕎)',
                 imgUrl: 'img/labMember/default.webp',
-                topic: 'Physics-Based Modeling & Circuit-Level Implememntation',
+                topic: 'Physics-Based Modeling & Circuit-Level Implementation',
                 badge: '',
                 location: '資電館 R717',
             },
@@ -31,7 +31,7 @@ export default {
             {
                 name: 'Wen-Tien Tseng (曾文典)',
                 imgUrl: 'img/labMember/default.webp',
-                topic: '二維材料、二維元件、SOT-MRAM 記憶體',
+                topic: '',
                 badge: '',
                 location: '資電館 R717',
             }
@@ -97,14 +97,14 @@ export default {
             {
                 name: 'Ying-Hao Lin (林英豪)',
                 imgUrl: 'img/labMember/Ying-Hao_Lin.jpg',
-                topic: '',
+                topic: 'Electrical and Stability Optimization of MoS₂ Two-Dimensional FETs',
                 badge: '網站作者暨平台管理員',
                 location: '工程三館 R105',
             },
             {
                 name: 'Yu-Ling Li (李玉麟)',
-                imgUrl: 'img/labMember/default.webp',
-                topic: '',
+                imgUrl: 'img/labMember/Yu-Ling_Li.gif',
+                topic: 'Doping and Contact Resistance in Two-Dimensional Materials (MoS₂)',
                 badge: 'MoS₂ CVD 與電性量測管理員',
                 location: '工程三館 R105',
             },
