@@ -29,7 +29,7 @@ export default [
     },
     {
         name: 'Neutral Beam Etcher (NBE, Ready for use)',
-        description: 'The Neutral Beam Etcher (NBE) utilizes a high-energy neutral particle beam for dry etching, minimizing ion bombardment and charging effects associated with conventional plasma etching. It enables low-damage and high-precision material removal, making it suitable for the etching and patterning of **metals, 2D materials, thin films, and micro/nanostructures**. The system supports advanced semiconductor fabrication and the development of emerging electronic devices',
+        description: 'The Neutral Beam Etcher (NBE) utilizes a high-energy neutral particle beam for dry etching, minimizing ion bombardment and charging effects associated with conventional plasma etching. It enables low-damage and high-precision material removal, making it suitable for the etching and patterning of metals, 2D materials, thin films, and micro/nanostructures. The system supports advanced semiconductor fabrication and the development of emerging electronic devices',
         img: [
 
         ]

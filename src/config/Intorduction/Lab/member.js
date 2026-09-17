@@ -22,7 +22,7 @@ export default {
                 location: '工程三館 R105',
             },
             {
-                name: 'Yu-Ling Li (李玉麟)',
+                name: 'Yu-Lin Li (李玉麟)',
                 imgUrl: 'img/labMember/Yu-Ling_Li.gif',
                 topic: 'Doping and Contact Resistance in Two-Dimensional Materials (MoS₂)',
                 badge: 'MoS₂ CVD 與電性量測管理員',
