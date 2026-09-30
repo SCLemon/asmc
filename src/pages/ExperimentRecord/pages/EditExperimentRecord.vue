@@ -196,6 +196,7 @@ export default {
                         confirmButtonText: '確認',
                         cancelButtonText: '取消',
                         type: 'warning',
+                        inputValue: title.value
                     }
                 )
 
