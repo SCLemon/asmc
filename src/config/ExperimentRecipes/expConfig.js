@@ -138,6 +138,11 @@ export default [
                 type: 'string'
             },
             {
+                name: '光罩檔案名稱',
+                params: 'design_file',
+                type: 'string'
+            },
+            {
                 name: '曝光方法 (ex. MLA150, 接觸式曝光,...)',
                 params: 'method',
                 type: 'string'
@@ -288,6 +293,47 @@ export default [
         title: 'ICP 感應耦合電漿蝕刻',
         params: [
 
+        ]
+    },
+    {
+        key: 9,
+        title: 'B1500A 電性量測',
+        params: [
+            {
+                name: '最佳量測片號（ex. #5, 11-33)',
+                params: 'best-die',
+                type: 'string'
+            },
+            {
+                name: 'Contact Type (Schottky or Ohmic)',
+                params: 'contact_type',
+                type: 'string'
+            },
+            {
+                name: 'Vth (V)',
+                params: 'Vth',
+                type: 'number'
+            },
+            {
+                name: 'Ion (uA/um)',
+                params: 'Ion',
+                type: 'number'
+            },
+            {
+                name: 'Ioff (uA/um)',
+                params: 'Ioff',
+                type: 'number'
+            },
+            {
+                name: 'SS (mV/dec)',
+                params: 'SS',
+                type: 'number'
+            },
+            {
+                name: '備註',
+                params: 'comment',
+                type: 'textarea'
+            },
         ]
     },
 ]
