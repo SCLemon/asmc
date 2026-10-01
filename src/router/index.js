@@ -34,7 +34,7 @@ import EquipmentSettingBySuperUser from '../pages/Settings/pages/bySuperUser/Equ
 // setting by user
 import EditLabByUser from '../pages/Settings/pages/byUser/LabSetting/EditLab/EditLab.vue'
 import ReservationRecordByUser from '../pages/Settings/pages/byUser/ReservationRecord/ReservationRecord.vue'
-
+import AffidavitByUser from '../pages/Settings/pages/byUser/Affidavit/Affidavit.vue'
 
 // underConstruction
 import UnderConstruction from '../pages/UnderConstruction/UnderConstruction.vue'
@@ -144,6 +144,10 @@ const routes = [
     {
       path: '/settings/user/reservation-record',
       component: ReservationRecordByUser
+    },
+    {
+      path: '/settings/user/affidavit',
+      component: AffidavitByUser
     },
     {
       path: '/',

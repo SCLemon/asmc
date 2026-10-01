@@ -1,4 +1,4 @@
-import { UserIcon, FlaskIcon, SettingsIcon, HomeUnlockIcon, CalendarIcon } from 'vorium-ui/icons'
+import { UserIcon, FlaskIcon, SettingsIcon, HomeUnlockIcon, CalendarIcon, EditIcon } from 'vorium-ui/icons'
 export default [
     {
         title: '平台管理員列表',
@@ -55,6 +55,11 @@ export default [
                 title: '預約記錄',
                 icon: CalendarIcon,
                 path: '/settings/user/reservation-record'
+            },
+            {
+                title: '切結書簽核',
+                icon: EditIcon,
+                path: '/settings/user/affidavit'
             },
         ]
     },
