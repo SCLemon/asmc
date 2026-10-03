@@ -186,7 +186,7 @@ export default {
         box-sizing: border-box;
         background: rgba(0,0,0,0.7);
     }
-    @media screen and (max-width: 440px) {
+    @media screen and (max-width: 500px) {
         .introduction-wrapper{
             padding-top: 60px;
         }

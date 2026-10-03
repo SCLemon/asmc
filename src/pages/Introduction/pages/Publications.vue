@@ -47,7 +47,7 @@ export default {
     .paper-list-mobile{
         display: none;
     }
-    @media screen and (max-width: 440px) {
+    @media screen and (max-width: 500px) {
         .paper-list{
             display: none;
         }

@@ -48,7 +48,7 @@ export default {
     .img{
         width: 100%;
     }
-    @media screen and (max-width: 440px) {
+    @media screen and (max-width: 500px) {
         .content{
             margin-top: 15px;
             font-size: 14px;
