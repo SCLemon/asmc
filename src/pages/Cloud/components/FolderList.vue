@@ -130,5 +130,10 @@ export default {
         cursor: pointer;
         background: rgba(0,0,0,0.05);
     }
+    @media screen and (max-width:1024px) {
+        .folder-list-wrapper{
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
 </style>
-```
+

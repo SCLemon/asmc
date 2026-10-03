@@ -187,7 +187,12 @@ export default {
         background: rgba(0, 0, 0, 0.02);
         cursor: pointer;
     }
-    .options>.el-button{
+    .el-button{
         padding: 17.5px 17.5px;
+    }
+    @media screen and (max-width: 1024px) {
+        .el-button{
+            padding: 10px 10px;
+        }
     }
 </style>

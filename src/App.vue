@@ -53,7 +53,6 @@ export default {
   }
   .view_box{
     width: calc(100vw - 80px);
-    min-width: 1140px;
     height: 100vh;
     box-sizing: border-box;
   }

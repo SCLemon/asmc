@@ -16,7 +16,7 @@
                         v-for="period in periodList" :key="period" :title="getPeriodLabel(item, period)"
                         @click="getPeriod(item, period)?.status != -1 && !isPast(item.date, period)? handle(getPeriod(item, period), item.date, period) : ''">
                         {{ getPeriod(item, period).userName || getPeriodLabel(item, period) }}
-                        <div class="calendar-item-is-Mine"><VIcon :icon="UserIcon" v-if="!isPast(item.date, period) && getPeriod(item, period)?.status!= -1 && getPeriod(item, period).isMine"></vIcon></div>
+                        <div class="calendar-item-is-Mine"><VIcon :icon="UserIcon" v-if="!isPast(item.date, period) && getPeriod(item, period)?.status!= -1 && getPeriod(item, period).isMine"></VIcon></div>
                     </div>
                 </div>
             </div>
@@ -181,6 +181,9 @@ export default {
         height: 30px;
         line-height: 30px;
         text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .calendar-item-wrapper{
         width: 100%;
@@ -247,6 +250,12 @@ export default {
     .calendar-item-is-Mine{
         position: absolute;
         right: 20px;
+    }
+
+    @media screen and (max-width:1024px) {
+        .calendar-item-is-Mine{
+            display: none;
+        }
     }
 
 </style>

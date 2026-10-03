@@ -5,8 +5,8 @@
                 <tr>
                     <th>CreateTime</th>
                     <th>Name</th>
-                    <th>Member Counts</th>
-                    <th>Asset Counts</th>
+                    <th>Members</th>
+                    <th>Assets</th>
                     <th>Pending payment</th>
                     <th>Status</th>
                     <th>Options</th>
@@ -222,5 +222,21 @@ export default {
     }
     .options>.el-button{
         padding: 17.5px 17.5px;
+    }
+    @media screen and (max-width: 1024px) {
+        .options>.el-button{
+            padding: 10px 10px;
+            font-size: 12px;
+        }
+        .parameter-table th:nth-child(1),
+        .parameter-table td:nth-child(1) {
+            width: 20%;
+            word-break: break-all;
+        }
+        .parameter-table th:nth-child(5),
+        .parameter-table td:nth-child(5) {
+            width: 20%;
+            word-break: break-all;
+        }
     }
 </style>

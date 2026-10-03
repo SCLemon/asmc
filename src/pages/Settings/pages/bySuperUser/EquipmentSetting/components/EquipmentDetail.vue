@@ -27,7 +27,7 @@
                 <div class="equipment-detail-user-picker-title">授權名單</div>
                 <el-transfer v-model="info.users"  :titles="['Unauthorized', 'Authorized']"  filterable filter-placeholder="Search By Name" :data="userList"/>
             </div>
-            <div class="equipment-detail-picker-block">
+            <div class="equipment-detail-picker-block equipment-detail-picker-block-2">
                 <div class="equipment-detail-user-picker-title">預約現況</div>
                 <equipment-reservation :target-equipment="targetEquipment"></equipment-reservation>
             </div>
@@ -259,7 +259,15 @@ export default {
     :deep(.el-transfer-panel__body) {
         height: 400px;
     }
-    :deep(.el-transfer__buttons){
-
+    @media screen and (max-width:1024px) {
+        .equipment-detail-picker-wrapper{
+            flex-wrap: wrap;
+        }
+        .equipment-detail-picker-block{
+            width: 100%;
+        }
+        .equipment-detail-picker-block-2{
+            margin-top: 15px;
+        }
     }
 </style>

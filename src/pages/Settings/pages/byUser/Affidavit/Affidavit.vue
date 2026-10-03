@@ -3,7 +3,7 @@
     <div class="affidavit-pdf-box">
       <VPdfViewer :pdfFile="file" />
     </div>
-    <div class="affidavit-button-wrapper">
+    <div v-if="isLoading" class="affidavit-button-wrapper">
         <div v-if="!(detail?.status)">
             <el-button type="primary" @click="sign()">同意簽署</el-button>
             <el-button @click="goBack()">返回頁面</el-button>
@@ -32,6 +32,7 @@ export default {
         const file = ref(null);
         const router = useRouter();
         const detail = ref({})
+        const isLoading = ref(false)
 
         onMounted(async ()=>{
             const response = await fetch('asset/affidavit.pdf')
@@ -48,9 +49,9 @@ export default {
                 }
             })
             detail.value = res.data.data;
-            console.log(detail.value)
             
             if(res.data.type == 'error') eventBus.emit('handleAlert', { title:'用戶資料獲取結果', message: res.data.message, type: res.data.type })
+            else isLoading.value = true;
         }
 
         function goBack(){
@@ -83,7 +84,7 @@ export default {
   
         }
         return{
-            file, detail, goBack, sign
+            file, detail, goBack, sign, isLoading
         }
     }
 }
