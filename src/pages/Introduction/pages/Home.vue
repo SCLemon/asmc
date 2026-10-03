@@ -48,11 +48,13 @@ export default {
     .img{
         width: 100%;
     }
-    @media screen and (max-width: 500px) {
+    @media screen and (max-width: 852px) {
         .content{
             margin-top: 15px;
             font-size: 14px;
         }
+    }
+    @media screen and (max-width: 500px) {
         .img-wrapper{
             margin-top: 20px;
             width: 100%;

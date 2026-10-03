@@ -108,8 +108,7 @@ export default {
         line-height: 1.35;
         font-size: 12px;
         height: 50px;
-        overflow-y: scroll;
-        
+        overflow-y: scroll;  
     }
     .member-badge{
         position: absolute;
@@ -142,6 +141,18 @@ export default {
             gap: 30px;
             width: 100%;
             margin-top: 30px;
+        }
+    }
+    @media screen and (max-width: 500px) {
+        .member-name{
+            font-size: 14px;
+        }
+        .member-research-title{
+            font-size: 13px;
+        }
+        .member-research{
+            font-size: 11px;
+            line-height: 1.5;
         }
     }
 </style>

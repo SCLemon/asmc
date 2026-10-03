@@ -80,7 +80,7 @@ export default {
     .list-item-img-block img{
         width: 100%;
     }
-    @media screen and (max-width: 500px) {
+    @media screen and (max-width: 852px) {
         .list-item-text-block-title{
             font-size: 18px;
             line-height: 1.5;
