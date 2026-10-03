@@ -224,7 +224,7 @@ export default {
         cursor: pointer;
         background: rgba(0,0,0,0.03);
     }
-    @media screen and (max-width:1024px) {
+    @media screen and (max-width:1032px) {
         .cloud-more-button-list-wrapper{
             top: calc(100% + 15px);
             width: 150px;

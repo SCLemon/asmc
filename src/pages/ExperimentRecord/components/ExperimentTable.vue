@@ -204,9 +204,10 @@ export default {
     .options>.el-button{
         padding: 17.5px 17.5px;
     }
-    @media screen and (max-width: 1024px) {
+    @media screen and (max-width: 1032px) {
         .options>.el-button{
-            padding: 15px 15px;
+            padding: 14px 14px;
+            font-size: 12px;
         }
     }
 </style>

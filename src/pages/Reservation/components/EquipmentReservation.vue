@@ -15,7 +15,7 @@
                         }"
                         v-for="period in periodList" :key="period" :title="getPeriodLabel(item, period)"
                         @click="getPeriod(item, period)?.status != -1 && !isPast(item.date, period)? handle(getPeriod(item, period), item.date, period) : ''">
-                        {{ getPeriod(item, period).userName || getPeriodLabel(item, period) }}
+                        {{ getPeriodLabel(item, period) }}
                         <div class="calendar-item-is-Mine"><VIcon :icon="UserIcon" v-if="!isPast(item.date, period) && getPeriod(item, period)?.status!= -1 && getPeriod(item, period).isMine"></VIcon></div>
                     </div>
                 </div>
@@ -80,18 +80,9 @@ export default {
         function getPeriodLabel(item, period) {
 
             const data = getPeriod(item, period);
-
-            if (isPast(item.date, period) || data?.status === -1) {
-                return '-';
-            }
-
-            if (data?.status === 2) {
-                return '已簽到';
-            }
-
-            if (data?.status === 3) {
-                return '逾時簽到';
-            }
+            console.log(data?.status)
+            if (isPast(item.date, period) || data?.status == -1) return '-';
+            else if(data?.status != 0 ) return data.userName
 
             return period;
         }
@@ -252,7 +243,7 @@ export default {
         right: 20px;
     }
 
-    @media screen and (max-width:1024px) {
+    @media screen and (max-width:1032px) {
         .calendar-item-is-Mine{
             display: none;
         }

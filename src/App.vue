@@ -105,4 +105,13 @@ export default {
   .page-leave-to{
       opacity: 0;
   }
+
+  @media screen and (max-width: 852px) {
+    .column{
+      display: none;
+    }
+    .view_box{
+      width: 100vw;
+    }
+  }
 </style>

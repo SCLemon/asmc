@@ -190,7 +190,7 @@ export default {
     .el-button{
         padding: 17.5px 17.5px;
     }
-    @media screen and (max-width: 1024px) {
+    @media screen and (max-width: 1032px) {
         .el-button{
             padding: 10px 10px;
         }
