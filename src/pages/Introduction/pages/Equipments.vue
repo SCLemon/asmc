@@ -63,7 +63,7 @@ export default {
     .list-item-text-block-title{
         font-size: 20px;
         font-weight: bolder;
-        height: 40px;
+        margin-bottom: 20px;
     }
     .list-item-text-block-description{
         line-height: 1.5;
@@ -79,5 +79,17 @@ export default {
     }
     .list-item-img-block img{
         width: 100%;
+    }
+    @media screen and (max-width: 440px) {
+        .list-item-text-block-title{
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        .content{
+            font-size: 14px;
+        }
+        .list-item-text-block-description{
+            font-size: 14px;
+        }
     }
 </style>

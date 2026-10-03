@@ -65,7 +65,6 @@ export default {
     }
     .member-wrapper{
         width: 100%;
-        min-width: 400px;
         height: 205px;
         display: flex;
         justify-content: space-between;
@@ -131,6 +130,15 @@ export default {
         .member-group {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            width: 100%;
+            margin-top: 30px;
+        }
+    }
+    @media screen and (max-width: 852px) {
+        .member-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
             width: 100%;
             margin-top: 30px;

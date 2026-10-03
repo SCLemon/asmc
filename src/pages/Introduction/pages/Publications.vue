@@ -1,16 +1,18 @@
 <template>
     <div class="labInto-wrapper">
         <div class="title">Publications</div>
-        <paper-list :parameters="paper"></paper-list>
+        <paper-list class="paper-list" :parameters="paper"></paper-list>
+        <paper-list-mobile class="paper-list-mobile" :parameters="paper"></paper-list-mobile>
     </div>
 </template>
 
 <script>
 import PaperList from './components/PaperList.vue';
+import PaperListMobile from './components/PaperListMobile.vue';
 import paper from '../../../config/Intorduction/Lab/paper';
 export default {
     components: { 
-        PaperList
+        PaperList, PaperListMobile
     },
     name: 'Publications',
     setup(){
@@ -41,5 +43,16 @@ export default {
         display: flex;
         align-items: center;
         justify-content: space-evenly;
+    }
+    .paper-list-mobile{
+        display: none;
+    }
+    @media screen and (max-width: 440px) {
+        .paper-list{
+            display: none;
+        }
+        .paper-list-mobile{
+            display: block;
+        }
     }
 </style>

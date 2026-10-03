@@ -40,7 +40,6 @@ export default {
     .img-wrapper{
         margin-top: 20px;
         width: 100%;
-
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 20px;
@@ -48,5 +47,16 @@ export default {
 
     .img{
         width: 100%;
+    }
+    @media screen and (max-width: 440px) {
+        .content{
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .img-wrapper{
+            margin-top: 20px;
+            width: 100%;
+            display: block;
+        }
     }
 </style>

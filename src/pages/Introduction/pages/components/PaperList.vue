@@ -11,7 +11,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item, id) in parameters" :key="item.name">
+                <tr v-for="(item, id) in parameters" :key="id">
                     <td>{{ id + 1 }}.</td>
                     <td>{{ item.author }}</td>
                     <td>{{ item.title }}</td>
