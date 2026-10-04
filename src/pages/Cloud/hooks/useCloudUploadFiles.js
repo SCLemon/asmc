@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { ref } from 'vue'
+import { ref, h } from 'vue'
 import jsCookie from 'js-cookie'
 import { ElNotification } from 'element-plus'
 
@@ -18,6 +18,27 @@ export function useCloudUploadFiles(currentParent, getData) {
         if(inputFileEl.value){
             inputFileEl.value.click()
         }
+
+    }
+
+
+    function downloadErrorLog(failedFiles, filename = 'upload_error_log.txt'){
+
+        const logContent = failedFiles.map(item => {
+            return `name: ${item.name}, reason: ${item.message}`
+        }).join('\n')
+
+        const blob = new Blob([logContent], { type:'text/plain;charset=utf-8' })
+
+        const link = document.createElement('a')
+
+        link.href = URL.createObjectURL(blob)
+
+        link.download = filename
+
+        link.click()
+
+        URL.revokeObjectURL(link.href)
 
     }
 
@@ -43,7 +64,7 @@ export function useCloudUploadFiles(currentParent, getData) {
 
                     if(!event.total) return
 
-                    item.progress = Math.round(
+                    item.percent = Math.round(
                         (event.loaded / event.total) * 100
                     )
 
@@ -56,15 +77,12 @@ export function useCloudUploadFiles(currentParent, getData) {
     }
 
 
-    async function uploadFiles(files, parent, concurrency = 4){
+    async function uploadFiles(files, parent, onProgress){
 
         const fileList = Array.from(files)
 
         if(!fileList.length){
-            return {
-                results:[],
-                failedFiles:[]
-            }
+            return []
         }
 
         uploading.value = true
@@ -77,9 +95,9 @@ export function useCloudUploadFiles(currentParent, getData) {
         fileList.forEach(file => {
 
             uploadList.value.push({
-                file,
+                item:file,
                 name:file.name,
-                progress:0,
+                percent:0,
                 status:'waiting',
                 message:''
             })
@@ -87,25 +105,19 @@ export function useCloudUploadFiles(currentParent, getData) {
         })
 
 
-        const results = []
-
-        let currentIndex = 0
         let completed = 0
 
 
-        const worker = async () => {
+        try{
 
-            while(true){
-
-                const index = currentIndex++
-
-                if(index >= fileList.length) break
+            for(let index = 0; index < fileList.length; index++){
 
                 const file = fileList[index]
 
                 const item = uploadList.value[index]
 
                 item.status = 'uploading'
+                item.percent = 0
                 item.message = ''
 
 
@@ -113,87 +125,44 @@ export function useCloudUploadFiles(currentParent, getData) {
 
                     const result = await uploadSingleFile(file, parent, item)
 
-                    results[index] = {
-                        file,
-                        ...result
-                    }
-
 
                     if(result.type === 'success'){
-
                         item.status = 'success'
-                        item.progress = 100
-
-                    }else{
-
+                        item.percent = 100
+                    }
+                    else{
                         item.status = 'error'
                         item.message = result.message || '檔案上傳失敗。'
-
                     }
 
-                }catch(e){
+                }
+                catch(e){
 
                     console.log(e)
 
                     item.status = 'error'
-
                     item.message = e.response?.data?.message || e.message || '檔案上傳失敗。'
-
-
-                    results[index] = {
-                        file,
-                        type:'error',
-                        message:item.message
-                    }
 
                 }
 
 
                 completed++
 
-                progress.value = Math.round(
-                    (completed / fileList.length) * 100
-                )
+                progress.value = Math.round((completed / fileList.length) * 100)
+
+                if(onProgress){
+                    onProgress(completed, fileList.length)
+                }
 
             }
+
+            // 所有檔案完成後更新 Cloud
+            await getData()
+            
+            return uploadList.value
 
         }
-
-
-        try{
-
-            const workers = []
-
-            const workerCount = Math.min(
-                concurrency,
-                fileList.length
-            )
-
-
-            for(let i = 0; i < workerCount; i++){
-                workers.push(worker())
-            }
-
-
-            await Promise.all(workers)
-
-
-            // 找出失敗檔案
-            const failedFiles = uploadList.value.filter(item => {
-                return item.status === 'error'
-            })
-
-
-            // 最後更新 Cloud 資料
-            await getData()
-
-
-            return {
-                results,
-                failedFiles
-            }
-
-        }finally{
+        finally{
 
             uploading.value = false
 
@@ -208,33 +177,33 @@ export function useCloudUploadFiles(currentParent, getData) {
 
         if(!files?.length) return
 
-        const notification = ElNotification({ title: '資源上傳進度', message: '資源正在上傳中...', type: 'warning', showClose:false, duration: 0, position: 'bottom-right' })
+        const progressText = ref(`資源正在上傳中 (0/${files.length})...`)
+
+        const notification = ElNotification({ 
+            title: '資源上傳進度', 
+            message: () => h('span', progressText.value), 
+            type: 'warning', 
+            showClose:false, 
+            duration: 0, 
+            position: 'bottom-right' 
+        })
+
         try{
 
-            const { results, failedFiles } = await uploadFiles(
-                files,
-                currentParent.value,
-                4
-            )
+            await uploadFiles(files, currentParent.value, (completed, total) => {
+                progressText.value = `資源正在上傳中 (${completed}/${total})...`
+            })
 
             event.target.value = ''
 
 
-            if(failedFiles.length){
-
-                const failedMessage = failedFiles.map(item => {
-                    return `${item.name}\n原因：${item.message}`
-                }).join('\n\n')
+            const failedFiles = uploadList.value.filter(item => {
+                return item.status === 'error'
+            })
 
 
-                ElNotification({ title: '檔案上傳結果', message: `${failedFiles.length} 個檔案上傳失敗。\n\n${failedMessage}`, type: 'error', position: 'bottom-right' })
-
-            }
-            else{
-
-                ElNotification({ title: '檔案上傳結果', message: '檔案上傳成功。', type:'success', position: 'bottom-right' })
-
-            }
+            if(failedFiles.length) downloadErrorLog(failedFiles)
+            ElNotification({ title: '資料夾上傳結果', message: '資料夾上傳完畢。', type:'success', position: 'bottom-right' })
 
         }
         catch(e){
@@ -247,7 +216,9 @@ export function useCloudUploadFiles(currentParent, getData) {
 
         }
         finally{
-            notification.close();
+
+            notification.close()
+
         }
 
     }
@@ -263,4 +234,3 @@ export function useCloudUploadFiles(currentParent, getData) {
     }
 
 }
-

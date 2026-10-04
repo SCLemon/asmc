@@ -32,7 +32,7 @@ import jsCookie from 'js-cookie'
 import axios from 'axios'
 import { useRoute } from 'vue-router';
 
-import { ref } from 'vue'
+import { ref, h } from 'vue'
 
 export default {
     name: 'MoreList',
@@ -109,7 +109,16 @@ export default {
 
         async function download() {
 
-            const notification = ElNotification({ title: '資源下載進度', message: '資源正在下載中...', type: 'warning', showClose:false, duration: 0, position: 'bottom-right' })
+            const downloadText = ref('資源正在下載中 (0%)...')
+
+            const notification = ElNotification({ 
+                title: '資源下載進度', 
+                message: () => h('span', downloadText.value), 
+                type: 'warning', 
+                showClose:false, 
+                duration: 0, 
+                position: 'bottom-right' 
+            })
 
             try {
                 
@@ -120,6 +129,25 @@ export default {
                         },
 
                         responseType: 'blob',
+
+                        onDownloadProgress: (event) => {
+
+                            if (event.total) {
+
+                                const percent = Math.round((event.loaded / event.total) * 100)
+
+                                downloadText.value = `資源正在下載中 (${percent}%)...`
+
+                            }
+                            else {
+
+                                const loadedMB = (event.loaded / (1024 * 1024)).toFixed(1)
+
+                                downloadText.value = `資源正在下載中 (${loadedMB} MB)...`
+
+                            }
+
+                        }
                     }
                 );
 

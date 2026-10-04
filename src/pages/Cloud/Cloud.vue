@@ -257,6 +257,7 @@ export default {
         display: flex;
         align-items: center;
         width: fit-content;
+        z-index:2;
     }
     .cloud-navigatior-search{
         width: 250px;

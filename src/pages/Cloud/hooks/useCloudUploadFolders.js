@@ -1,4 +1,4 @@
-import { ref, reactive } from 'vue'
+import { ref, reactive, h } from 'vue'
 import axios from 'axios'
 import jsCookie from 'js-cookie'
 import { ElNotification } from 'element-plus'
@@ -18,6 +18,27 @@ export function useCloudUploadFolders(currentParent, getData) {
         if(inputFolderEl.value){
             inputFolderEl.value.click()
         }
+
+    }
+
+
+    function downloadErrorLog(failedFiles, filename = 'folder_upload_error_log.txt'){
+
+        const logContent = failedFiles.map(item => {
+            return `name: ${item.path || item.name}, reason: ${item.message}`
+        }).join('\n')
+
+        const blob = new Blob([logContent], { type:'text/plain;charset=utf-8' })
+
+        const link = document.createElement('a')
+
+        link.href = URL.createObjectURL(blob)
+
+        link.download = filename
+
+        link.click()
+
+        URL.revokeObjectURL(link.href)
 
     }
 
@@ -94,7 +115,7 @@ export function useCloudUploadFolders(currentParent, getData) {
     }
 
 
-    async function createFolderStructure(fileList, parent){
+    async function createFolderStructure(fileList, parent, onProgress){
 
         const folderMap = new Map()
 
@@ -133,7 +154,13 @@ export function useCloudUploadFolders(currentParent, getData) {
 
 
         // 逐層建立資料夾
-        for(const folderPath of sortedFolders){
+        for(let i = 0; i < sortedFolders.length; i++){
+
+            const folderPath = sortedFolders[i]
+
+            if(onProgress){
+                onProgress(i + 1, sortedFolders.length)
+            }
 
             const parts = folderPath.split('/')
 
@@ -158,7 +185,7 @@ export function useCloudUploadFolders(currentParent, getData) {
     }
 
 
-    async function uploadFolder(files, parent, concurrency = 4){
+    async function uploadFolder(files, parent, onProgress){
 
         const fileList = Array.from(files)
 
@@ -196,102 +223,89 @@ export function useCloudUploadFolders(currentParent, getData) {
             // 1. 建立資料夾結構
             // =========================
 
-            const folderMap = await createFolderStructure(fileList, parent)
+            const folderMap = await createFolderStructure(fileList, parent, (created, total) => {
+                if(onProgress?.onFolderProgress){
+                    onProgress.onFolderProgress(created, total)
+                }
+            })
 
 
             // =========================
-            // 2. 開始上傳檔案
+            // 2. 一個一個上傳檔案
             // =========================
 
-            let currentIndex = 0
             let completed = 0
 
             const results = []
 
 
-            const worker = async () => {
+            for(let index = 0; index < fileList.length; index++){
 
-                while(true){
+                const file = fileList[index]
 
-                    const index = currentIndex++
+                const item = uploadList[index]
 
-                    if(index >= fileList.length) break
-
-                    const file = fileList[index]
-
-                    const item = uploadList[index]
-
-                    item.status = 'uploading'
-                    item.message = ''
+                item.status = 'uploading'
+                item.progress = 0
+                item.message = ''
 
 
-                    try{
+                try{
 
-                        const pathParts = file.webkitRelativePath.split('/')
+                    const pathParts = file.webkitRelativePath.split('/')
 
-                        // 移除檔案名稱
-                        pathParts.pop()
+                    // 移除檔案名稱
+                    pathParts.pop()
 
-                        const folderPath = pathParts.join('/')
+                    const folderPath = pathParts.join('/')
 
-                        // 找到檔案應該放的資料夾
-                        const fileParent = folderMap.get(folderPath)
+                    // 找到檔案應該放的資料夾
+                    const fileParent = folderMap.get(folderPath)
 
-                        const result = await uploadSingleFile(file, fileParent, item)
+                    const result = await uploadSingleFile(file, fileParent, item)
 
-                        results[index] = result
+                    results[index] = result
 
 
-                        if(result.type === 'success'){
+                    if(result.type === 'success'){
 
-                            item.status = 'success'
-                            item.progress = 100
+                        item.status = 'success'
+                        item.progress = 100
 
-                        }else{
-
-                            item.status = 'error'
-                            item.message = result.message || '檔案上傳失敗。'
-
-                        }
-
-                    }catch(e){
-
-                        console.log(e)
+                    }else{
 
                         item.status = 'error'
-
-                        item.message = e.response?.data?.message || e.message || '檔案上傳失敗。'
-
-                        results[index] = {
-                            type:'error',
-                            name:file.name,
-                            path:file.webkitRelativePath,
-                            message:item.message
-                        }
+                        item.message = result.message || '檔案上傳失敗。'
 
                     }
 
+                }catch(e){
 
-                    completed++
+                    console.log(e)
 
-                    progress.value = Math.round((completed / fileList.length) * 100)
+                    item.status = 'error'
+
+                    item.message = e.response?.data?.message || e.message || '檔案上傳失敗。'
+
+                    results[index] = {
+                        type:'error',
+                        name:file.name,
+                        path:file.webkitRelativePath,
+                        message:item.message
+                    }
 
                 }
 
+
+                completed++
+
+                progress.value = Math.round((completed / fileList.length) * 100)
+
+                if(onProgress?.onFileProgress){
+                    onProgress.onFileProgress(completed, fileList.length)
+                }
+
             }
-
-
-            const workers = []
-
-            const workerCount = Math.min(concurrency, fileList.length)
-
-
-            for(let i = 0; i < workerCount; i++){
-                workers.push(worker())
-            }
-
-
-            await Promise.all(workers)
 
 
             // =========================
@@ -331,37 +345,40 @@ export function useCloudUploadFolders(currentParent, getData) {
 
         if(!files?.length) return
 
-        const notification = ElNotification({ title: '資源上傳進度', message: '資源正在上傳中...', type: 'warning', showClose:false, duration: 0, position: 'bottom-right' })
+        const progressText = ref(`正在建立目錄結構...`)
+
+        const notification = ElNotification({ title: '資料夾上傳進度', message: () => h('span', progressText.value), type: 'warning', showClose:false, duration: 0, position: 'bottom-right' })
 
         try{
 
-            const { results, failedFiles } = await uploadFolder(files, currentParent.value, 4)
+            const { results, failedFiles } = await uploadFolder(
+                files, 
+                currentParent.value, 
+                {
+                    onFolderProgress:(created, total) => {
+                        progressText.value = `正在建立目錄結構 (${created}/${total})...`
+                    },
+                    onFileProgress:(completed, total) => {
+                        progressText.value = `資源正在上傳中 (${completed}/${total})...`
+                    }
+                }
+            )
 
             event.target.value = ''
 
 
             // 有檔案上傳失敗
-            if(failedFiles.length){
-
-                const failedMessage = failedFiles.map(item => {
-                    return `${item.path}\n原因：${item.message}`
-                }).join('\n\n')
-
-
-                ElNotification({ title: '資料夾上傳結果', message: `${failedFiles.length} 個檔案上傳失敗。\n\n${failedMessage}`, type: 'error', position: 'bottom-right' })
-            }
-            else{
-
-                ElNotification({ title: '資料夾上傳結果', message: '資料夾上傳成功。', type:'success', position: 'bottom-right' })
-
-            }
-
+            if(failedFiles.length) downloadErrorLog(failedFiles)
+            
+            ElNotification({ title: '資料夾上傳結果', message: '資料夾上傳完畢。', type:'success', position: 'bottom-right' })
 
         }
         catch(e){
 
+            console.log(e)
+
             event.target.value = ''
-            ElNotification({ title: '資料夾上傳結果', message: '資料夾結構建立失敗。', type: 'error', position: 'bottom-right' })
+            ElNotification({ title: '資料夾上傳結果', message: e.message || '資料夾結構建立失敗。', type: 'error', position: 'bottom-right' })
 
         }
         finally{

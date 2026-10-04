@@ -21,7 +21,7 @@ import MoreList from './components/MoreList.vue';
 import axios from 'axios'
 import { ElNotification } from 'element-plus'
 
-import { ref } from 'vue'
+import { ref, h } from 'vue'
 import jsCookie from 'js-cookie';
 
 export default {
@@ -48,14 +48,42 @@ export default {
 
         async function preview(token) {
 
-            const notification = ElNotification({ title: '資源預覽進度', message: '資源預覽開啟中...', type: 'warning', showClose:false, duration: 0, position: 'bottom-right' })
+            const previewText = ref('資源預覽載入中 (0%)...')
+
+            const notification = ElNotification({ 
+                title: '資源預覽進度', 
+                message: () => h('span', previewText.value), 
+                type: 'warning', 
+                showClose:false, 
+                duration: 0, 
+                position: 'bottom-right' 
+            })
             
             try {
+
                 const response = await axios.get(`/api/cloud/user/download/${token}`,
                     {
                         responseType: 'blob',
                         headers: {
                             'x-user-token': jsCookie.get('authToken')
+                        },
+                        onDownloadProgress: (event) => {
+
+                            if (event.total) {
+
+                                const percent = Math.round((event.loaded / event.total) * 100)
+
+                                previewText.value = `資源預覽載入中 (${percent}%)...`
+
+                            }
+                            else {
+
+                                const loadedMB = (event.loaded / (1024 * 1024)).toFixed(1)
+
+                                previewText.value = `資源預覽載入中 (${loadedMB} MB)...`
+
+                            }
+
                         }
                     }
                 )
@@ -64,13 +92,19 @@ export default {
 
                 window.open(blobUrl, '_blank')
                 ElNotification({ title: '資源預覽結果', message: '資源預覽成功', type: 'success', position: 'bottom-right' })
+
             } 
             catch (e){
+
                 ElNotification({ title: '資源預覽結果', message: '資源預覽失敗', type: 'error', position: 'bottom-right' })
+
             }
             finally{
+
                 notification.close();
+
             }
+
         }
 
         return {
