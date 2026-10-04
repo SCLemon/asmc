@@ -259,7 +259,7 @@ export default {
     :deep(.el-transfer-panel__body) {
         height: 400px;
     }
-    @media screen and (max-width:1024px) {
+    @media screen and (max-width:1380px) {
         .equipment-detail-picker-wrapper{
             flex-wrap: wrap;
         }

@@ -174,7 +174,10 @@ export default {
     .parameter-table td:nth-child(1) {
         width: 16.5%;
         padding-left: 5px;
-        word-break: break-all;
+
+        word-break: keep-all;
+        overflow-wrap: break-word;
+        white-space: normal;
     }
 
     .parameter-table th:nth-child(2),
@@ -223,7 +226,7 @@ export default {
     .options>.el-button{
         padding: 17.5px 17.5px;
     }
-    @media screen and (max-width: 1032px) {
+    @media screen and (max-width: 1180px) {
         .options>.el-button{
             padding: 10px 10px;
             font-size: 12px;
@@ -231,12 +234,10 @@ export default {
         .parameter-table th:nth-child(1),
         .parameter-table td:nth-child(1) {
             width: 20%;
-            word-break: break-all;
         }
         .parameter-table th:nth-child(5),
         .parameter-table td:nth-child(5) {
             width: 20%;
-            word-break: break-all;
         }
     }
 </style>

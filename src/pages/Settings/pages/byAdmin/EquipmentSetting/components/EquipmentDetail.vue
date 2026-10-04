@@ -280,7 +280,7 @@ export default {
     :deep(.el-transfer-panel__body) {
         height: 400px;
     }
-    @media screen and (max-width:1032px) {
+    @media screen and (max-width:1380px) {
         .equipment-detail-editor-input-wrapper-2{
             flex-wrap: wrap;
         }
