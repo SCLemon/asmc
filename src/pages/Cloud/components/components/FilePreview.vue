@@ -9,6 +9,7 @@
         <div v-if="fileType === 'image'" class="image-wrapper"><img :src="previewSrc" alt="預覽圖" class="preview-image" /></div>
         <vue-office-docx v-else-if="fileType === 'docx'" :src="previewSrc" class="docx-viewer" @rendered="onRenderSuccess" @error="onRenderError" />
         <div  class="xlsx-viewer-wrapper" v-else-if="fileType === 'xlsx' || fileType === 'csv'"><vue-office-excel class="xlsx-viewer" :src="previewSrc"  @rendered="onRenderSuccess" @error="onRenderError" /></div>
+        <div v-else-if="fileType === 'txt'" class="txt-viewer"><pre>{{ textContent }}</pre></div>
         <div v-else-if="fileType === 'pdf'" class="pdf-viewer-wrapper"><VPdfViewer :pdfFile="pdfFile" /></div>
         <div v-else class="state-message">不支援此檔案格式預覽（{{ fileType || '未知格式' }}）</div>
     </div>
@@ -42,6 +43,10 @@ export default {
             type: String, 
             required: true 
         },
+        fileName: {
+            type: String,
+            default: ''
+        }
     },
   setup(props, context) {
     const loading = ref(false)
@@ -50,6 +55,7 @@ export default {
     const fileType = ref('')
     const previewSrc = ref(null)
     const pdfFile = ref(null)
+    const textContent = ref('')
 
     const detectFileType = (mime = '', name = '') => {
         const type = mime.toLowerCase(), filename = name.toLowerCase()
@@ -58,6 +64,7 @@ export default {
         if (type.includes('wordprocessingml.document') || type.includes('docx') || filename.endsWith('.docx')) return 'docx'
         if (type.includes('spreadsheetml.sheet') || type.includes('xlsx') || filename.endsWith('.xlsx')) return 'xlsx'
         if (type.includes('csv') || filename.endsWith('.csv')) return 'csv'
+        if (type.includes('text/plain') || filename.endsWith('.txt')) return 'txt'
         return 'unknown'
     }
 
@@ -67,6 +74,7 @@ export default {
         error.value = false
         errorMessage.value = ''
         pdfFile.value = null
+        textContent.value = ''
         revokePreviewSrc()
 
         try {
@@ -111,6 +119,9 @@ export default {
 
                 previewSrc.value = xlsxBlob
             }
+            else if (fileType.value === 'txt') {
+                textContent.value = await blob.text()
+            }
             else {
                 previewSrc.value = await blob.arrayBuffer()
             }
@@ -131,6 +142,7 @@ export default {
     function onRenderSuccess(){
         loading.value = false
     }
+
     function onRenderError(){
          error.value = true; 
          errorMessage.value = '解析失敗' 
@@ -151,7 +163,7 @@ export default {
     onBeforeUnmount(() => revokePreviewSrc())
 
     return {
-        loading, error, errorMessage, fileType, previewSrc, pdfFile, closePreview, onRenderSuccess, onRenderError, CloseIcon
+        loading, error, errorMessage, fileType, previewSrc, pdfFile, textContent, closePreview, onRenderSuccess, onRenderError, CloseIcon
     }
   }
 }
@@ -203,6 +215,26 @@ export default {
 .xlsx-viewer{
     width: 85%;
     height: 65%;
+}
+
+/* txt */
+.txt-viewer {
+    width: 100%;
+    height: 100%;
+    padding: 30px;
+    box-sizing: border-box;
+    overflow: auto;
+    background-color: transparent;
+    color: white;
+}
+
+.txt-viewer pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: monospace;
+    font-size: 15px;
+    line-height: 1.6;
 }
 
 /* pdf */
