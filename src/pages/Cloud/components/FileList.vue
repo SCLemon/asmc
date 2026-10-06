@@ -1,6 +1,6 @@
 <template>
     <div class="file-list-wrapper">
-        <div class="file-item" v-for="(file, id) in fileList" :key="id" @click="preview(file.token)">
+        <div class="file-item" v-for="(file, id) in fileList" :key="id" @dblclick="preview(file.token)">
             <div class="file-item-icon"><VIcon :icon="FileIcon" :size="16"></VIcon></div>
             <div class="file-item-title">{{ file.name }}</div>
             <div class="file-item-size">{{ ((file?.file?.size) / 1024).toFixed(1) }} KB</div>

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-date-picker v-model="date" type="daterange" single-panel style="width: 100%; box-sizing: border-box;" @calendar-change="handleCalendarChange" :disabled-date="disabledDate"/>
+        <el-date-picker v-model="date" type="daterange" single-panel style="width: 100%; box-sizing: border-box;" @calendar-change="handleCalendarChange" :disabled-date="disabledDate" :editable="false"/>
 
         <div class="calendar-wrapper">
             <div class="calendar-item-wrapper-all" v-for="item in reservationData" :key="item.date">

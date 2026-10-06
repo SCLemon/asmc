@@ -125,7 +125,7 @@ export default {
         color: rgba(0,0,0,0.3);
     }
 
-    @media screen and (max-width: 1032px) {
+    @media screen and (max-width: 1380px) {
         .member-group {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
