@@ -8,7 +8,7 @@
     <div v-else class="preview-content">
         <div v-if="fileType === 'image'" class="image-wrapper"><img :src="previewSrc" alt="預覽圖" class="preview-image" /></div>
         <vue-office-docx v-else-if="fileType === 'docx'" :src="previewSrc" class="docx-viewer" @rendered="onRenderSuccess" @error="onRenderError" />
-        <div  class="xlsx-viewer-wrapper" v-else-if="fileType === 'xlsx'"><vue-office-excel class="xlsx-viewer" :src="previewSrc"  @rendered="onRenderSuccess" @error="onRenderError" /></div>
+        <div  class="xlsx-viewer-wrapper" v-else-if="fileType === 'xlsx' || fileType === 'csv'"><vue-office-excel class="xlsx-viewer" :src="previewSrc"  @rendered="onRenderSuccess" @error="onRenderError" /></div>
         <div v-else-if="fileType === 'pdf'" class="pdf-viewer-wrapper"><VPdfViewer :pdfFile="pdfFile" /></div>
         <div v-else class="state-message">不支援此檔案格式預覽（{{ fileType || '未知格式' }}）</div>
     </div>
@@ -26,6 +26,7 @@ import { VPdfViewer } from 'vorium-ui'
 import 'vorium-ui/dist/vorium-ui.css'
 import '@vue-office/excel/lib/index.css'
 import '@vue-office/docx/lib/index.css'
+import * as XLSX from 'xlsx'
 
 import { VIcon } from 'vorium-ui'
 import { CloseIcon } from 'vorium-ui/icons'
@@ -50,20 +51,14 @@ export default {
     const previewSrc = ref(null)
     const pdfFile = ref(null)
 
-
-    const revokePreviewSrc = () => {
-        if (previewSrc.value && typeof previewSrc.value === 'string' && previewSrc.value.startsWith('blob:')) {
-            URL.revokeObjectURL(previewSrc.value)
-        }
-    }
-
     const detectFileType = (mime = '', name = '') => {
-      const type = mime.toLowerCase(), filename = name.toLowerCase()
-      if (type.includes('image/') || /\.(png|jpe?g|gif|webp|svg)$/i.test(filename)) return 'image'
-      if (type.includes('pdf') || filename.endsWith('.pdf')) return 'pdf'
-      if (type.includes('wordprocessingml.document') || type.includes('docx') || filename.endsWith('.docx')) return 'docx'
-      if (type.includes('spreadsheetml.sheet') || type.includes('xlsx') || filename.endsWith('.xlsx')) return 'xlsx'
-      return 'unknown'
+        const type = mime.toLowerCase(), filename = name.toLowerCase()
+        if (type.includes('image/') || /\.(png|jpe?g|gif|webp|svg)$/i.test(filename)) return 'image'
+        if (type.includes('pdf') || filename.endsWith('.pdf')) return 'pdf'
+        if (type.includes('wordprocessingml.document') || type.includes('docx') || filename.endsWith('.docx')) return 'docx'
+        if (type.includes('spreadsheetml.sheet') || type.includes('xlsx') || filename.endsWith('.xlsx')) return 'xlsx'
+        if (type.includes('csv') || filename.endsWith('.csv')) return 'csv'
+        return 'unknown'
     }
 
     const fetchFile = async (url) => {
@@ -102,6 +97,20 @@ export default {
 
                 pdfFile.value = fileObj
             } 
+            else if (fileType.value === 'csv') {
+                const text = await blob.text()
+
+                const workbook = XLSX.read(text, {
+                    type: 'string'
+                })
+
+                const xlsxBlob = XLSX.write(workbook, {
+                    bookType: 'xlsx',
+                    type: 'array'
+                })
+
+                previewSrc.value = xlsxBlob
+            }
             else {
                 previewSrc.value = await blob.arrayBuffer()
             }
@@ -119,10 +128,6 @@ export default {
         }
     }
 
-    function closePreview(){
-        context.emit('close-preview')
-    }
-
     function onRenderSuccess(){
         loading.value = false
     }
@@ -130,6 +135,17 @@ export default {
          error.value = true; 
          errorMessage.value = '解析失敗' 
     }
+
+    const revokePreviewSrc = () => {
+        if (previewSrc.value && typeof previewSrc.value === 'string' && previewSrc.value.startsWith('blob:')) {
+            URL.revokeObjectURL(previewSrc.value)
+        }
+    }
+
+    function closePreview(){
+        context.emit('close-preview')
+    }
+
     watch(() => props.url, (newUrl) => fetchFile(newUrl), { immediate: true })
 
     onBeforeUnmount(() => revokePreviewSrc())
@@ -222,7 +238,7 @@ export default {
     height: 100%;
     min-height: 300px;
     font-size: 15px;
-    color: #606266;
+    color: white;
 }
 
 .error-message {
