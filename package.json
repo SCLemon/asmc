@@ -11,6 +11,7 @@
     "@vue-office/docx": "^1.6.3",
     "@vue-office/excel": "^1.7.14",
     "@vue-office/pdf": "^2.0.10",
+    "@vue-office/pptx": "^1.0.1",
     "axios": "^1.19.0",
     "core-js": "^3.8.3",
     "element-plus": "^2.14.5",

@@ -8,6 +8,7 @@
     <div v-else class="preview-content">
         <div v-if="fileType === 'image'" class="image-wrapper"><img :src="previewSrc" alt="預覽圖" class="preview-image" /></div>
         <vue-office-docx v-else-if="fileType === 'docx'" :src="previewSrc" class="docx-viewer" @rendered="onRenderSuccess" @error="onRenderError" />
+        <vue-office-pptx v-else-if="fileType === 'pptx'" :src="previewSrc" class="pptx-viewer" @rendered="onRenderSuccess" @error="onRenderError" />
         <div  class="xlsx-viewer-wrapper" v-else-if="fileType === 'xlsx' || fileType === 'csv'"><vue-office-excel class="xlsx-viewer" :src="previewSrc"  @rendered="onRenderSuccess" @error="onRenderError" /></div>
         <div v-else-if="fileType === 'txt'" class="txt-viewer"><pre>{{ textContent }}</pre></div>
         <div v-else-if="fileType === 'pdf'" class="pdf-viewer-wrapper"><VPdfViewer :pdfFile="pdfFile" /></div>
@@ -23,6 +24,7 @@ import jsCookie from 'js-cookie'
 import { ElNotification } from 'element-plus'
 import VueOfficeDocx from '@vue-office/docx'
 import VueOfficeExcel from '@vue-office/excel'
+import VueOfficePptx from '@vue-office/pptx'
 import { VPdfViewer } from 'vorium-ui'
 import 'vorium-ui/dist/vorium-ui.css'
 import '@vue-office/excel/lib/index.css'
@@ -36,7 +38,7 @@ import 'vorium-ui/icons/icons.css'
 export default {
   name: 'FilePreview',
     components: { 
-        VueOfficeDocx, VueOfficeExcel, VPdfViewer, VIcon
+        VueOfficeDocx, VueOfficeExcel, VueOfficePptx, VPdfViewer, VIcon
     },
     props: {
         url: { 
@@ -62,6 +64,7 @@ export default {
         if (type.includes('image/') || /\.(png|jpe?g|gif|webp|svg)$/i.test(filename)) return 'image'
         if (type.includes('pdf') || filename.endsWith('.pdf')) return 'pdf'
         if (type.includes('wordprocessingml.document') || type.includes('docx') || filename.endsWith('.docx')) return 'docx'
+        if (type.includes('presentationml.presentation') || type.includes('pptx') || filename.endsWith('.pptx')) return 'pptx'
         if (type.includes('spreadsheetml.sheet') || type.includes('xlsx') || filename.endsWith('.xlsx')) return 'xlsx'
         if (type.includes('csv') || filename.endsWith('.csv')) return 'csv'
         if (type.includes('text/plain') || filename.endsWith('.txt')) return 'txt'
@@ -200,8 +203,16 @@ export default {
 
 /* docx */
 .docx-viewer {
-    width: 100%;
+    max-width: 100%;
     height: 100%;
+}
+
+/* pptx */
+.pptx-viewer {
+    max-width: 60%;
+    height: 100%;
+    margin: 0 auto;
+    margin-top: 20px;
 }
 
 /* xlsx */
@@ -219,7 +230,7 @@ export default {
 
 /* txt */
 .txt-viewer {
-    width: 100%;
+    max-width: 60%;
     height: 100%;
     padding: 30px;
     box-sizing: border-box;
@@ -239,7 +250,7 @@ export default {
 
 /* pdf */
 .pdf-viewer-wrapper {
-    width: 60%;
+    max-width: 60%;
     height: 100%;
     margin: 0 auto;
     margin-top: 20px;
@@ -258,7 +269,7 @@ export default {
 }
 
 .preview-image {
-    max-width: 100%;
+    max-width: 60%;
     max-height: 80%;
     object-fit: contain;
 }

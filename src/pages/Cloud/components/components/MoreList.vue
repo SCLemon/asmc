@@ -47,9 +47,6 @@ export default {
     },
     setup(props, context){
 
-        const route = useRoute();
-
-
         async function rename(){
 
             try{
@@ -237,6 +234,7 @@ export default {
         display: flex;
         align-items: center;
         font-size: 14px;
+        user-select: none;
     }
     .cloud-more-button-list-item-icon{
         width: 40px;

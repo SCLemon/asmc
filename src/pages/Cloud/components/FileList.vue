@@ -50,6 +50,7 @@ export default {
         const openPreview = ref(false)
         const currentPreviewUrl = ref('');
         async function preview(token){
+            window.getSelection()?.removeAllRanges();
             openPreview.value = true;
             currentPreviewUrl.value = `/api/cloud/user/download/${token}`;
         }
