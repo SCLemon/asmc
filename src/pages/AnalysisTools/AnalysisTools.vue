@@ -21,18 +21,18 @@
                 <div class="analysis-tools-list-item-wrapper-button-wrapper">
                     <!-- 綁定該項目的獨立狀態 -->
                     <el-button 
-                        :type="getBtnState(tool.cloudId || index).status === 'error' ? 'danger' : 'primary'"
+                        :type="getBtnState(tool.cloudId).status === 'error' ? 'danger' : 'primary'"
                         class="analysis-tools-list-item-wrapper-button"
-                        :loading="getBtnState(tool.cloudId || index).status === 'loading'"
-                        :disabled="getBtnState(tool.cloudId || index).status === 'loading'"
+                        :loading="getBtnState(tool.cloudId).status === 'loading'"
+                        :disabled="getBtnState(tool.cloudId).status === 'loading'"
                         @click="download(tool.cloudId)"
                     >
                         <!-- Loading 狀態：顯示百分比 (若後端無 total 則顯示已下載 MB) -->
-                        <template v-if="getBtnState(tool.cloudId || index).status === 'loading'">
-                            {{ getBtnState(tool.cloudId || index).progressText }}
+                        <template v-if="getBtnState(tool.cloudId).status === 'loading'">
+                            {{ getBtnState(tool.cloudId).progressText }}
                         </template>
                         <!-- 失敗狀態：顯示 ERROR -->
-                        <template v-else-if="getBtnState(tool.cloudId || index).status === 'error'">
+                        <template v-else-if="getBtnState(tool.cloudId).status === 'error'">
                             ERROR
                         </template>
                         <!-- 預設狀態 -->
@@ -102,8 +102,8 @@ export default {
             });
         });
         
-        async function download(toolKey, token) {
-            const state = getBtnState(toolKey);
+        async function download(token) {
+            const state = getBtnState(token);
 
             // 避免重複點擊
             if (state.status === 'loading') return;
