@@ -91,14 +91,6 @@ const routes = [
       component: AnalysisTools,
     },
     {
-      path: '/analysis-tools/id-vg-analysis-tool',
-      component: () => import('../pages/AnalysisTools/pages/Id_Vg_Analysis/Id_Vg_Analysis.vue')
-    },
-    {
-      path: '/analysis-tools/id-vd-analysis-tool',
-      component: () => import('../pages/AnalysisTools/pages/Id_Vd_Analysis/Id_Vd_Analysis.vue')
-    },
-    {
       path: '/login',
       component: UserLogin,
     },
