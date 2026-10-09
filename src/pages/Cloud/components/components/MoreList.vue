@@ -41,6 +41,10 @@ export default {
             type: String,
             default: ''
         },
+        source: {
+            type: Object,
+            default: {}
+        }
     },
     components:{
         VIcon,
@@ -50,8 +54,8 @@ export default {
         async function rename(){
 
             try{
-                const { value } = await ElMessageBox.prompt('請輸入資料夾名稱', '重新命名', {
-                    confirmButtonText: '更改', cancelButtonText: '取消',
+                const { value } = await ElMessageBox.prompt('請輸入名稱', '重新命名', {
+                    confirmButtonText: '更改', cancelButtonText: '取消', inputValue: props.source?.name ?? ''
                 })
                 
                 if(value && (value.trim()).length){

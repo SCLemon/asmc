@@ -7,7 +7,7 @@
             <div class="file-item-createTime">{{ file.createTime }}</div>
             <div class="file-item-more" @click.stop="openTargetFileMoreList(file.token)">
                 <VIcon :icon="MoreVerticalIcon" :size="16"></VIcon>
-                <MoreList v-if="activeMoreToken == file.token" :token="file.token" @close="activeMoreToken = null"></MoreList>
+                <MoreList v-if="activeMoreToken == file.token" :token="file.token" @close="activeMoreToken = null" :source="file"></MoreList>
             </div>
         </div>
     </div>
@@ -101,6 +101,7 @@ export default {
         text-overflow: ellipsis;
         margin-left: 15px;
         margin-right: 15px;
+        user-select: none;
     }
     .file-item-size{
         height: 30px;

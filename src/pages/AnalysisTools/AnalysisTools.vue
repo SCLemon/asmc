@@ -27,18 +27,9 @@
                         :disabled="getBtnState(tool.cloudId).status === 'loading'"
                         @click="download(tool.cloudId)"
                     >
-                        <!-- Loading 狀態：顯示百分比 (若後端無 total 則顯示已下載 MB) -->
-                        <template v-if="getBtnState(tool.cloudId).status === 'loading'">
-                            {{ getBtnState(tool.cloudId).progressText }}
-                        </template>
-                        <!-- 失敗狀態：顯示 ERROR -->
-                        <template v-else-if="getBtnState(tool.cloudId).status === 'error'">
-                            ERROR
-                        </template>
-                        <!-- 預設狀態 -->
-                        <template v-else>
-                            Download
-                        </template>
+                        <template v-if="getBtnState(tool.cloudId).status === 'loading'">{{ getBtnState(tool.cloudId).progressText }}</template>
+                        <template v-else-if="getBtnState(tool.cloudId).status === 'error'">ERROR</template>
+                        <template v-else>Download</template>
                     </el-button>
                 </div>
             </div>

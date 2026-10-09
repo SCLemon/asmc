@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory  } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 import axios from 'axios'
 import jsCookie from 'js-cookie'
@@ -9,37 +9,18 @@ import Members from '../pages/Introduction/pages/Ｍembers.vue'
 import Publications from '../pages/Introduction/pages/Publications.vue'
 import Equipments from '../pages/Introduction/pages/Equipments.vue'
 
-import AnalysisTools from '../pages/AnalysisTools/AnalysisTools.vue'
 import UserLogin from '../pages/UserLogin/UserLogin.vue'
 
-import Profile from '../pages/Profile/Profile.vue'
 import Reservation from '../pages/Reservation/Reservation.vue'
-import Cloud from '../pages/Cloud/Cloud.vue'
 import ExperimentRecord from '../pages/ExperimentRecord/ExperimentRecord.vue'
 import EditExperimentRecord from '../pages/ExperimentRecord/pages/EditExperimentRecord.vue'
 
-import Settings from '../pages/Settings/Settings.vue'
-
-// setting by admin
-import MemberSettingByAdmin from '../pages/Settings/pages/byAdmin/MemberSetting/MemberSetting.vue'
-import EditMemberByAdmin from '../pages/Settings/pages/byAdmin/MemberSetting/pages/EditMember.vue'
-import LabSettingByAdmin from '../pages/Settings/pages/byAdmin/LabSetting/LabSetting.vue'
-import EditLabByAdmin from '../pages/Settings/pages/byAdmin/LabSetting/pages/EditLab/EditLab.vue'
-import EquipmentSettingByAdmin from '../pages/Settings/pages/byAdmin/EquipmentSetting/EquipmentSetting.vue'
-import DoorAccessControl from '../pages/Settings/pages/byAdmin/DoorAccessControl/DoorAccessControl.vue'
-
-// setting by superUser
-import EquipmentSettingBySuperUser from '../pages/Settings/pages/bySuperUser/EquipmentSetting/EquipmentSetting.vue'
-
-// setting by user
-import EditLabByUser from '../pages/Settings/pages/byUser/LabSetting/EditLab/EditLab.vue'
-import ReservationRecordByUser from '../pages/Settings/pages/byUser/ReservationRecord/ReservationRecord.vue'
-import AffidavitByUser from '../pages/Settings/pages/byUser/Affidavit/Affidavit.vue'
-
-// underConstruction
-import UnderConstruction from '../pages/UnderConstruction/UnderConstruction.vue'
 
 const routes = [
+    {
+      path: '/login',
+      component: UserLogin,
+    },
     {
       path: '/introduction',
       component: Introduction,
@@ -67,10 +48,6 @@ const routes = [
       ]
     },
     {
-      path: '/profile',
-      component: Profile
-    },
-    {
       path: '/experiment-records',
       component: ExperimentRecord
     },
@@ -83,63 +60,63 @@ const routes = [
       component: Reservation
     },
     {
+      path: '/profile',
+      component: () => import('../pages/Profile/Profile.vue'),
+    },
+    {
       path: '/cloud/:token?',
-      component: Cloud
+      component: () => import('../pages/Cloud/Cloud.vue'),
     },
     {
       path: '/analysis-tools',
-      component: AnalysisTools,
-    },
-    {
-      path: '/login',
-      component: UserLogin,
+      component: () => import('../pages/AnalysisTools/AnalysisTools.vue'),
     },
     {
       path: '/settings',
-      component: Settings,
+      component: () => import('../pages/Settings/Settings.vue'),
     },
-    // setting by admin
+    // setting by admin (Lazy Load)
     {
       path: '/settings/admin/member-setting',
-      component: MemberSettingByAdmin
+      component: () => import('../pages/Settings/pages/byAdmin/MemberSetting/MemberSetting.vue')
     },
     {
       path: '/settings/admin/member-setting/edit',
-      component: EditMemberByAdmin
+      component: () => import('../pages/Settings/pages/byAdmin/MemberSetting/pages/EditMember.vue')
     },
     {
       path: '/settings/admin/lab-setting',
-      component: LabSettingByAdmin
+      component: () => import('../pages/Settings/pages/byAdmin/LabSetting/LabSetting.vue')
     },
     {
       path: '/settings/admin/lab-setting/edit',
-      component: EditLabByAdmin
+      component: () => import('../pages/Settings/pages/byAdmin/LabSetting/pages/EditLab/EditLab.vue')
     },
     {
       path: '/settings/admin/equipment-setting',
-      component: EquipmentSettingByAdmin
+      component: () => import('../pages/Settings/pages/byAdmin/EquipmentSetting/EquipmentSetting.vue')
     },
     {
       path: '/settings/admin/door-access-control',
-      component: DoorAccessControl
+      component: () => import('../pages/Settings/pages/byAdmin/DoorAccessControl/DoorAccessControl.vue')
     },
-    // by superUser
+    // by superUser (Lazy Load)
     {
       path: '/settings/superUser/equipment-setting',
-      component: EquipmentSettingBySuperUser
+      component: () => import('../pages/Settings/pages/bySuperUser/EquipmentSetting/EquipmentSetting.vue')
     },
-    // by user
+    // by user (Lazy Load)
     {
       path: '/settings/user/lab-setting/edit',
-      component: EditLabByUser
+      component: () => import('../pages/Settings/pages/byUser/LabSetting/EditLab/EditLab.vue')
     },
     {
       path: '/settings/user/reservation-record',
-      component: ReservationRecordByUser
+      component: () => import('../pages/Settings/pages/byUser/ReservationRecord/ReservationRecord.vue')
     },
     {
       path: '/settings/user/affidavit',
-      component: AffidavitByUser
+      component: () => import('../pages/Settings/pages/byUser/Affidavit/Affidavit.vue')
     },
     {
       path: '/',

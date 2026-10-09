@@ -1,12 +1,12 @@
 <template>
     <div class="folder-list-wrapper">
 
-        <div class="folder-item" v-for="(folder, id) in folderList"  :key="id" @click="goTo(folder.token)">
+        <div class="folder-item" v-for="(folder, id) in folderList"  :key="id" @dblclick="goTo(folder.token)">
             <div class="folder-item-icon"><VIcon :icon="FolderIcon" :size="16"></VIcon></div>
             <div class="folder-item-title">{{ folder.name }}</div>
-            <div class="folder-item-more" @click.stop="openTargetFolderMoreList(folder.token)">
+            <div class="folder-item-more" @dblclick.stop @click.stop="openTargetFolderMoreList(folder.token)">
                 <VIcon :icon="MoreVerticalIcon" :size="16"></VIcon>
-                <MoreList v-if="activeMoreToken === folder.token" :token="folder.token" @close="activeMoreToken = null"></MoreList>
+                <MoreList v-if="activeMoreToken === folder.token" :token="folder.token" @close="activeMoreToken = null" :source="folder"></MoreList>
             </div>
 
         </div>
@@ -116,6 +116,7 @@ export default {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        user-select: none;
     }
     .folder-item-more{
         width: 30px;

@@ -24,6 +24,7 @@
     "vue": "^3.2.13",
     "vue-demi": "^0.14.10",
     "vue-router": "^5.1.0",
+    "webpack-obfuscator": "^3.6.1",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
