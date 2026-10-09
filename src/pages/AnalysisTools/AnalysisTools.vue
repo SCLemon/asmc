@@ -21,18 +21,18 @@
                 <div class="analysis-tools-list-item-wrapper-button-wrapper">
                     <!-- 綁定該項目的獨立狀態 -->
                     <el-button 
-                        :type="getBtnState(tool.id || index).status === 'error' ? 'danger' : 'primary'"
+                        :type="getBtnState(tool.cloudId || index).status === 'error' ? 'danger' : 'primary'"
                         class="analysis-tools-list-item-wrapper-button"
-                        :loading="getBtnState(tool.id || index).status === 'loading'"
-                        :disabled="getBtnState(tool.id || index).status === 'loading'"
-                        @click="download(tool.id || index, tool.token || '14a0ba2e-2d02-414c-a23a-d9746a951ea1')"
+                        :loading="getBtnState(tool.cloudId || index).status === 'loading'"
+                        :disabled="getBtnState(tool.cloudId || index).status === 'loading'"
+                        @click="download(tool.cloudId)"
                     >
                         <!-- Loading 狀態：顯示百分比 (若後端無 total 則顯示已下載 MB) -->
-                        <template v-if="getBtnState(tool.id || index).status === 'loading'">
-                            {{ getBtnState(tool.id || index).progressText }}
+                        <template v-if="getBtnState(tool.cloudId || index).status === 'loading'">
+                            {{ getBtnState(tool.cloudId || index).progressText }}
                         </template>
                         <!-- 失敗狀態：顯示 ERROR -->
-                        <template v-else-if="getBtnState(tool.id || index).status === 'error'">
+                        <template v-else-if="getBtnState(tool.cloudId || index).status === 'error'">
                             ERROR
                         </template>
                         <!-- 預設狀態 -->
