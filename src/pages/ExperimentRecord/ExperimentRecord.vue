@@ -1,7 +1,6 @@
 <template>
   <div class="experiment-record-wrapper">
     <div class="experiment-record-header">
-        <div class="experiment-record-title">Experiment Records</div>
         <div class="experiment-record-group">
             <el-radio-group v-model="group" size="large" fill="black">
                 <el-radio-button label="My Recipes" :value="1" />
@@ -91,13 +90,6 @@ export default {
         height: 80px;
         display: flex;
         align-items: center;
-    }
-    .experiment-record-title{
-        font-size: 24px;
-        font-weight: bolder;
-    }
-    .experiment-record-group{
-        margin-left: 25px;
     }
     .experiment-record-right{
         margin-left: auto;
