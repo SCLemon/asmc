@@ -1,5 +1,5 @@
 <template>
-    <div class="labInto-wrapper">
+    <div class="labIntro-wrapper">
         <div class="title">ASMC LAB</div>
         <div class="content">Founded by <span style="font-weight: bolder;">Dr. Chao-Hui Yeh（葉昭輝教授）</span> of the Institute of Electronics Engineering at National Tsing Hua University (NTHU), our laboratory is located in Room R209, Engineering Building III, National Tsing Hua University, Hsinchu, Taiwan.</div>
         <div class="content">Our research focuses on emerging semiconductor technologies, including <span style="font-weight: bolder;">two-dimensional (2D) materials and devices</span>, next-generation non-volatile memory technologies such as <span style="font-weight: bolder;">Resistive RAM (ReRAM)</span> and <span style="font-weight: bolder;">Ferroelectric RAM (FeRAM)</span>, and <span style="font-weight: bolder;">3D integrated circuit (3D IC) heterogeneous integration</span>. We are dedicated to developing advanced electronic devices and <span style="font-weight: bolder;">intelligent computing technologies</span> while addressing key challenges in next-generation semiconductor innovation.</div>
@@ -23,7 +23,7 @@ export default {
 </script>
 
 <style scoped>
-    .labInto-wrapper{
+    .labIntro-wrapper{
         padding: 30px 30px 20px 30px;
         box-sizing: border-box;
     }

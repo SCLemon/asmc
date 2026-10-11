@@ -8,6 +8,7 @@ import Home from '../pages/Introduction/pages/Home.vue'
 import Members from '../pages/Introduction/pages/Ｍembers.vue'
 import Publications from '../pages/Introduction/pages/Publications.vue'
 import Equipments from '../pages/Introduction/pages/Equipments.vue'
+import Contact from '../pages/Introduction/pages/Contact.vue'
 
 import UserLogin from '../pages/UserLogin/UserLogin.vue'
 
@@ -40,6 +41,10 @@ const routes = [
         {
           path: 'equipments',
           component: Equipments,
+        },
+        {
+          path: 'contact',
+          component: Contact,
         },
         {
           path: '',

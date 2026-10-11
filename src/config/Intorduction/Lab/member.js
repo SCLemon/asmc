@@ -74,6 +74,13 @@ export default {
                 location: '工程三館 R209',
             },
             {
+                name: '<> (林靖凱)',
+                imgUrl: 'img/labMember/default.webp',
+                topic: '',
+                badge: '',
+                location: '工程三館 R209',
+            },
+            {
                 name: '<> (謝宗哲)',
                 imgUrl: 'img/labMember/default.webp',
                 topic: '',
@@ -82,13 +89,6 @@ export default {
             },
             {
                 name: '<> (楊弘卉)',
-                imgUrl: 'img/labMember/default.webp',
-                topic: '',
-                badge: '',
-                location: '工程三館 R209',
-            },
-            {
-                name: '<> (林靖凱)',
                 imgUrl: 'img/labMember/default.webp',
                 topic: '',
                 badge: '',
@@ -121,23 +121,9 @@ export default {
                 location: '工程三館 R105',
             },
             {
-                name: 'Tzu-Hsien Chuang (莊子賢)',
-                imgUrl: 'img/labMember/Tzu-Hsien_Chuang.jpg',
-                topic: '',
-                badge: '',
-                location: '工程三館 R105',
-            },
-            {
                 name: 'Duen-Hong Jheng (鄭敦鴻)',
                 imgUrl: 'img/labMember/default.webp',
                 topic: '',
-                badge: '',
-                location: '工程三館 R105',
-            },
-            {
-                name: 'Pin-Yi Li (李品逸)',
-                imgUrl: 'img/labMember/default.webp',
-                topic: 'WSe₂ FET depinning',
                 badge: '',
                 location: '工程三館 R105',
             },
@@ -156,6 +142,13 @@ export default {
                 location: '',
             },
             {
+                name: 'Tzu-Hsien Chuang (莊子賢)',
+                imgUrl: 'img/labMember/Tzu-Hsien_Chuang.jpg',
+                topic: '',
+                badge: '',
+                location: '工程三館 R105',
+            },
+            {
                 name: '<> (許詠鈞)',
                 imgUrl: 'img/labMember/default.webp',
                 topic: '',
@@ -168,6 +161,13 @@ export default {
                 topic: '',
                 badge: '',
                 location: '',
+            },
+            {
+                name: 'Pin-Yi Li (李品逸)',
+                imgUrl: 'img/labMember/default.webp',
+                topic: 'WSe₂ FET depinning',
+                badge: '',
+                location: '工程三館 R105',
             },
             {
                 name: '<> (黃東安)',

@@ -1,5 +1,5 @@
 <template>
-    <div class="labInto-wrapper">
+    <div class="labIntro-wrapper">
         <div class="title">Equipments</div>
         <div class="content">Our laboratory is equipped with a wide range of advanced semiconductor fabrication and characterization instruments, covering thin-film deposition, lithography, device fabrication, material characterization, and electrical measurements.</div>
         <div class="content">These facilities provide an integrated research environment for the development and validation of advanced semiconductor devices. By leveraging state-of-the-art equipment and a comprehensive experimental platform, researchers can systematically investigate the entire process from materials and fabrication to device characterization and electrical analysis, effectively shortening experimental cycles, improving research efficiency, and accelerating the development and validation of emerging semiconductor devices and next-generation electronic technologies.</div>
@@ -36,7 +36,7 @@ export default {
 </script>
 
 <style scoped>
-    .labInto-wrapper{
+    .labIntro-wrapper{
         padding: 30px 30px 30px 30px;
         box-sizing: border-box;
     }

@@ -1,5 +1,5 @@
 <template>
-    <div class="labInto-wrapper">
+    <div class="labIntro-wrapper">
         <div class="title">Publications</div>
         <paper-list class="paper-list" :parameters="paper"></paper-list>
         <paper-list-mobile class="paper-list-mobile" :parameters="paper"></paper-list-mobile>
@@ -24,7 +24,7 @@ export default {
 </script>
 
 <style scoped>
-    .labInto-wrapper{
+    .labIntro-wrapper{
         padding: 30px 30px 0 30px;
         box-sizing: border-box;
     }

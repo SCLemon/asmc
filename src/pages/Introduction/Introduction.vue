@@ -26,6 +26,10 @@
                     Equipments
                     <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/equipments')}"></div>
                 </div>
+                <div class="introduction-view-option"  @click="goTo('/introduction/contact')">
+                    Contact
+                    <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/contact')}"></div>
+                </div>
             </div>
         </div>
         <div class="introduction-banner">
@@ -52,6 +56,10 @@
                 <div class="introduction-view-option"  @click="goTo('/introduction/equipments')">
                     Equipments
                     <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/equipments')}"></div>
+                </div>
+                <div class="introduction-view-option"  @click="goTo('/introduction/contact')">
+                    Contact
+                    <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/contact')}"></div>
                 </div>
             </div>
             <router-view v-slot="{ Component }">
