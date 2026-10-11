@@ -31,7 +31,7 @@
 import { eventBus } from '@/utils/eventBus';
 import axios from 'axios';
 import jsCookie from 'js-cookie';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router';
 
@@ -41,6 +41,10 @@ export default {
         keyword:{
             type: String,
             default: ''
+        },
+        group:{
+            type: Number,
+            default: 1
         }
     },
     setup(props){
@@ -61,7 +65,7 @@ export default {
         })
 
         async function getData(){
-            const res = await axios.get('/api/experimentRecords/user/getData',{
+            const res = await axios.get(`/api/experimentRecords/user/getData?group=${props.group}`,{
                 headers:{
                     'x-user-token': jsCookie.get('authToken')
                 }
@@ -119,6 +123,10 @@ export default {
             }
             catch(e){}
         }
+
+        watch(() => props.group, async()=>{
+            await getData();
+        })
         return {
             tableData, getData, goToExperimentRecordDetail, goToExperimentRecordCloud, deleteExperimentRecord, filteredData, rate
         }

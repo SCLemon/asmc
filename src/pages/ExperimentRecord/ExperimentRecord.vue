@@ -2,6 +2,12 @@
   <div class="experiment-record-wrapper">
     <div class="experiment-record-header">
         <div class="experiment-record-title">Experiment Records</div>
+        <div class="experiment-record-group">
+            <el-radio-group v-model="group" size="large" fill="black">
+                <el-radio-button label="My Recipes" :value="1" />
+                <el-radio-button label="Full Database" :value="2" />
+            </el-radio-group>
+        </div>
         <div class="experiment-record-right">
             <div class="experiment-record-search">
                 <input class="experiment-record-search-input" type="text" name="" id="" placeholder="Search recipe by name or owner" v-model="keyword">
@@ -11,7 +17,7 @@
         </div>
     </div>
     <div class="experiment-record-table">
-        <ExperimentTable ref="ExperimentTableRef" :keyword="keyword"></ExperimentTable>
+        <ExperimentTable ref="ExperimentTableRef" :keyword="keyword" :group="group"></ExperimentTable>
     </div>
   </div>
 </template>
@@ -39,6 +45,7 @@ export default {
     setup(){
         const ExperimentTableRef = ref(null)
         const keyword = ref('');
+        const group = ref(1)
 
         async function register(){
 
@@ -65,7 +72,7 @@ export default {
 
         }
         return {
-            ExperimentTableRef, register, SearchIcon, keyword
+            ExperimentTableRef, register, SearchIcon, keyword, group
         }
     }
 }
@@ -88,6 +95,9 @@ export default {
     .experiment-record-title{
         font-size: 24px;
         font-weight: bolder;
+    }
+    .experiment-record-group{
+        margin-left: 25px;
     }
     .experiment-record-right{
         margin-left: auto;
