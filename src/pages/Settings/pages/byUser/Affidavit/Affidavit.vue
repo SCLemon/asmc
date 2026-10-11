@@ -35,7 +35,7 @@ export default {
         const isLoading = ref(false)
 
         onMounted(async ()=>{
-            const response = await fetch('asset/affidavit.pdf')
+            const response = await fetch('/asset/affidavit.pdf')
             const blob = await response.blob()
             file.value = new File([blob], 'affidavit.pdf',{ type: 'application/pdf' })
 
