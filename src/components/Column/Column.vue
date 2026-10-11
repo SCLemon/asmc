@@ -1,7 +1,7 @@
 <template>
   <div class="column-wrapper">
     <div class="column-logo-wrapper">
-        <img class="column-logo-img" src="logo/logo.png" alt="">
+        <img class="column-logo-img" src="/logo/logo.png" alt="">
     </div>
     <div class="column-menu-wrapper">
         <div class="common-item" 

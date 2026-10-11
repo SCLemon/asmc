@@ -96,7 +96,7 @@ export default {
             width: 100%;
         }
         .content-map-wrapper{
-            margin-top: 20px;
+            margin-top: 35px;
             width: 100%;
         }
         .content-item-title{
