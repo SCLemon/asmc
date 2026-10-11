@@ -3,7 +3,7 @@ export default [
         name: 'MLA 150 Maskless Aligner (Ready for use)',
         description: 'The MLA 150 Maskless Aligner is a high-precision maskless lithography system that directly exposes designed patterns onto photoresist without the need for conventional photomasks. With flexible pattern design and rapid prototyping capabilities, the system supports semiconductor device fabrication, micro- and nanostructure development, and emerging electronic device research, helping reduce lithography development time and improve research efficiency.',
         img: [
-            'img/labEquipment/MLA150/MLA150_1.jpg'
+            '/img/labEquipment/MLA150/MLA150_1.jpg'
         ]
     },
     {
@@ -17,7 +17,7 @@ export default [
         name: 'Leica Optical Microscope (Ready for use)',
         description: 'The Leica Optical Microscope provides high-resolution optical imaging for the inspection and characterization of semiconductor devices, thin films, and micro- and nanostructures. With clear imaging and flexible magnification capabilities, researchers can efficiently examine sample conditions, fabrication results, and microstructural features, supporting device process inspection, research analysis, and improved experimental efficiency.',
         img: [
-            'img/labEquipment/OM/OM_1.jpg'
+            '/img/labEquipment/OM/OM_1.jpg'
         ]
     },
     {

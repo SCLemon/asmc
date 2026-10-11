@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, createWebHistory} from 'vue-router'
 
 import axios from 'axios'
 import jsCookie from 'js-cookie'
@@ -130,7 +130,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes
 })
 

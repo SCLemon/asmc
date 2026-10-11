@@ -16,7 +16,7 @@ module.exports = defineConfig({
         },
       }
   },
-  publicPath: './',
+  publicPath: '/',
   configureWebpack: (config) => {
       if (process.env.NODE_ENV === 'production') {
           // 加密與混淆

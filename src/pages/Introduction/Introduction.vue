@@ -2,7 +2,7 @@
     <div class="introduction-wrapper">
         <div class="introduction-view-options-wrapper-mobile-top">
             <div class="introduction-view-options-wrapper-mobile-top-logo">
-                <img src="logo/logo_banner_black.png" alt="">
+                <img src="/logo/logo_banner_black.png" alt="">
             </div>
             <div :class="['introduction-view-options-wrapper-mobile-top-more',
                 { 'introduction-view-options-wrapper-mobile-top-more-is-open': openMobileList }
@@ -34,9 +34,9 @@
         </div>
         <div class="introduction-banner">
             <VCarousel :aspectRatio="2.4/1" :autoPlay="true" :interval="5000">
-                <v-carousel-item><div class="introduction-banner-item"><img src="img/labIntro/banner_1.jpg" alt=""></div></v-carousel-item>
-                <v-carousel-item><div class="introduction-banner-item"><img src="img/labIntro/banner_2.jpg" alt=""></div></v-carousel-item>
-                <v-carousel-item><div class="introduction-banner-item"><img src="img/labIntro/banner_3.jpg" alt=""></div></v-carousel-item>
+                <v-carousel-item><div class="introduction-banner-item"><img src="/img/labIntro/banner_1.jpg" alt=""></div></v-carousel-item>
+                <v-carousel-item><div class="introduction-banner-item"><img src="/img/labIntro/banner_2.jpg" alt=""></div></v-carousel-item>
+                <v-carousel-item><div class="introduction-banner-item"><img src="/img/labIntro/banner_3.jpg" alt=""></div></v-carousel-item>
             </VCarousel>
         </div>
         <div class="introduction-view-wrapper">
