@@ -3,13 +3,13 @@
     <div class="file-preview-close-button" @click="closePreview()">
         <VIcon :icon="CloseIcon" :size="30"></VIcon>
     </div>
-    <div v-if="loading" class="state-message">資源預覽載入中...</div>
+    <div v-if="loading" class="state-message">資源預覽載入中 ({{ downloadProgress }}%)...</div>
     <div v-else-if="error" class="state-message error-message">{{ errorMessage }}</div>
     <div v-else class="preview-content">
         <div v-if="fileType === 'image'" class="image-wrapper"><img :src="previewSrc" alt="預覽圖" class="preview-image" /></div>
         <vue-office-docx v-else-if="fileType === 'docx'" :src="previewSrc" class="docx-viewer" @rendered="onRenderSuccess" @error="onRenderError" />
         <vue-office-pptx v-else-if="fileType === 'pptx'" :src="previewSrc" class="pptx-viewer" @rendered="onRenderSuccess" @error="onRenderError" />
-        <div  class="xlsx-viewer-wrapper" v-else-if="fileType === 'xlsx' || fileType === 'csv'"><vue-office-excel class="xlsx-viewer" :src="previewSrc"  @rendered="onRenderSuccess" @error="onRenderError" /></div>
+        <div class="xlsx-viewer-wrapper" v-else-if="fileType === 'xlsx' || fileType === 'csv'"><vue-office-excel class="xlsx-viewer" :src="previewSrc"  @rendered="onRenderSuccess" @error="onRenderError" /></div>
         <div v-else-if="fileType === 'txt'" class="txt-viewer"><pre>{{ textContent }}</pre></div>
         <div v-else-if="fileType === 'pdf'" class="pdf-viewer-wrapper"><VPdfViewer :pdfFile="pdfFile" /></div>
         <div v-else class="state-message">不支援此檔案格式預覽（{{ fileType || '未知格式' }}）</div>
@@ -52,12 +52,16 @@ export default {
     },
   setup(props, context) {
     const loading = ref(false)
+    const downloadProgress = ref(0)
     const error = ref(false)
     const errorMessage = ref('')
     const fileType = ref('')
     const previewSrc = ref(null)
     const pdfFile = ref(null)
     const textContent = ref('')
+
+    // 保存當前請求的 AbortController
+    let abortController = null
 
     const detectFileType = (mime = '', name = '') => {
         const type = mime.toLowerCase(), filename = name.toLowerCase()
@@ -71,9 +75,22 @@ export default {
         return 'unknown'
     }
 
+    const cancelDownload = () => {
+        if (abortController) {
+            abortController.abort()
+            abortController = null
+        }
+    }
+
     const fetchFile = async (url) => {
         if (!url) return
+        
+        // 若有先前未完成的下載，先打斷
+        cancelDownload()
+        abortController = new AbortController()
+
         loading.value = true
+        downloadProgress.value = 0
         error.value = false
         errorMessage.value = ''
         pdfFile.value = null
@@ -83,7 +100,15 @@ export default {
         try {
             const response = await axios.get(url, {
                 responseType: 'blob',
-                headers: { 'x-user-token': jsCookie.get('authToken') }
+                signal: abortController.signal, // 綁定 AbortController 信號
+                headers: { 'x-user-token': jsCookie.get('authToken') },
+                onDownloadProgress: (progressEvent) => {
+                    if (progressEvent.total) {
+                        downloadProgress.value = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+                    } else if (progressEvent.progress) {
+                        downloadProgress.value = Math.round(progressEvent.progress * 100)
+                    }
+                }
             })
 
             const blob = response.data
@@ -130,12 +155,16 @@ export default {
             }
         } 
         catch (e) {
+            // 如果是主動取消請求，不跳錯誤提示
+            if (axios.isCancel(e) || e.name === 'CanceledError' || e.name === 'AbortError') {
+                return
+            }
             error.value = true
             errorMessage.value = '資源預覽失敗'
             ElNotification({ title: '資源預覽結果', message: '資源預覽失敗', type: 'error', position: 'bottom-right' })
         } 
         finally {
-
+            abortController = null
             if (fileType.value !== 'pdf') {
                 loading.value = false
             }
@@ -158,15 +187,20 @@ export default {
     }
 
     function closePreview(){
+        // 點擊關閉時，打斷正在下載的請求
+        cancelDownload()
         context.emit('close-preview')
     }
 
     watch(() => props.url, (newUrl) => fetchFile(newUrl), { immediate: true })
 
-    onBeforeUnmount(() => revokePreviewSrc())
+    onBeforeUnmount(() => {
+        cancelDownload()
+        revokePreviewSrc()
+    })
 
     return {
-        loading, error, errorMessage, fileType, previewSrc, pdfFile, textContent, closePreview, onRenderSuccess, onRenderError, CloseIcon
+        loading, downloadProgress, error, errorMessage, fileType, previewSrc, pdfFile, textContent, closePreview, onRenderSuccess, onRenderError, CloseIcon
     }
   }
 }
@@ -204,13 +238,13 @@ export default {
 /* docx */
 .docx-viewer {
     max-width: 100%;
-    height: 100%;
+    height: calc(100% - 30px);
 }
 
 /* pptx */
 .pptx-viewer {
     max-width: 60%;
-    height: 100%;
+    height: calc(100% - 40px);
     margin: 0 auto;
     margin-top: 20px;
 }
@@ -231,7 +265,7 @@ export default {
 /* txt */
 .txt-viewer {
     max-width: 60%;
-    height: 100%;
+    height: calc(100% - 40px);
     padding: 30px;
     box-sizing: border-box;
     overflow: auto;
@@ -251,7 +285,7 @@ export default {
 /* pdf */
 .pdf-viewer-wrapper {
     max-width: 60%;
-    height: 100%;
+    height: calc(100% - 40px);
     margin: 0 auto;
     margin-top: 20px;
     flex: 1;
