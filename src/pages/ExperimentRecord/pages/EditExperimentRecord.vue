@@ -10,7 +10,7 @@
             <div class="edit-experiment-record-button"><el-button @click="save()" type="primary">儲存資訊</el-button></div>
         </div>
     </div>
-    <div class="edit-experiment-record-abstract" contenteditable="true" v-text="abstract" ref="abstractEl"></div>
+    <div class="edit-experiment-record-abstract" contenteditable="true" v-html="abstract" ref="abstractEl"></div>
     <div class="edit-experiment-record-table">
          <el-collapse v-model="activeNames" v-if="dataSet.length" accordion>
             <el-collapse-item v-for="(exp, id) in dataSet" :key="exp.token" :title="`Step ${id+1}. ${exp.title}`" :name="exp.token" class="exp-params-item-wrapper">
@@ -225,7 +225,7 @@ export default {
                         type: 'warning',
                     }
                 )
-                abstract.value = abstractEl.value.innerText;
+                abstract.value = abstractEl.value.innerHTML;
                 
                 const res = await axios.post('/api/experimentRecords/user/save',{ targetRecord: route.query.targetRecord, dataSet: dataSet.value, abstract: abstract.value },{
                     headers: {
