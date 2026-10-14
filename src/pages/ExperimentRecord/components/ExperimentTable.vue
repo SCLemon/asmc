@@ -96,6 +96,17 @@ export default {
                         type: 'warning',
                     }
                 )
+
+                const { value } = await ElMessageBox.prompt('請輸入「確認刪除計畫」？', '再次確認',
+                    {
+                        confirmButtonText: '確認',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                    }
+                )
+
+                if(value != '確認刪除計畫') return eventBus.emit('handleAlert', { title:'實驗計畫刪除結果', message: `確認訊息輸入錯誤 (您的輸入為：${value})`, type: 'error' });
+
                 const res = await axios.post('/api/experimentRecords/user/delete',{ targetExperimentRecord: exp.token },{
                     headers: {
                         'x-user-token': jsCookie.get('authToken')

@@ -30,7 +30,7 @@ export default {
     // 操作通知
     const alertHandler = (data)=>{
       const { title, message, type } = data;
-      ElNotification({ title, message, type, duration: 1750 })
+      ElNotification({ title, message, type, duration: 2000 })
     }
     onMounted(()=>{
       eventBus.on('handleAlert', alertHandler)

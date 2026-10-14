@@ -18,7 +18,7 @@
                 </div>
                 <div class="content-item">
                     <div class="content-item-title">Version</div>
-                    <div class="content-item-text">v0.0.0.12 @2026.10.11</div>
+                    <div class="content-item-text">v0.1.0.0 @2026.10.14</div>
                     <div class="content-item-subText">Designed By SCLemon (林英豪)</div>
                 </div>
             </div>
