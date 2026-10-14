@@ -139,6 +139,7 @@ export default {
         box-sizing: border-box;
         padding: 15px 10px 15px 10px;
         position: relative;
+        user-select: none;
     }
     .introduction-view-option:hover{
         cursor: pointer;
