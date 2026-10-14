@@ -7,7 +7,7 @@
                     <th>Owner</th>
                     <th>Recipe Name</th>
                     <th>
-                        <div>Ion, SS, Contact @ [Vd, Vg, W, L]</div>
+                        <div>Ion, Vth, SS, Contact @ [Vd, Vg, W, L]</div>
                         <div class="parameter-table-result-tooltip"></div>
                     </th>
                     <th>Options</th>
