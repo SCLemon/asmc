@@ -149,13 +149,6 @@ export default {
                 location: '',
             },
             {
-                name: 'Tzu-Hsien Chuang (莊子賢)',
-                imgUrl: '/img/labMember/Tzu-Hsien_Chuang.jpg',
-                topic: '',
-                badge: '',
-                location: '工程三館 R105',
-            },
-            {
                 name: '<> (許詠鈞)',
                 imgUrl: '/img/labMember/default.webp',
                 topic: '',
@@ -173,6 +166,13 @@ export default {
                 name: 'Pin-Yi Li (李品逸)',
                 imgUrl: '/img/labMember/default.webp',
                 topic: 'WSe₂ FET depinning',
+                badge: '',
+                location: '工程三館 R105',
+            },
+            {
+                name: 'Tzu-Hsien Chuang (莊子賢)',
+                imgUrl: '/img/labMember/Tzu-Hsien_Chuang.jpg',
+                topic: '',
                 badge: '',
                 location: '工程三館 R105',
             },
