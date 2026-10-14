@@ -124,7 +124,7 @@ export default {
     .parameter-wrapper{
         box-sizing: border-box;
         overflow-y: scroll;
-        height: 100%;
+        height: calc(100% - 40px);
     }
     .parameter-table {
         width: 100%;
