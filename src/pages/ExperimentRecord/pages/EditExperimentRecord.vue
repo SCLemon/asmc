@@ -10,6 +10,7 @@
             <div class="edit-experiment-record-button"><el-button @click="save()" type="primary">儲存資訊</el-button></div>
         </div>
     </div>
+    <div class="edit-experiment-record-abstract" contenteditable="true" v-text="abstract" ref="abstractEl"></div>
     <div class="edit-experiment-record-table">
          <el-collapse v-model="activeNames" v-if="dataSet.length" accordion>
             <el-collapse-item v-for="(exp, id) in dataSet" :key="exp.token" :title="`Step ${id+1}. ${exp.title}`" :name="exp.token" class="exp-params-item-wrapper">
@@ -80,8 +81,11 @@ export default {
         const router = useRouter();
         const route = useRoute();
         const dialogVisible = ref(false);
-
         const title = ref('')
+
+        const abstractEl = ref();
+        const abstract = ref('請輸入計畫摘要')
+        
 
         async function goBack(){
             router.replace('/experiment-records').catch((e)=>{})
@@ -112,6 +116,7 @@ export default {
             })
             dataSet.value = res.data?.data?.dataSet;
             title.value = res.data?.data?.title;
+            abstract.value = res.data?.data?.abstract || '請輸入計畫摘要'
         }
 
         // 新增子項目
@@ -220,8 +225,9 @@ export default {
                         type: 'warning',
                     }
                 )
-
-                const res = await axios.post('/api/experimentRecords/user/save',{ targetRecord: route.query.targetRecord, dataSet: dataSet.value },{
+                abstract.value = abstractEl.value.innerText;
+                
+                const res = await axios.post('/api/experimentRecords/user/save',{ targetRecord: route.query.targetRecord, dataSet: dataSet.value, abstract: abstract.value },{
                     headers: {
                         'x-user-token': jsCookie.get('authToken')
                     }
@@ -236,7 +242,7 @@ export default {
             dataSet, goBack, save, title, activeNames, options,
             PlusIcon, ChevronUpIcon, ChevronDownIcon, TrashIcon,
             dialogVisible, selected_option, addItem, openAdd,
-            removeItem, move, EditIcon, rename
+            removeItem, move, EditIcon, rename, abstract, abstractEl
         }
     }
 }
@@ -279,7 +285,18 @@ export default {
         height: calc(100% - 80px);
         overflow-y: scroll;
     }
-
+    /* exp-abstract */
+    .edit-experiment-record-abstract{
+        width: 100%;
+        min-height: 50px;
+        max-height: 200px;
+        overflow-y: scroll;
+        outline: 0;
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 17.5px;
+        color: rgba(210, 210, 210) !important;
+    }
     /* exp-params */
     .edit-experiment-record-initialize{
         width: 100%;

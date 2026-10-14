@@ -138,13 +138,18 @@ export default [
                 type: 'string'
             },
             {
+                name: '曝光方法 (ex. MLA150, 接觸式曝光,...)',
+                params: 'method',
+                type: 'string'
+            },
+            {
                 name: '光罩檔案名稱',
                 params: 'design_file',
                 type: 'string'
             },
             {
-                name: '曝光方法 (ex. MLA150, 接觸式曝光,...)',
-                params: 'method',
+                name: '對準配置名稱',
+                params: 'alignment_setting',
                 type: 'string'
             },
             {
@@ -305,6 +310,11 @@ export default [
                 type: 'string'
             },
             {
+                name: '取樣條件 [Vd(V), Vg(V), W(um), L(um), ex. 1, 5, 40, 1]',
+                params: 'conditions',
+                type: 'string'
+            },
+            {
                 name: 'Contact Type (Schottky or Ohmic)',
                 params: 'contact_type',
                 type: 'string'
@@ -320,8 +330,8 @@ export default [
                 type: 'number'
             },
             {
-                name: 'Ioff (uA/um)',
-                params: 'Ioff',
+                name: 'Ion/Ioff',
+                params: 'Ion_Ioff',
                 type: 'number'
             },
             {

@@ -6,7 +6,10 @@
                     <th>CreateTime</th>
                     <th>Owner</th>
                     <th>Recipe Name</th>
-                    <th>Rate</th>
+                    <th>
+                        <div>Ion, SS, Contact @ [Vd, Vg, W, L]</div>
+                        <div class="parameter-table-result-tooltip"></div>
+                    </th>
                     <th>Options</th>
                 </tr>
             </thead>
@@ -15,7 +18,7 @@
                     <td>{{ exp.createTime }}</td>
                     <td>{{ exp.owner }}</td>
                     <td>{{ exp.name }}</td>
-                    <td><el-rate v-model="exp.rate" allow-half :disabled="!(exp.isMine)" @change="rate(exp)"/></td>
+                    <td>{{ exp.results }}</td>
                     <td class="options">
                         <el-button @click="goToExperimentRecordDetail(exp)">查看</el-button>
                         <el-button @click="goToExperimentRecordCloud(exp.token)">檔案</el-button>
@@ -171,24 +174,24 @@ export default {
     .parameter-table td:nth-child(1) {
         width: 20%;
         padding-left: 5px;
-        word-break: break-all;
+        word-break: keep-all;
     }
 
     .parameter-table th:nth-child(2),
     .parameter-table td:nth-child(2) {
-        width: 15%;
+        width: 12.5%;
         word-break: break-all;
     }
 
     .parameter-table th:nth-child(3),
     .parameter-table td:nth-child(3) {
-        width: 22.5%;
+        width: 20%;
         word-break: break-all;
     }
 
     .parameter-table th:nth-child(4),
     .parameter-table td:nth-child(4) {
-        width: 17.5%;
+        width: 22.5%;
         word-break: break-all;
     }
     .parameter-table th:nth-child(5),
