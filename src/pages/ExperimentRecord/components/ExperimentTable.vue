@@ -3,7 +3,7 @@
         <table class="parameter-table" v-if="tableData?.length">
             <thead>
                 <tr>
-                    <th>CreateTime</th>
+                    <th>Date</th>
                     <th>Owner</th>
                     <th>Recipe Name</th>
                     <th>
@@ -183,26 +183,26 @@ export default {
 
     .parameter-table th:nth-child(1),
     .parameter-table td:nth-child(1) {
-        width: 15%;
+        width: 10%;
         padding-left: 5px;
         word-break: keep-all;
     }
 
     .parameter-table th:nth-child(2),
     .parameter-table td:nth-child(2) {
-        width: 12.5%;
+        width: 10%;
         word-break: break-all;
     }
 
     .parameter-table th:nth-child(3),
     .parameter-table td:nth-child(3) {
-        width: 20%;
+        width: 23%;
         word-break: break-all;
     }
 
     .parameter-table th:nth-child(4),
     .parameter-table td:nth-child(4) {
-        width: 27.5%;
+        width: 32%;
         word-break: break-all;
     }
     .parameter-table th:nth-child(5),
