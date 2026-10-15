@@ -45,6 +45,17 @@
                     <el-option v-for="item in level_options" :key="item.value" :label="item.label" :value="item.value"/>
                 </el-select>
             </div>
+            <div class="member-setting-edit-input-wrapper">
+                <div class="member-setting-edit-input-title">上線：</div>
+                <el-input v-model="user.lastOnline" style="width: 100%; height: 40px;" disabled="true" />
+            </div>
+            <div class="member-setting-edit-input-wrapper">
+                <div class="member-setting-edit-input-title">合約：</div>
+                <el-radio-group v-model="user.affidavit" disabled="true">
+                    <el-radio :value="true">已簽核</el-radio>
+                    <el-radio :value="false">未簽核</el-radio>
+                </el-radio-group>
+            </div>
         </div>
     </div>
 </template>

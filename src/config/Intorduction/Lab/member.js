@@ -198,7 +198,7 @@ export default {
             {
                 name: 'Cheng-Chieh Hsieh (謝承婕)',
                 imgUrl: '/img/labMember/Cheng-Chieh_Hsieh.jpg',
-                topic: 'Room-Temperature Solid-Phase Substitutional Doping for CMOS Compatible Contact Engineering in WSe₂, pETs',
+                topic: 'Room-Temperature Solid-Phase Substitutional Doping for CMOS Compatible Contact Engineering in WSe₂ pETs',
                 badge: '',
                 location: '',
             },

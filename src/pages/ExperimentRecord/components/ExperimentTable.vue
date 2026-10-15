@@ -183,7 +183,7 @@ export default {
 
     .parameter-table th:nth-child(1),
     .parameter-table td:nth-child(1) {
-        width: 20%;
+        width: 15%;
         padding-left: 5px;
         word-break: keep-all;
     }
@@ -202,7 +202,7 @@ export default {
 
     .parameter-table th:nth-child(4),
     .parameter-table td:nth-child(4) {
-        width: 22.5%;
+        width: 27.5%;
         word-break: break-all;
     }
     .parameter-table th:nth-child(5),

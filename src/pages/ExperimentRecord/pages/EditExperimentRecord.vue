@@ -10,33 +10,35 @@
             <div class="edit-experiment-record-button"><el-button @click="save()" type="primary">儲存資訊</el-button></div>
         </div>
     </div>
-    <div class="edit-experiment-record-abstract" contenteditable="true" v-html="abstract" ref="abstractEl"></div>
-    <div class="edit-experiment-record-table">
-         <el-collapse v-model="activeNames" v-if="dataSet.length" accordion>
-            <el-collapse-item v-for="(exp, id) in dataSet" :key="exp.token" :title="`Step ${id+1}. ${exp.title}`" :name="exp.token" class="exp-params-item-wrapper">
-                <div class="exp-params-item-function-block">
-                    <VIcon class="exp-params-item-function-icon" :icon="PlusIcon" @click="openAdd(id+1)"></VIcon>
-                    <VIcon class="exp-params-item-function-icon" :icon="ChevronUpIcon" @click="move(exp.token, 'up')"></VIcon>
-                    <VIcon class="exp-params-item-function-icon" :icon="ChevronDownIcon" @click="move(exp.token, 'down')"></VIcon>
-                    <VIcon class="exp-params-item-function-icon" :icon="TrashIcon" style="color: red;" @click="removeItem(exp.token)"></VIcon>
-                </div>
-                <div class="exp-params-form-body">
-                    <el-form label-position="top">
-                        <el-row :gutter="16">
-                            <el-col :span="12" v-for="param in exp.params" :key="param.params">
-                                <el-form-item :label="param.name">
-                                    <el-input-number v-if="param.type === 'number'" v-model="exp.formData[param.params]" :placeholder="`請輸入 ${param.name}`" style="width: 100%;" controls-position="right"/>
-                                    <el-input v-else-if="param.type === 'textarea'" type="textarea" v-model="exp.formData[param.params]" :placeholder="`請輸入 ${param.name}`" :rows="3" :autosize="{ minRows: 3, maxRows: 6 }" clearable/>
-                                    <el-input v-else v-model="exp.formData[param.params]" :placeholder="`請輸入 ${param.name}`" clearable/>
-                                </el-form-item>
-                            </el-col>
-                        </el-row>
-                    </el-form>
-                </div>
-            </el-collapse-item>
-        </el-collapse>
-        <div v-else class="edit-experiment-record-initialize" @click="openAdd(0)">
-            <VIcon :size="24" :icon="PlusIcon"></VIcon>
+    <div class="edit-experiment-record-content-wrapper">
+        <div class="edit-experiment-record-abstract" contenteditable="true" v-html="abstract" ref="abstractEl"></div>
+        <div class="edit-experiment-record-table">
+            <el-collapse v-model="activeNames" v-if="dataSet.length" accordion>
+                <el-collapse-item v-for="(exp, id) in dataSet" :key="exp.token" :title="`Step ${id+1}. ${exp.title}`" :name="exp.token" class="exp-params-item-wrapper">
+                    <div class="exp-params-item-function-block">
+                        <VIcon class="exp-params-item-function-icon" :icon="PlusIcon" @click="openAdd(id+1)"></VIcon>
+                        <VIcon class="exp-params-item-function-icon" :icon="ChevronUpIcon" @click="move(exp.token, 'up')"></VIcon>
+                        <VIcon class="exp-params-item-function-icon" :icon="ChevronDownIcon" @click="move(exp.token, 'down')"></VIcon>
+                        <VIcon class="exp-params-item-function-icon" :icon="TrashIcon" style="color: red;" @click="removeItem(exp.token)"></VIcon>
+                    </div>
+                    <div class="exp-params-form-body">
+                        <el-form label-position="top">
+                            <el-row :gutter="16">
+                                <el-col :span="12" v-for="param in exp.params" :key="param.params">
+                                    <el-form-item :label="param.name">
+                                        <el-input-number v-if="param.type === 'number'" v-model="exp.formData[param.params]" :placeholder="`請輸入 ${param.name}`" style="width: 100%;" controls-position="right"/>
+                                        <el-input v-else-if="param.type === 'textarea'" type="textarea" v-model="exp.formData[param.params]" :placeholder="`請輸入 ${param.name}`" :rows="3" :autosize="{ minRows: 3, maxRows: 6 }" clearable/>
+                                        <el-input v-else v-model="exp.formData[param.params]" :placeholder="`請輸入 ${param.name}`" clearable/>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </div>
+                </el-collapse-item>
+            </el-collapse>
+            <div v-else class="edit-experiment-record-initialize" @click="openAdd(0)">
+                <VIcon :size="24" :icon="PlusIcon"></VIcon>
+            </div>
         </div>
     </div>
     <el-dialog v-model="dialogVisible" title="新增站點">
@@ -285,17 +287,25 @@ export default {
         height: calc(100% - 80px);
         overflow-y: scroll;
     }
+    /*  */
+    .edit-experiment-record-content-wrapper{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: calc(100vh - 90px);
+    }
     /* exp-abstract */
     .edit-experiment-record-abstract{
         width: 100%;
         min-height: 50px;
-        max-height: 200px;
+        max-height: 150px;
         overflow-y: scroll;
         outline: 0;
         font-size: 14px;
         line-height: 1.5;
         margin-bottom: 17.5px;
         color: rgba(210, 210, 210) !important;
+        flex-shrink: 0;
     }
     /* exp-params */
     .edit-experiment-record-initialize{
