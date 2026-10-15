@@ -13,6 +13,7 @@
     "@vue-office/pdf": "^2.0.10",
     "@vue-office/pptx": "^1.0.1",
     "axios": "^1.19.0",
+    "browser-image-compression": "^2.0.2",
     "core-js": "^3.8.3",
     "element-plus": "^2.14.5",
     "highlight.js": "^11.11.1",
