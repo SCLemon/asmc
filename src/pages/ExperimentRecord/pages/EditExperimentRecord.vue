@@ -11,6 +11,9 @@
         </div>
     </div>
     <div class="edit-experiment-record-content-wrapper">
+        <div class="edit-experiment-record-period">
+            <el-date-picker v-model="period" type="daterange" single-panel :editable="false"/>
+        </div>
         <div class="edit-experiment-record-abstract" contenteditable="true" v-html="abstract" ref="abstractEl"></div>
         <div class="edit-experiment-record-table">
             <el-collapse v-model="activeNames" v-if="dataSet.length" accordion>
@@ -88,6 +91,7 @@ export default {
         const abstractEl = ref();
         const abstract = ref('請輸入計畫摘要')
         
+        const period = ref([]);
 
         async function goBack(){
             router.replace('/experiment-records').catch((e)=>{})
@@ -118,6 +122,7 @@ export default {
             })
             dataSet.value = res.data?.data?.dataSet;
             title.value = res.data?.data?.title;
+            period.value = res.data?.data?.period;
             abstract.value = res.data?.data?.abstract || '請輸入計畫摘要'
         }
 
@@ -229,7 +234,7 @@ export default {
                 )
                 abstract.value = abstractEl.value.innerHTML;
                 
-                const res = await axios.post('/api/experimentRecords/user/save',{ targetRecord: route.query.targetRecord, dataSet: dataSet.value, abstract: abstract.value },{
+                const res = await axios.post('/api/experimentRecords/user/save',{ targetRecord: route.query.targetRecord, dataSet: dataSet.value, abstract: abstract.value, period: period.value },{
                     headers: {
                         'x-user-token': jsCookie.get('authToken')
                     }
@@ -244,7 +249,8 @@ export default {
             dataSet, goBack, save, title, activeNames, options,
             PlusIcon, ChevronUpIcon, ChevronDownIcon, TrashIcon,
             dialogVisible, selected_option, addItem, openAdd,
-            removeItem, move, EditIcon, rename, abstract, abstractEl
+            removeItem, move, EditIcon, rename, abstract, abstractEl,
+            period
         }
     }
 }
@@ -287,12 +293,23 @@ export default {
         height: calc(100% - 80px);
         overflow-y: scroll;
     }
-    /*  */
+    /* exp */
     .edit-experiment-record-content-wrapper{
         display: flex;
         flex-direction: column;
         width: 100%;
         height: calc(100vh - 90px);
+    }
+    /* exp-period */
+    .edit-experiment-record-period{
+        width: 100%;
+        margin-bottom: 17.5px;
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+    }
+    :deep(.el-date-editor){
+        width: 100% !important;
     }
     /* exp-abstract */
     .edit-experiment-record-abstract{
@@ -303,9 +320,11 @@ export default {
         outline: 0;
         font-size: 14px;
         line-height: 1.5;
-        margin-bottom: 17.5px;
-        color: rgba(210, 210, 210) !important;
+        margin-bottom: 20px;
+        color: rgba(190, 190, 190) !important;
         flex-shrink: 0;
+        padding-left: 2px;
+        padding-right: 2px;
     }
     /* exp-params */
     .edit-experiment-record-initialize{
