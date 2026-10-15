@@ -12,11 +12,6 @@
             <div class="cloud-more-button-list-item-icon"><VIcon :icon="TrashIcon"></VIcon></div>
             <div class="cloud-more-button-list-item-title">刪除</div>
         </div>
-        
-        <el-dialog v-model="dialogTableVisible" title="Shipping address" width="800">
-
-        </el-dialog>
-
     </div>
 </template>
 
