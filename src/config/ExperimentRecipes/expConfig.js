@@ -206,7 +206,7 @@ export default [
     },
     {
         key: 5,
-        title: 'PVD 物理氣相沉積 (蒸鍍）',
+        title: 'PVD 物理氣相沉積（蒸鍍）',
         params: [
             {
                 name: '蒸鍍環境壓力 (torr)',
