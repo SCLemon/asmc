@@ -1,4 +1,4 @@
-import { UserIcon, FlaskIcon, SettingsIcon, HomeUnlockIcon, CalendarIcon, EditIcon } from 'vorium-ui/icons'
+import { UserIcon, FlaskIcon, SettingsIcon, HomeUnlockIcon, CalendarIcon, EditIcon, ToolIcon } from 'vorium-ui/icons'
 export default [
     {
         title: '平台管理員列表',
@@ -21,7 +21,7 @@ export default [
             },
             {
                 title: '工具管理',
-                icon: SettingsIcon,
+                icon: ToolIcon,
                 path: '/settings/admin/tool-setting'
             },
             {

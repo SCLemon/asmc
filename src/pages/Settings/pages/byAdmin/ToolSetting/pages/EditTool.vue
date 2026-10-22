@@ -23,8 +23,16 @@
             </div>
             <div class="tool-setting-edit-input-wrapper">
                 <div class="tool-setting-edit-input-title">介紹：</div>
-                <el-input type="textarea" v-model="tool.abstract" style="width: 100%; height: 40px;" clearable placeholder="Enter Abstract" />
+                <el-input type="textarea" v-model="tool.abstract" style="width: 100%;" clearable placeholder="Enter Abstract" />
             </div>
+        </div>
+        <div class="tool-setting-edit-input-title" v-if="method != 'add'">工具圖示：</div>
+        <div class="tool-setting-edit-icon-wrapper" @click="openUploadIcon()" v-if="method != 'add'">
+            <img :src="tool.imgUrl || '/logo/logo.png'" alt="">
+            <div class="tool-setting-edit-icon-wrapper-mask">
+                <VIcon :icon="PlusIcon" :size="40" style="color: white;"></VIcon>
+            </div>
+            <input type="file" ref="iconFileRef" @change="uploadIcon()" style="display: none;" accept="image/*">
         </div>
     </div>
 </template>
@@ -38,8 +46,17 @@ import { useRoute, useRouter } from 'vue-router';
 import { ElMessageBox } from 'element-plus'
 
 
+import { VIcon } from 'vorium-ui'
+import { PlusIcon } from 'vorium-ui/icons'
+import 'vorium-ui/icons/icons.css'
+
+import { compressImage } from '../../../../../../utils/compressor';
+
 export default {
     name: 'EditMember',
+    components:{
+        VIcon
+    },
     setup(){
         
         const router = useRouter();
@@ -47,12 +64,14 @@ export default {
         
         const method = route.query.method;
         const targetTool = route.query.targetTool;
+        const iconFileRef = ref();
 
         const tool = ref({
             name: '',
             version: '',
             author: '',
             abstract: '',
+            imgUrl: '',
             status: true,
         })
 
@@ -69,6 +88,41 @@ export default {
             tool.value = res.data.data || {};
             
             if(res.data.type == 'error') eventBus.emit('handleAlert', { title:'工具資料獲取結果', message: res.data.message, type: res.data.type })
+        }
+
+        function openUploadIcon(){
+            iconFileRef.value.click();
+        }
+
+        async function uploadIcon(){
+            const file = iconFileRef.value?.files?.[0];
+            if (!file) return;
+
+            const formData = new FormData();
+
+            const compressedImage = await compressImage(file, 400, 100);
+
+            formData.append('file', compressedImage);
+            formData.append('targetTool', targetTool);
+
+            try {
+                const res = await axios.post('/api/toolSetting/admin/uploadIcon', formData, {
+                    headers: {
+                        'x-user-token': jsCookie.get('authToken'),
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                eventBus.emit('handleAlert', { title: '圖示上傳資訊', message: res.data.message, type: res.data.type });
+
+                if (res.data.type === 'success') tool.value.imgUrl = res.data.data.imgUrl;
+            } 
+            catch (e) {
+                eventBus.emit('handleAlert', { title: '圖示上傳失敗', message: '伺服器錯誤，請稍後再試。', type: 'error' });
+            } 
+            finally {
+                iconFileRef.value.value = '';
+            }
         }
 
         async function send(){
@@ -135,7 +189,7 @@ export default {
         }
 
         return {
-            method, tool, send, goBack, freeze
+            method, tool, send, goBack, freeze, PlusIcon, iconFileRef, openUploadIcon, uploadIcon
         }
     }
 }
@@ -187,5 +241,34 @@ export default {
     }
     :deep(.el-select__wrapper){
         height: 40px;
+    }
+    .tool-setting-edit-icon-wrapper{
+        margin-top: 25px;
+        width: 200px;
+        height: 200px;
+        border: 1px dashed rgba(0,0,0, 0.3);
+        position: relative;
+    }
+    .tool-setting-edit-icon-wrapper>img{
+        width: 100%;
+    }
+    .tool-setting-edit-icon-wrapper-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top:0;
+        left:0;
+        background: rgba(0,0,0,0.85);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .tool-setting-edit-icon-wrapper-mask:hover{ 
+        cursor: pointer;
+    }
+    .tool-setting-edit-icon-wrapper:hover .tool-setting-edit-icon-wrapper-mask{
+        opacity: 1;
     }
 </style>

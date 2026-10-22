@@ -100,7 +100,7 @@ export default {
         try {
             const response = await axios.get(url, {
                 responseType: 'blob',
-                signal: abortController.signal, // 綁定 AbortController 信號
+                signal: abortController.signal,
                 headers: { 'x-user-token': jsCookie.get('authToken') },
                 onDownloadProgress: (progressEvent) => {
                     if (progressEvent.total) {
@@ -155,7 +155,6 @@ export default {
             }
         } 
         catch (e) {
-            // 如果是主動取消請求，不跳錯誤提示
             if (axios.isCancel(e) || e.name === 'CanceledError' || e.name === 'AbortError') {
                 return
             }

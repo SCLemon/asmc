@@ -11,7 +11,7 @@
         <div class="analysis-tools-list-wrapper">
             <div class="analysis-tools-list-item-wrapper" v-for="(tool, index) in filteredAnalysisTool" :key="tool.id || index">
                 <div class="analysis-tools-list-item-wrapper-detail">
-                    <div class="analysis-tools-list-item-icon"><img :src="tool.imgUrl || '/logo/logo.png'" alt=""></div>
+                    <div class="analysis-tools-list-item-icon"><img src="/logo/logo.png" v-lazy :data-src="tool.imgUrl || '/logo/logo.png'" alt=""></div>
                     <div class="analysis-tools-list-item-text-wrapper">
                         <div class="analysis-tools-list-item-text-title">{{ tool.name }}</div>
                         <div class="analysis-tools-list-item-text-subTitle">{{ tool.author }} {{ tool.version || 'Latest' }}</div>
