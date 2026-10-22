@@ -20,6 +20,11 @@ export default [
                 path: '/settings/admin/equipment-setting'
             },
             {
+                title: '工具管理',
+                icon: SettingsIcon,
+                path: '/settings/admin/tool-setting'
+            },
+            {
                 title: '門禁管理',
                 icon: HomeUnlockIcon,
                 path: '/settings/admin/door-access-control'

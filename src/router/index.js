@@ -102,6 +102,14 @@ const routes = [
       component: () => import('../pages/Settings/pages/byAdmin/EquipmentSetting/EquipmentSetting.vue')
     },
     {
+      path: '/settings/admin/tool-setting',
+      component: () => import('../pages/Settings/pages/byAdmin/ToolSetting/ToolSetting.vue')
+    },
+    {
+      path: '/settings/admin/tool-setting/edit',
+      component: () => import('../pages/Settings/pages/byAdmin/ToolSetting/pages/EditTool.vue')
+    },
+    {
       path: '/settings/admin/door-access-control',
       component: () => import('../pages/Settings/pages/byAdmin/DoorAccessControl/DoorAccessControl.vue')
     },

@@ -11,24 +11,24 @@
         <div class="analysis-tools-list-wrapper">
             <div class="analysis-tools-list-item-wrapper" v-for="(tool, index) in filteredAnalysisTool" :key="tool.id || index">
                 <div class="analysis-tools-list-item-wrapper-detail">
-                    <div class="analysis-tools-list-item-icon"><img :src="tool.imgUrl" alt=""></div>
+                    <div class="analysis-tools-list-item-icon"><img :src="tool.imgUrl || '/logo/logo.png'" alt=""></div>
                     <div class="analysis-tools-list-item-text-wrapper">
-                        <div class="analysis-tools-list-item-text-title">{{ tool.title }}</div>
-                        <div class="analysis-tools-list-item-text-subTitle">{{ tool.subTitle }}</div>
-                        <div class="analysis-tools-list-item-text-description">{{ tool.description }}</div>
+                        <div class="analysis-tools-list-item-text-title">{{ tool.name }}</div>
+                        <div class="analysis-tools-list-item-text-subTitle">{{ tool.author }} {{ tool.version || 'Latest' }}</div>
+                        <div class="analysis-tools-list-item-text-description">{{ tool.abstract }}</div>
                     </div>
                 </div>
                 <div class="analysis-tools-list-item-wrapper-button-wrapper">
                     <!-- 綁定該項目的獨立狀態 -->
                     <el-button 
-                        :type="getBtnState(tool.cloudId).status === 'error' ? 'danger' : 'primary'"
+                        :type="getBtnState(tool.token).status === 'error' ? 'danger' : 'primary'"
                         class="analysis-tools-list-item-wrapper-button"
-                        :loading="getBtnState(tool.cloudId).status === 'loading'"
-                        :disabled="getBtnState(tool.cloudId).status === 'loading'"
-                        @click="download(tool.cloudId)"
+                        :loading="getBtnState(tool.token).status === 'loading'"
+                        :disabled="getBtnState(tool.token).status === 'loading'"
+                        @click="download(tool.token)"
                     >
-                        <template v-if="getBtnState(tool.cloudId).status === 'loading'">{{ getBtnState(tool.cloudId).progressText }}</template>
-                        <template v-else-if="getBtnState(tool.cloudId).status === 'error'">ERROR</template>
+                        <template v-if="getBtnState(tool.token).status === 'loading'">{{ getBtnState(tool.token).progressText }}</template>
+                        <template v-else-if="getBtnState(tool.token).status === 'error'">ERROR</template>
                         <template v-else>Download</template>
                     </el-button>
                 </div>
@@ -38,11 +38,9 @@
 </template>
 
 <script>
-import { ref, reactive, watch, computed } from 'vue';
+import { ref, reactive, watch, computed, onMounted, toRaw } from 'vue';
 import { VInput, VScanLight, VIcon } from 'vorium-ui';
 import 'vorium-ui/dist/vorium-ui.css';
-import { ElMessageBox, ElNotification } from 'element-plus';
-import analysisTool from '../../config/AnalysisTools/tools.js';
 
 import jsCookie from 'js-cookie'
 import axios from 'axios'
@@ -54,11 +52,33 @@ export default {
     },
     setup(){
         const keyword = ref('');
-        let list = analysisTool.map((tool) => tool.title);
-        let suggestionList = reactive([]);
+
+        const analysisTool = ref([]);
+
         let timer = null;
         let isLoading = ref(false);
         let requestId = 0;
+
+        let list = computed(()=>{
+            return analysisTool.value?.map((tool) => tool.name);
+        })
+
+        let suggestionList = reactive([]);
+
+        onMounted(async()=>{
+            await getData();
+        })
+
+        async function getData(){
+            const res = await axios.get('/api/toolSetting/admin/getDataForView',{
+                headers:{
+                    'x-user-token': jsCookie.get('authToken')
+                }
+            })
+            analysisTool.value = res.data.data
+        }
+
+
 
         // 用於儲存各按鈕下載狀態的物件 (以 key 隔離)
         const downloadStates = reactive({});
@@ -79,7 +99,7 @@ export default {
             timer = setTimeout(async () => {
                 const currentId = ++requestId;
                 isLoading.value = true;
-                const filterList = list.filter(i => i.toLowerCase().includes(value.toLowerCase()));
+                const filterList = list.value.filter(i => i.toLowerCase().includes(value.toLowerCase()));
 
                 if (currentId !== requestId) return;
                 suggestionList.splice(0, suggestionList.length, ...filterList);
@@ -88,8 +108,8 @@ export default {
         }, { immediate: true });
 
         const filteredAnalysisTool = computed(() => {
-            return analysisTool.filter((tool) => {
-                return (tool.title.toLowerCase()).includes(keyword.value.toLowerCase());
+            return analysisTool.value.filter((tool) => {
+                return (tool.name?.toLowerCase()).includes(keyword.value.toLowerCase());
             });
         });
         
