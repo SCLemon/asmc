@@ -1,23 +1,37 @@
 <template>
     <div class="cloud-more-button-list-wrapper">
-        <div class="cloud-more-button-list-item" @click="rename()">
-            <div class="cloud-more-button-list-item-icon"><VIcon :icon="EditIcon"></VIcon></div>
-            <div class="cloud-more-button-list-item-title">重新命名</div>
-        </div>
         <div class="cloud-more-button-list-item" @click="download()">
             <div class="cloud-more-button-list-item-icon"><VIcon :icon="DownloadIcon"></VIcon></div>
             <div class="cloud-more-button-list-item-title">下載</div>
         </div>
+        <div class="cloud-more-button-list-item" @click="rename()">
+            <div class="cloud-more-button-list-item-icon"><VIcon :icon="EditIcon"></VIcon></div>
+            <div class="cloud-more-button-list-item-title">重新命名</div>
+        </div>
+        <div class="cloud-more-button-list-item" @click.stop="openMove()">
+            <div class="cloud-more-button-list-item-icon"><VIcon :icon="SendIcon"></VIcon></div>
+            <div class="cloud-more-button-list-item-title">移動</div>
+        </div>
+
         <div class="cloud-more-button-list-item" @click="remove()">
             <div class="cloud-more-button-list-item-icon"><VIcon :icon="TrashIcon"></VIcon></div>
             <div class="cloud-more-button-list-item-title">刪除</div>
         </div>
+        <el-dialog v-model="openMoveDialog" title="移動至" width="80%">
+            <el-tree style="width: 100%" :data="structure" :props="structureProps" @node-click="handleSelected" node-key="id" :current-node-key="0" :default-expanded-keys="[0]" highlight-current/>
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button @click="handleCanceled()">取消</el-button>
+                    <el-button type="primary" @click="move()">移動</el-button>
+                </div>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
 <script>
 import { VIcon } from 'vorium-ui'
-import { DownloadIcon, TrashIcon, EditIcon  } from 'vorium-ui/icons'
+import { DownloadIcon, TrashIcon, EditIcon, SendIcon  } from 'vorium-ui/icons'
 import 'vorium-ui/icons/icons.css'
 
 import { ElMessageBox, ElNotification } from 'element-plus'
@@ -25,7 +39,6 @@ import { eventBus } from '@/utils/eventBus.js';
 
 import jsCookie from 'js-cookie'
 import axios from 'axios'
-import { useRoute } from 'vue-router';
 
 import { ref, h } from 'vue'
 
@@ -46,10 +59,11 @@ export default {
     },
     setup(props, context){
 
+
         async function rename(){
 
             try{
-                const { value } = await ElMessageBox.prompt('請輸入名稱', '重新命名', {
+                const { value } = await ElMessageBox.prompt('', '重新命名', {
                     confirmButtonText: '更改', cancelButtonText: '取消', inputValue: props.source?.name ?? ''
                 })
                 
@@ -103,6 +117,7 @@ export default {
             
         }
 
+                
         async function download() {
 
             const downloadText = ref('資源正在下載中 (0%)...')
@@ -206,8 +221,75 @@ export default {
 
         }
 
+        // 移動資料夾 Begin //
+        const structure = ref([])
+        const structureProps = { id: 'id', children: 'children', label: 'label', value: 'value' }
+        const openMoveDialog = ref(false);
+        const currentSelected = ref(null)
+
+        function handleSelected(data){
+            currentSelected.value = data.value
+        }
+        function handleCanceled(){
+            currentSelected.value = null;
+            openMoveDialog.value = false;
+        }
+
+        async function getStructure(){
+
+            try{
+                const res = await axios.get('/api/cloud/user/getStructure',
+                {
+                    headers:{
+                        'x-user-token':jsCookie.get('authToken')
+                    }
+                })
+
+                if(res.data.type == 'success') structure.value = res.data.data;
+
+                if(res.data.type == 'error'){
+                    eventBus.emit('handleAlert',{ title:'雲端資料結構獲取結果', message:res.data.message, type:res.data.type })
+                }
+            }
+            catch(e){
+                eventBus.emit('handleAlert',{ title:'雲端資料結構獲取結果',  message: '雲端資料結構獲取失敗', type: 'error'})
+            }
+        }
+
+        async function openMove(){
+            openMoveDialog.value = true;
+            await getStructure();
+        }
+
+        async function move(){
+
+            try{
+                
+                const res = await axios.put('/api/cloud/user/move',{
+                    targetCloud: props.token, destination: currentSelected.value
+                },
+                {
+                    headers:{
+                        'x-user-token':jsCookie.get('authToken')
+                    }
+                })
+                eventBus.emit('handleAlert', { title:'資料移動結果', message: res.data.message, type: res.data.type })
+
+            }
+            catch(e){
+                console.log(e)
+            }
+            finally{
+                context.emit('close')
+                eventBus.emit('refreshCloudData')
+            }
+            
+        }
+        // 移動資料夾 End //
+
         return {
-            DownloadIcon, TrashIcon, EditIcon, rename, remove, download
+            DownloadIcon, TrashIcon, EditIcon, SendIcon, rename, remove, download, 
+            openMoveDialog, openMove, structure, structureProps, handleSelected, handleCanceled, move
         }
     }
 }
@@ -225,7 +307,7 @@ export default {
         border-radius: 5px;
         box-shadow: 0 0 3px rgba(0,0,0,0.2);
         overflow: hidden;
-        z-index: 1;
+        z-index: 2;
     }
     .cloud-more-button-list-item{
         width: 100%;

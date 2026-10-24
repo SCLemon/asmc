@@ -90,7 +90,6 @@ export default {
         onMounted(async()=>{
             document.addEventListener('click', handleClickOutside);
             eventBus.on('refreshCloudData', getData);
-            
             scrollToRight()
             await getData()
         })
@@ -125,12 +124,6 @@ export default {
 
         }
 
-        // 上傳檔案
-        const { inputFileEl, openUploadFiles, handleUploadFiles } = useCloudUploadFiles(currentParent, getData)
-
-        // 上傳資料夾
-        const { inputFolderEl, uploadList, createFolder, openUploadFolders, handleUploadFolder } = useCloudUploadFolders(currentParent, getData)
-
         // 創建新資料夾
         async function openCreateNewFolder(){
             try{
@@ -153,6 +146,14 @@ export default {
             }
         }
 
+        // 上傳檔案
+        const { inputFileEl, openUploadFiles, handleUploadFiles } = useCloudUploadFiles(currentParent, getData)
+
+        // 上傳資料夾
+        const { inputFolderEl, uploadList, createFolder, openUploadFolders, handleUploadFolder } = useCloudUploadFolders(currentParent, getData)
+
+
+
         // blur 時，自動關閉 AddList
         function handleClickOutside(event){
             if(addButtonWrapper.value && !addButtonWrapper.value.contains(event.target)){
@@ -167,6 +168,7 @@ export default {
             if(!el) return
             el.scrollTo({ left:el.scrollWidth, behavior:'smooth' })
         }
+
 
         watch(historyList,()=>{
             scrollToRight()
@@ -275,6 +277,7 @@ export default {
         box-sizing: border-box;
         padding-left: 5px;
         border: 0;
+        background: transparent;
     }
     .cloud-navigatior-search-input:focus{
         outline: 0;
@@ -296,7 +299,7 @@ export default {
         align-items: center;
         justify-content: center;
         border: 1px solid #dcdfe6;
-        background: white;
+        background: transparent;
         transition: box-shadow 0.3s ease;
         z-index: 1;
     }

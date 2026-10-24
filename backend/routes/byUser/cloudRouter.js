@@ -28,20 +28,34 @@ router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
     try {
         let condition = {};
 
+        // 統一排除 System 資料
+        const excludeSystem = { owner: { $ne: 'System' } };
+
         if (keyword) {
-            const nameQuery = { name: { $regex: keyword, $options: 'i' }, type: 'file' };
+            const nameQuery = {
+                name: { $regex: keyword, $options: 'i' },
+                type: 'file'
+            };
 
             if (parent) {
-
                 const hierarchy = await cloudModel.aggregate([
-                    { $match: { token: parent, type: 'folder' } },
+                    {
+                        $match: {
+                            token: parent,
+                            type: 'folder',
+                            ...excludeSystem
+                        }
+                    },
                     {
                         $graphLookup: {
                             from: 'clouds',
                             startWith: '$token',
                             connectFromField: 'token',
                             connectToField: 'parent',
-                            as: 'descendants'
+                            as: 'descendants',
+                            restrictSearchWithMatch: {
+                                owner: { $ne: 'System' }
+                            }
                         }
                     },
                     {
@@ -56,17 +70,29 @@ router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
                     }
                 ]);
 
-                const targetTokens = hierarchy.length ? hierarchy[0].allTokens : [parent];
+                const targetTokens = hierarchy.length
+                    ? hierarchy[0].allTokens
+                    : [parent];
 
                 condition = {
                     parent: { $in: targetTokens },
+                    ...excludeSystem,
                     ...nameQuery
                 };
-            } 
-            else condition = nameQuery;
-        } 
-        else condition = { parent: parent || null };
+            } else {
+                condition = {
+                    ...excludeSystem,
+                    ...nameQuery
+                };
+            }
+        } else {
+            condition = {
+                parent: parent || null,
+                ...excludeSystem
+            };
+        }
 
+        // 查詢資料時排除 System
         const cloud = await cloudModel.find(condition)
             .select('token createTime name type file.size file.mimeType parent -_id')
             .lean();
@@ -75,8 +101,11 @@ router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
         const files = [];
 
         cloud.forEach(item => {
-            if (item.type === 'folder') folders.push(item);
-            else if (item.type === 'file') files.push(item);
+            if (item.type === 'folder') {
+                folders.push(item);
+            } else if (item.type === 'file') {
+                files.push(item);
+            }
         });
 
         // 麵包屑路徑生成
@@ -89,7 +118,11 @@ router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
             let currentToken = parent;
 
             while (currentToken) {
-                const folder = await cloudModel.findOne({ token: currentToken, type: 'folder' })
+                const folder = await cloudModel.findOne({
+                    token: currentToken,
+                    type: 'folder',
+                    ...excludeSystem
+                })
                     .select('token name parent -_id')
                     .lean();
 
@@ -113,9 +146,9 @@ router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
             message: 'Cloud 資料獲取成功！'
         });
 
-    } 
-    catch (e) {
+    } catch (e) {
         console.error(e);
+
         return res.send({
             type: 'error',
             data: { folders: [], files: [] },
@@ -124,6 +157,7 @@ router.post('/api/cloud/user/getData', authMiddleware(7), async (req, res) => {
         });
     }
 });
+
 
 // 上傳檔案
 router.post('/api/cloud/user/upload', authMiddleware(7), upload.single('file'), autoCleanupTmp, async (req, res) => {
@@ -391,6 +425,7 @@ router.get('/api/cloud/user/download/:targetCloud', authMiddleware(7), async (re
 
             res.setHeader('Access-Control-Expose-Headers', 'Content-Length, Content-Disposition');
             res.setHeader('Content-Length', stat.size);
+            res.setHeader('Cache-Control', 'private, max-age=259200');
 
             return res.download(cloud.file.path, cloud.name);
         }
@@ -487,5 +522,232 @@ router.get('/api/cloud/user/download/:targetCloud', authMiddleware(7), async (re
         res.destroy(e);
     }
 });
+
+
+// 資料夾結構
+router.get('/api/cloud/user/getStructure', authMiddleware(7), async (req, res) => {
+
+    try {
+
+        // 統一排除 System 資料
+        const excludeSystem = { owner: { $ne: 'System' } };
+
+        const cloudData = await cloudModel.find(excludeSystem)
+            .select('token name type parent')
+            .lean();
+
+        // 僅保留 root 和 folder
+        const folders = cloudData.filter(item => {
+            return item.type === 'folder';
+        });
+
+        // 建立 token 對應表
+        const cloudMap = new Map();
+
+        let id = 1;
+
+        folders.forEach(item => {
+            cloudMap.set(item.token, {
+                id: id++,
+                label: item.name,
+                value: item.token,
+                parent: item.parent,
+                children: []
+            });
+        });
+
+        // 建立樹狀結構
+        const root = {
+            id: 0,
+            label: 'ASMC 雲端硬碟',
+            value: null,
+            children: []
+        };
+
+        const structure = [root];
+
+        folders.forEach(item => {
+
+            const currentNode = cloudMap.get(item.token);
+
+            // 沒有 parent 的資料夾，放在 root 下面
+            if (item.parent === null || item.parent === '' || !item.parent) {
+
+                root.children.push(currentNode);
+
+            } 
+            else if (cloudMap.has(item.parent)) { // 排除 System 下的 Folder
+
+                const parentNode = cloudMap.get(item.parent);
+
+                parentNode.children.push(currentNode);
+
+            }
+
+        });
+
+        // 整理輸出格式
+        const formatStructure = (nodes) => {
+
+            return nodes.map(node => {
+
+                const result = {
+                    id: node.id,
+                    label: node.label,
+                    value: node.value
+                };
+
+                if (node.children.length > 0) {
+                    result.children = formatStructure(node.children);
+                }
+
+                return result;
+
+            });
+
+        };
+
+        return res.send({ type: 'success', data: formatStructure(structure), message: '雲端結構汲取成功。'});
+
+    } 
+    catch (error) {
+
+        console.error('取得雲端結構失敗：', error);
+
+        return res.send({ type: 'error', message: '伺服器錯誤，請洽客服人員協助。'  });
+
+    }
+
+});
+
+
+// 移動檔案或資料夾
+router.put('/api/cloud/user/move', authMiddleware(7), async (req, res) => {
+    
+    const { targetCloud, destination } = req.body;
+
+    if (!targetCloud) {
+        return res.send({
+            type: 'error',
+            message: '目標路徑不可為空。'
+        });
+    }
+
+    try {
+        // 1. 動態組裝查詢條件：若 level === 10 則不限制 owner
+        const query = { token: targetCloud };
+        if (req.user.level != 10) {
+            query.owner = req.user.token;
+        }
+
+        const cloud = await cloudModel.findOne(query);
+
+        if (!cloud) {
+            return res.send({
+                type: 'error',
+                message: '檔案或資料夾不存在或無權限修改。'
+            });
+        }
+
+        // 2. 檢查目的地是否為有效的資料夾
+        let destinationCloud = null;
+
+        if (destination !== null && destination !== '') {
+
+            const destinationQuery = {
+                token: destination,
+                type: 'folder'
+            };
+
+            if (req.user.level != 10) {
+                destinationQuery.owner = req.user.token;
+            }
+
+            destinationCloud = await cloudModel.findOne(destinationQuery);
+
+            if (!destinationCloud) {
+                return res.send({
+                    type: 'error',
+                    message: '目的資料夾不存在或無權限存取。'
+                });
+            }
+
+        }
+
+        // 3. 檢查是否移動到原本的位置
+        if ((cloud.parent || null) === (destination || null)) {
+            return res.send({
+                type: 'error',
+                message: '目標已位於該資料夾中。'
+            });
+        }
+
+        // 4. 如果移動的是資料夾，禁止移動到自己或自己的子資料夾
+        if (cloud.type === 'folder' && destination) {
+
+            let currentParent = destinationCloud;
+
+            while (currentParent) {
+
+                if (currentParent.token === targetCloud) {
+                    return res.send({
+                        type: 'error',
+                        message: '無法將資料夾移動到自己或自己的子資料夾中。'
+                    });
+                }
+
+                if (!currentParent.parent) {
+                    break;
+                }
+
+                currentParent = await cloudModel.findOne({
+                    token: currentParent.parent,
+                    type: 'folder'
+                });
+
+            }
+
+        }
+
+        // 5. 檢查目的地是否有相同名稱且相同類型的項目
+        const existingCloud = await cloudModel.findOne({
+            token: { $ne: targetCloud },
+            parent: destination || null,
+            name: cloud.name,
+            type: cloud.type
+        });
+
+        if (existingCloud) {
+            return res.send({
+                type: 'error',
+                message: cloud.type === 'file'
+                    ? '目的資料夾下已有相同名稱的檔案。'
+                    : '目的資料夾下已有相同名稱的資料夾。'
+            });
+        }
+
+        // 6. 更新 parent
+        cloud.parent = destination || null;
+        cloud.updateTime = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+
+        await cloud.save();
+
+        return res.send({
+            type: 'success',
+            data: cloud,
+            message: '移動成功。'
+        });
+
+    } catch (e) {
+        console.log(e);
+        return res.send({
+            type: 'error',
+            message: '伺服器錯誤，請洽客服人員協助。'
+        });
+    }
+});
+
+
+
 
 module.exports = router;

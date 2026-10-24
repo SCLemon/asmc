@@ -100,7 +100,7 @@ export default {
 
             const formData = new FormData();
 
-            const compressedImage = await compressImage(file, 400, 100);
+            const compressedImage = await compressImage(file, 200, 75);
 
             formData.append('file', compressedImage);
             formData.append('targetTool', targetTool);
@@ -244,10 +244,13 @@ export default {
     }
     .tool-setting-edit-icon-wrapper{
         margin-top: 25px;
-        width: 200px;
-        height: 200px;
+        width: 150px;
+        height: 150px;
         border: 1px dashed rgba(0,0,0, 0.3);
         position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     .tool-setting-edit-icon-wrapper>img{
         width: 100%;
