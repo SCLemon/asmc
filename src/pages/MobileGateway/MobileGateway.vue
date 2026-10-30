@@ -1,7 +1,7 @@
 <template>
     <div class="mobile-gateway-wrapper">
-        <div class="mobile-gateway-item">
-            <div class="mobile-gateway-item-text-block" v-for="(item, id) in pathConfig.menu" :key="id" @click="goTo(item.path)">
+        <div class="mobile-gateway-item" v-for="(item, id) in pathConfig.menu" :key="id" @click="goTo(item.path)">
+            <div class="mobile-gateway-item-text-block">
                 <VIcon :icon="item.icon" :size="180"></VIcon>
                 <div class="mobile-gateway-item-title">{{ item.name }}</div>
             </div>
@@ -43,7 +43,7 @@ export default {
         display: flex;
         align-items: center;
         flex-direction: column;
-        gap:20px;
+        gap:30px;
         padding-top: 30px;
     }
     .mobile-gateway-item{

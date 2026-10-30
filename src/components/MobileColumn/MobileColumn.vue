@@ -5,7 +5,7 @@
         </div>
         <div class="mobile-column-options-wrapper-mobile-top-router">
             <div :class="['mobile-column-options-wrapper-mobile-top-user-block',{ 'mobile-column-options-wrapper-mobile-top-user-block-selected': $route.path.includes('mobile-gateway') }]" @click="goTo('/mobile-gateway')"><VIcon :icon="UserIcon" :size="24"></VIcon></div>
-            <div v-if="!$route.path.includes('mobile-gateway')" :class="['mobile-column-options-wrapper-mobile-top-more',{ 'mobile-column-options-wrapper-mobile-top-more-is-open': openMobileList }]" @click="openMobileList = !openMobileList"><VIcon :icon="MenuIcon" :size="24"></VIcon></div>
+            <div v-if="$route.path.includes('/introduction')" :class="['mobile-column-options-wrapper-mobile-top-more',{ 'mobile-column-options-wrapper-mobile-top-more-is-open': openMobileList }]" @click="openMobileList = !openMobileList"><VIcon :icon="MenuIcon" :size="24"></VIcon></div>
             <div v-else class="mobile-column-options-wrapper-mobile-top-more" @click="logout()"><VIcon :icon="CloseIcon" :size="24"></VIcon></div>
         </div>
         <div class="mobile-column-options-wrapper-mobile" v-if="openMobileList">

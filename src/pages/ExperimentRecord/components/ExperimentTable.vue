@@ -232,4 +232,39 @@ export default {
             font-size: 12px;
         }
     }
+    @media screen and (max-width: 500px) {
+        .options>.el-button{
+            padding: 14px 14px;
+            font-size: 12px;
+        }
+        .parameter-table th:nth-child(1),
+        .parameter-table td:nth-child(1) {
+            width: 100px;
+            padding-left: 5px;
+            word-break: keep-all;
+        }
+
+        .parameter-table th:nth-child(2),
+        .parameter-table td:nth-child(2) {
+            width: 100px;
+            word-break: break-all;
+        }
+
+        .parameter-table th:nth-child(3),
+        .parameter-table td:nth-child(3) {
+            width: 250px;
+            word-break: break-all;
+        }
+
+        .parameter-table th:nth-child(4),
+        .parameter-table td:nth-child(4) {
+            width: 350px;
+            word-break: break-all;
+        }
+        .parameter-table th:nth-child(5),
+        .parameter-table td:nth-child(5) {
+            width: 200px;
+            word-break: break-all;
+        }
+    }
 </style>

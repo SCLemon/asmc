@@ -131,4 +131,20 @@ export default {
         height: calc(100% - 80px);
         overflow: hidden;
     }
+    @media screen and (max-width: 500px) {
+        .experiment-record-header{
+            flex-direction: column;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            gap:20px;
+            height:auto;
+        }
+        .experiment-record-group{
+            width: 100%;
+        }
+        .experiment-record-search{
+            margin-right: 20px;
+            justify-content: center;
+        }
+    }
 </style>

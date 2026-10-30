@@ -44,7 +44,7 @@
             </div>
         </div>
     </div>
-    <el-dialog v-model="dialogVisible" title="新增站點">
+    <el-dialog v-model="dialogVisible" title="新增站點" align-center>
         <el-select v-model="selected_option" placeholder="Select" style="width: 100%;">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>
         </el-select>
@@ -360,5 +360,30 @@ export default {
     }
     :deep(.el-input__inner){
         text-align: center;
+    }
+
+    @media screen and (max-width: 500px) {
+        .edit-experiment-record-header{
+            flex-direction:column-reverse;
+            align-items: baseline;
+            margin-top: 20px;
+            margin-bottom: 18px;
+            gap:25px;
+            height: auto;
+        }
+        .edit-experiment-record-title{
+            font-size: 20px;
+        }
+        :deep(.exp-params-form-body .el-col) {
+            max-width: 100%;
+            flex: 0 0 100%;
+        }
+
+        :deep(.exp-params-form-body .el-form-item) {
+            width: 100%;
+        }
+        :deep(.el-dialog){
+            width: 80vw;
+        }
     }
 </style>

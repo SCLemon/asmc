@@ -18,7 +18,7 @@
                 </div>
                 <div class="content-item">
                     <div class="content-item-title">Version</div>
-                    <div class="content-item-text">v0.2.2.0 @2026.10.24</div>
+                    <div class="content-item-text">v0.3.0.0 @2026.10.30</div>
                     <div class="content-item-subText">© 2026 SCLemon. All rights reserved.</div>
                 </div>
             </div>
