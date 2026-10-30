@@ -1,37 +1,5 @@
 <template>
     <div class="introduction-wrapper">
-        <div class="introduction-view-options-wrapper-mobile-top">
-            <div class="introduction-view-options-wrapper-mobile-top-logo">
-                <img src="/logo/logo_banner_black.png" alt="">
-            </div>
-            <div :class="['introduction-view-options-wrapper-mobile-top-more',
-                { 'introduction-view-options-wrapper-mobile-top-more-is-open': openMobileList }
-            ]" @click="openMobileList = !openMobileList">
-                <VIcon :icon="MenuIcon" :size="24"></VIcon>
-            </div>
-            <div class="introduction-view-options-wrapper-mobile" v-if="openMobileList">
-                <div class="introduction-view-option" @click="goTo('/introduction/home')">
-                    Introduction
-                    <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/home')}"></div>
-                </div>
-                <div class="introduction-view-option"  @click="goTo('/introduction/members')">
-                    Members
-                    <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/members')}"></div>
-                </div>
-                <div class="introduction-view-option"  @click="goTo('/introduction/publications')">
-                    Publications
-                    <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/publications')}"></div>
-                </div>
-                <div class="introduction-view-option"  @click="goTo('/introduction/equipments')">
-                    Equipments
-                    <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/equipments')}"></div>
-                </div>
-                <div class="introduction-view-option"  @click="goTo('/introduction/contact')">
-                    Contact
-                    <div class="introduction-view-option-selected-bar" :class="{'introduction-view-option-selected-bar-selected': $route.path.includes('/contact')}"></div>
-                </div>
-            </div>
-        </div>
         <div class="introduction-banner">
             <VCarousel :aspectRatio="2.4/1" :autoPlay="true" :interval="5000">
                 <v-carousel-item><div class="introduction-banner-item"><img src="/img/labIntro/banner_1.jpg" alt=""></div></v-carousel-item>
@@ -73,7 +41,7 @@
 
 <script>
 import { VCarousel, VCarouselItem, VIcon } from 'vorium-ui'
-import { MenuIcon } from 'vorium-ui/icons'
+import { MenuIcon, UserIcon } from 'vorium-ui/icons'
 import 'vorium-ui/icons/icons.css'
 import 'vorium-ui/dist/vorium-ui.css'
 import { useRouter } from 'vue-router'
@@ -99,7 +67,7 @@ export default {
             openMobileList.value = false;
         }
         return {
-            goTo, MenuIcon, openMobileList
+            goTo, MenuIcon, openMobileList, UserIcon
         }
     }
 }
@@ -159,52 +127,10 @@ export default {
     .introduction-view-option:hover .introduction-view-option-selected-bar{
         width: 100%;
     }
-    .introduction-view-options-wrapper-mobile-top{
-        display: none;
-        z-index: 9999;
-        width: 100%;
-        height: 60px;
-        position: fixed;
-        top: 0;
-        background: black;
-        box-sizing: border-box;
-    }
-    .introduction-view-options-wrapper-mobile-top-logo{
-        width: 160px;
-        margin-left: 12.5px;
-    }
-    .introduction-view-options-wrapper-mobile-top-logo>img{
-        width: 100%;
-    }
-    .introduction-view-options-wrapper-mobile-top-more{
-        margin-left: auto;
-        color: white;
-        width: 60px;
-        height: 60px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .introduction-view-options-wrapper-mobile-top-more-is-open{
-        background: rgba(255,255,255,0.1);
-    }
-    .introduction-view-options-wrapper-mobile{
-        position: absolute;   
-        width: 100%;
-        top:100%;
-        box-sizing: border-box;
-        background: rgba(0,0,0,0.7);
-    }
+
     @media screen and (max-width: 500px) {
-        .introduction-wrapper{
-            padding-top: 60px;
-        }
         .introduction-view-options-wrapper {
             display: none;
-        }
-        .introduction-view-options-wrapper-mobile-top{
-            display: flex;
-            align-items: center;
         }
         .introduction-view-option{
             width: 100%;

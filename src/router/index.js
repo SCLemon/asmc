@@ -18,6 +18,8 @@ import EditExperimentRecord from '../pages/ExperimentRecord/pages/EditExperiment
 
 import Cloud from '../pages/Cloud/Cloud.vue'
 
+import MobileGateway from '../pages/MobileGateway/MobileGateway.vue'
+
 const routes = [
     {
       path: '/login',
@@ -26,6 +28,15 @@ const routes = [
         title: 'ASMC LAB｜登入',
         description: '登入 ASMC 實驗室網站，使用實驗室系統服務。',
         keywords: 'ASMC, ASMC Lab, 登入'
+      }
+    },
+    {
+      path:'/mobile-gateway',
+      component: MobileGateway,
+      meta: {
+        title: 'ASMC LAB｜使用者選單',
+        description: 'ASMC 使用者選單，歡迎使用實驗室系統服務。',
+        keywords: 'ASMC, ASMC Lab, 使用者選單'
       }
     },
     {

@@ -47,6 +47,7 @@ export default {
 
     .img{
         width: 100%;
+        z-index: 1;
     }
     @media screen and (max-width: 852px) {
         .content{

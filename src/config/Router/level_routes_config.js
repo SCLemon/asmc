@@ -12,7 +12,8 @@ export default [
             '/profile',
             '/user',
             '/reservation',
-            '/settings'
+            '/settings',
+            '/mobile-gateway'
         ]
     },
     {

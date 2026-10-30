@@ -140,4 +140,19 @@ export default {
         width: 75%;
         margin-top: 50px;
     }
+    @media screen and (max-width: 500px) {
+        .user-login-wrapper{
+            height: calc(100vh - 60px)
+        }
+        .user-login-input-box-wrapper{
+            width: 90vw;
+            padding-bottom: 55px;
+        }
+        .user-login-input-box-title{
+            display: none;
+        }
+        .send-button{
+            margin-top: 35px;
+        }
+    }
 </style>

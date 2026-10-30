@@ -142,4 +142,16 @@ export default {
         margin-bottom: 15px;
         font-size: 14px;
     }
+    @media screen and (max-width: 500px) {
+        .equipment-setting-title{
+            display: none;
+        }
+        .equipment-setting-right{
+            margin-left: 0;
+            width: 100%;
+        }
+        .equipment-superUser-wrapper{
+            display: none;
+        }
+    }
 </style>

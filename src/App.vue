@@ -1,8 +1,7 @@
 <template>
   <div class="view-wrapper">
-    <div class="column">
-      <column></column>
-    </div>
+    <div class="column"><column></column></div>
+    <div class="mobile-column"><mobile-column></mobile-column></div>
     <div class="view_box">
       <div class="view" ref="view">
         <router-view v-slot="{ Component }">
@@ -18,12 +17,13 @@
 <script>
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import Column from './components/Column/Column.vue';
+import MobileColumn from './components/MobileColumn/MobileColumn.vue';
 import { ElNotification } from 'element-plus'
 import { eventBus } from '@/utils/eventBus'
 export default {
   name:'App',
   components:{
-    Column
+    Column, MobileColumn
   },
   setup(){
 
@@ -70,6 +70,9 @@ export default {
     flex-shrink: 0;
     box-shadow: 7.5px 0px 5px rgba(210,210,210);
   }
+  .mobile-column{
+      display: none;
+  }
 
   *::-webkit-scrollbar{
     display: none;
@@ -79,14 +82,12 @@ export default {
     font-family: "Inter", sans-serif;
   }
 
-
+  /* 動畫 */
   .page-enter-active,
   .page-leave-active{
       transition:
           opacity .2s linear,
   }
-
-  /* 新頁面：由下往上進場 */
 
   .page-enter-from{
       opacity: 0;
@@ -95,8 +96,6 @@ export default {
   .page-enter-to{
       opacity: 1;
   }
-
-  /* 舊頁面：往下退場 */
 
   .page-leave-from{
       opacity: 1;
@@ -107,11 +106,21 @@ export default {
   }
 
   @media screen and (max-width: 852px) {
+    .view-wrapper{
+      display: block;
+    }
     .column{
       display: none;
     }
+    .mobile-column{
+      display: block;
+    }
     .view_box{
       width: 100vw;
+      height: calc(100vh - 60px);
+    }
+    .view{
+      height: calc(100vh - 60px);
     }
   }
 </style>

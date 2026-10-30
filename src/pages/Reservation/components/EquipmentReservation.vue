@@ -247,5 +247,28 @@ export default {
             display: none;
         }
     }
+    @media screen and (max-width: 500px) {
+        .calendar-wrapper{
+            overflow-x: scroll;
+            width: 100%;
+            height: calc(100vh - 210px);
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+        }
+        .calendar-item-wrapper-all{
+            width: 100%;
+            flex-shrink: 0;
+            scroll-snap-align: center;
+            scroll-snap-stop: always;
+        }
+        .calendar-item-is-Mine{
+            display: block;
+        }
+        .calendar-item:hover{
+            cursor: pointer;
+            background: white;
+            color: black;
+        }
+    }
 
 </style>
