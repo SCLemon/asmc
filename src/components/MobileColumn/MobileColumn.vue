@@ -1,11 +1,12 @@
 <template>
     <div class="mobile-column-options-wrapper-mobile-top">
-        <div class="mobile-column-options-wrapper-mobile-top-logo">
+        <div class="mobile-column-options-wrapper-mobile-top-logo" @click="goTo('/')">
             <img src="/logo/logo_banner_black.png" alt="">
         </div>
         <div class="mobile-column-options-wrapper-mobile-top-router">
             <div :class="['mobile-column-options-wrapper-mobile-top-user-block',{ 'mobile-column-options-wrapper-mobile-top-user-block-selected': $route.path.includes('mobile-gateway') }]" @click="goTo('/mobile-gateway')"><VIcon :icon="UserIcon" :size="24"></VIcon></div>
-            <div :class="['mobile-column-options-wrapper-mobile-top-more',{ 'mobile-column-options-wrapper-mobile-top-more-is-open': openMobileList }]" @click="openMobileList = !openMobileList"><VIcon :icon="MenuIcon" :size="24"></VIcon></div>
+            <div v-if="!$route.path.includes('mobile-gateway')" :class="['mobile-column-options-wrapper-mobile-top-more',{ 'mobile-column-options-wrapper-mobile-top-more-is-open': openMobileList }]" @click="openMobileList = !openMobileList"><VIcon :icon="MenuIcon" :size="24"></VIcon></div>
+            <div v-else class="mobile-column-options-wrapper-mobile-top-more" @click="logout()"><VIcon :icon="CloseIcon" :size="24"></VIcon></div>
         </div>
         <div class="mobile-column-options-wrapper-mobile" v-if="openMobileList">
             <div class="mobile-column-option" @click="goTo('/introduction/home')">
@@ -34,11 +35,12 @@
 
 <script>
 import { VIcon } from 'vorium-ui'
-import { MenuIcon, UserIcon } from 'vorium-ui/icons'
+import { MenuIcon, UserIcon, CloseIcon } from 'vorium-ui/icons'
 import 'vorium-ui/icons/icons.css'
 import 'vorium-ui/dist/vorium-ui.css'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
+import jsCookie from 'js-cookie'
 
 export default {
     name: 'MobileColumn',
@@ -59,8 +61,12 @@ export default {
             router.replace(path).catch((e)=>{})
             openMobileList.value = false;
         }
+        function logout(){
+            jsCookie.remove('authToken');
+            router.replace('/').catch((e)=>{})
+        }
         return {
-            goTo, MenuIcon, openMobileList, UserIcon
+            goTo, MenuIcon, openMobileList, UserIcon, CloseIcon, logout
         }
     }
 }
