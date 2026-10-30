@@ -224,6 +224,7 @@ export default {
     display: flex;
     justify-content: center;
     align-content: center;
+    z-index: 2;
 }
 .file-preview-close-button:hover{
     cursor: pointer;
@@ -246,6 +247,9 @@ export default {
     height: calc(100% - 40px);
     margin: 0 auto;
     margin-top: 20px;
+}
+:deep(.pptx-preview-wrapper){
+    background: transparent !important;
 }
 
 /* xlsx */
@@ -284,10 +288,11 @@ export default {
 /* pdf */
 .pdf-viewer-wrapper {
     max-width: 60%;
-    height: calc(100% - 40px);
+    height: calc(100% - 20px);
     margin: 0 auto;
     margin-top: 20px;
     flex: 1;
+    overflow-y: hidden;
 }
 
 /* image */
@@ -323,5 +328,52 @@ export default {
 
 :deep(.docx-wrapper){
     background: transparent;
+}
+@media screen and (max-width:1380px) {
+    .pptx-viewer {
+        max-width: 90%;
+        height: calc(100% - 20px);
+        margin: 0 auto;
+        margin-top: 70px;
+    }
+    .pdf-viewer-wrapper {
+        max-width: 90%;
+        height: calc(100% - 80px);
+        margin: 0 auto;
+        margin-top: 60px;
+        flex: 1;
+    }
+    .xlsx-viewer{
+        width: 95%;
+        height: 70%;
+    }
+    .preview-image {
+        max-width: 80%;
+        max-height: 80%;
+        object-fit: contain;
+    }
+}
+@media screen and (max-width:500px) {
+    .file-preview-close-button{
+        right: 15px;
+    }
+    .docx-viewer {
+        max-width: 100%;
+        height: calc(100% - 70px);
+        margin-top: 60px;
+    }
+    .pdf-viewer-wrapper {
+        max-width: 95%;
+        height: calc(100% - 40px);
+        margin-top: 65px;
+    }
+    .preview-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+    :deep(.pdf-container){
+        padding-top: 0;
+    }
 }
 </style>

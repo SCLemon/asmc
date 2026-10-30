@@ -11,5 +11,10 @@ export default {
             path: '/reservation',
             icon: CalendarIcon,
         },
+        {
+            name: '雲端硬碟',
+            path: '/cloud',
+            icon: BookIcon,
+        },
     ],
 }

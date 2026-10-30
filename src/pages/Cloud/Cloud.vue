@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="cloud-navigatior-wrapper" ref="historyWrapper">
-            <div class="cloud-navigatior-history-list">
+            <div class="cloud-navigatior-history-list" ref="historyWrapperMobile">
                 <div v-for="(item, id) in historyList" :key="id" class="cloud-navigatior-history-item-wrapper">
                     <VIcon :icon="ChevronRightIcon" :size="16" v-if="id" :style="{color: (id == (historyList.length - 1)) ? 'black':'rgba(0,0,0,0.2)'}"></VIcon>
                     <div class="cloud-navigatior-history-item" @click="goTo(item.token)" :class="{ 'cloud-navigatior-history-item-selected': id == (historyList.length - 1)}">{{ item.label }}</div>
@@ -72,6 +72,7 @@ export default {
         const route = useRoute();
 
         const historyWrapper = ref(null)
+        const historyWrapperMobile = ref(null)
         const addButtonWrapper = ref(null);
 
         const historyList = ref([{ label:'ASMC 雲端硬碟', token:'' }]);
@@ -165,8 +166,10 @@ export default {
         const scrollToRight = async () => {
             await nextTick()
             const el = historyWrapper.value
-            if(!el) return
+            const el2 = historyWrapperMobile.value
+            if(!el && !el2) return
             el.scrollTo({ left:el.scrollWidth, behavior:'smooth' })
+            el2.scrollTo({ left:el2.scrollWidth, behavior:'smooth' })
         }
 
 
@@ -194,6 +197,7 @@ export default {
             inputFolderEl,
             keyword,
             historyWrapper,
+            historyWrapperMobile,
             historyList,
             uploadList,
             ChevronRightIcon,
@@ -216,7 +220,6 @@ export default {
 <style scoped>
     .cloud-navigatior-wrapper{
         width: 100%;
-        overflow: hidden;
         position: relative;
         padding-left: 25px;
         padding-right: 550px;
@@ -238,7 +241,6 @@ export default {
         padding-right: 15px;
         color: rgba(0,0,0,0.2);
         flex-shrink: 0;
-        transition: all 0.25s ease;
     }
     .cloud-navigatior-history-item:hover{
         cursor: pointer;
@@ -301,7 +303,6 @@ export default {
         border: 1px solid #dcdfe6;
         background: transparent;
         transition: box-shadow 0.3s ease;
-        z-index: 1;
     }
     .cloud-add-button-text{
         display: flex;
@@ -346,8 +347,36 @@ export default {
         background: rgba(0,0,0,0.03);
     }
     .cloud-navigatior-stage{
-        width: 100%;
         height: calc(100vh - 80px);
         overflow-y: scroll;
+    }
+    @media screen and (max-width: 500px) {
+        .cloud-navigatior-wrapper{
+            padding-right: 0px;
+            padding-left: 0;
+            flex-direction: column;
+            box-shadow: none;
+            height: auto;
+
+        }
+        .cloud-navigatior-history-list{
+            height: 40px;
+            font-size: 12px;
+            width: 100%;
+            justify-content: left;
+            overflow-x: scroll;
+            
+        }
+        .cloud-navigatior-right{
+            position: initial;
+            right: 0;
+        }
+        .cloud-navigatior-stage{
+            height: calc(100vh - 145px);
+            overflow-y: scroll;
+        }
+        .cloud-add-button-list-wrapper{
+            right: 17.5px;
+        }
     }
 </style>

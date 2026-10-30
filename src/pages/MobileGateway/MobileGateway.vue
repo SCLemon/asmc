@@ -40,14 +40,13 @@ export default {
         height: calc(100vh - 60px);
         box-sizing: border-box;
         overflow-y: scroll;
-        display: flex;
-        align-items: center;
-        flex-direction: column;
         gap:30px;
         padding-top: 30px;
     }
     .mobile-gateway-item{
         width: 90%;
+        margin: 0 auto;
+        margin-bottom: 30px;
         height: 300px;
         display: flex;
         justify-content: center;
